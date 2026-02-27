@@ -75,12 +75,12 @@ export function StorybookViewer({ data }: { data: WishData }) {
             id: "intro",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 relative">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 relative">
                     <img src="https://www.transparenttextures.com/patterns/ornement.png" className="absolute top-4 w-32 opacity-20" alt="" />
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.5 }} className="mb-8">
                         <BookHeart className="w-20 h-20 text-amber-800 drop-shadow-md" strokeWidth={1.5} />
                     </motion.div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-amber-900 mb-6 leading-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-900 mb-6 leading-tight">
                         <span className="text-6xl text-amber-700 italic pr-2 font-black font-serif">O</span>nce Upon A Time...
                     </h1>
                     <p className="text-2xl text-amber-800/80 italic mt-4 max-w-sm border-t border-b border-amber-900/20 py-4">
@@ -96,7 +96,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
             locked: false,
             content: (
                 <div className="flex flex-col items-center justify-center h-full text-center px-10 relative">
-                    <h2 className="text-3xl font-bold mb-8 text-amber-950 leading-loose">
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-amber-950 leading-loose">
                         Chapter 1<br />
                         <span className="text-xl font-normal italic text-amber-800">The Legend of the <span className="capitalize font-bold">{data.relationship?.replace("-", " ")}</span></span>
                     </h2>
@@ -113,7 +113,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
             locked: false,
             content: (
                 <div className="flex flex-col justify-center h-full px-10">
-                    <h2 className="text-3xl font-bold mb-8 text-amber-900 text-center border-b-2 border-amber-900 border-dotted pb-4">Endearing Traits</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-amber-900 text-center border-b-2 border-amber-900 border-dotted pb-4">Endearing Traits</h2>
                     <div className="flex flex-col gap-6">
                         {data.quirks.map((q, i) => (
                             <motion.div
@@ -177,7 +177,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
                     {!dateUnlocked ? (
                         <div className="w-full max-w-sm relative">
                             <KeyRound className="w-16 h-16 text-amber-800 mx-auto mb-6" strokeWidth={1.5} />
-                            <h2 className="text-3xl font-bold mb-4 text-amber-900 leading-tight">A Seal Upon<br />The Parchment</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-amber-900 leading-tight">A Seal Upon<br />The Parchment</h2>
                             <p className="text-lg opacity-80 mb-8 text-amber-950 italic">Only those who remember the sacred date may pass beyond this chapter.</p>
 
                             <input
@@ -197,8 +197,8 @@ export function StorybookViewer({ data }: { data: WishData }) {
                     ) : (
                         <div className="text-amber-900 text-center">
                             <Unlock className="w-16 h-16 mx-auto mb-6 text-amber-700" strokeWidth={1.5} />
-                            <h2 className="text-3xl font-bold mb-4 italic">The Seal is Broken</h2>
-                            <div className="text-4xl font-black mt-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-4 italic">The Seal is Broken</h2>
+                            <div className="text-3xl sm:text-4xl font-black mt-4">
                                 {data.secretDate}
                             </div>
                         </div>
@@ -212,7 +212,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
             locked: false,
             content: (
                 <div className="flex flex-col justify-start h-full px-10 pt-16 align-top">
-                    <h2 className="text-3xl font-bold mb-8 text-amber-900 text-center border-b-2 border-amber-900 border-dotted pb-4">Heart of the Story</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-amber-900 text-center border-b-2 border-amber-900 border-dotted pb-4">Heart of the Story</h2>
                     <div className="text-xl leading-relaxed whitespace-pre-wrap font-serif text-amber-950 overflow-y-auto max-h-[60vh] custom-scrollbar text-justify px-2">
                         {data.coreMessage}
                     </div>
@@ -226,7 +226,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
             content: (
                 <div className="flex flex-col items-center justify-center text-center h-full px-10 relative">
                     <Crown className="w-20 h-20 text-amber-600 mb-8 drop-shadow-md" strokeWidth={1} />
-                    <h1 className="text-4xl font-black mb-6 text-amber-900 italic">Happily Ever After...</h1>
+                    <h1 className="text-3xl sm:text-4xl font-black mb-6 text-amber-900 italic">Happily Ever After...</h1>
 
                     <p className="text-2xl italic leading-tight mb-12 font-medium text-amber-950 border-t border-b border-amber-900/30 py-8">
                         &quot;{data.futurePromise}&quot;

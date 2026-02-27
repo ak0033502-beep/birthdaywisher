@@ -9,7 +9,7 @@ export function Step15CoreMessage() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">The Heart-To-Heart 💌</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">The Heart-To-Heart 💌</h2>
                 <p className="text-foreground/60 text-lg">
                     This is it. The main paragraph. Pour your heart out (or roast them some more).
                     <br /><span className="text-sm font-medium text-primary mt-2 block">This unlocks AFTER they solve the puzzle!</span>

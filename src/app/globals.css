@@ -91,3 +91,30 @@ body {
     background-position: 200% center;
   }
 }
+
+/* Mobile utilities */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area padding for notch/island phones */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem);
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 640px) {
+
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px !important;
+    /* Prevent iOS zoom on focus */
+  }
+}

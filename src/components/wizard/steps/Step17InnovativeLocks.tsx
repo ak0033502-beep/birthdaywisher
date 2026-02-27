@@ -12,7 +12,7 @@ export function Step17InnovativeLocks() {
                 <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-bold uppercase tracking-wider mb-4 border border-emerald-500/20">
                     Viral Features
                 </span>
-                <h2 className="text-3xl md:text-5xl font-black mb-4">Make It Unforgettable.</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-5xl font-black mb-4">Make It Unforgettable.</h2>
                 <p className="text-foreground/60 text-lg">
                     Add world-first interactive locks that nobody else has seen before. Surprise them completely.
                 </p>

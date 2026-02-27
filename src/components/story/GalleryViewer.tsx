@@ -87,7 +87,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "intro",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 relative z-20 w-full">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 relative z-20 w-full">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -95,7 +95,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
                         className={`${frameBase} w-full max-w-md relative before:absolute before:-inset-4 before:border before:border-zinc-200/50 before:-z-10`}
                     >
                         <div className="bg-zinc-50 py-16 px-8 border border-zinc-100 h-full flex flex-col justify-center shadow-inner">
-                            <h1 className="text-4xl md:text-5xl font-serif text-zinc-800 mb-6 leading-tight tracking-[0.1em] uppercase">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-zinc-800 mb-6 leading-tight tracking-[0.1em] uppercase">
                                 The<br />{data.nickname || data.targetName}<br />Collection
                             </h1>
                             <div className="w-16 h-[1px] bg-zinc-300 mx-auto my-6"></div>
@@ -113,7 +113,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "connection",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 w-full max-w-lg mx-auto">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 w-full max-w-lg mx-auto">
                     <motion.h2
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
                         className="text-3xl font-serif text-zinc-800 mb-8 leading-relaxed"
@@ -136,7 +136,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "quirks",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full px-8 w-full max-w-md mx-auto">
+                <div className="flex flex-col justify-center h-full px-4 sm:px-8 w-full max-w-md mx-auto">
                     <div className="grid grid-cols-2 gap-4 relative z-10 w-full mb-8">
                         {data.quirks.map((q, i) => (
                             <motion.div
@@ -159,7 +159,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "tale",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full px-8 relative max-w-lg mx-auto">
+                <div className="flex flex-col justify-center h-full px-4 sm:px-8 relative max-w-lg mx-auto">
                     <div className={`p-10 ${frameBase} relative overflow-hidden bg-[#fafafa]`}>
                         <Search className="absolute top-4 right-4 w-6 h-6 text-zinc-300" strokeWidth={1.5} />
                         <p className="text-lg leading-loose font-serif text-zinc-700 relative z-10 text-justify first-line:uppercase first-line:tracking-widest first-letter:text-5xl first-letter:float-left first-letter:mr-2 first-letter:font-bold">
@@ -175,7 +175,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: `media-${idx}`,
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full w-full px-6 relative">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 sm:px-6 relative">
                     <motion.div
                         className={`w-full max-w-sm ${frameBase} pb-16 relative`} // Extra thick bottom border for polaroid/frame style
                     >
@@ -198,7 +198,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "date",
             locked: !dateUnlocked,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 relative z-20 max-w-sm mx-auto">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 relative z-20 max-w-sm mx-auto">
                     {!dateUnlocked ? (
                         <div className={`w-full p-8 ${frameBase} relative bg-zinc-50`}>
                             <KeyRound className={`w-8 h-8 mx-auto mb-6 text-zinc-400`} strokeWidth={1.5} />
@@ -237,7 +237,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "core",
             locked: false,
             content: (
-                <div className="flex flex-col justify-start h-full px-6 pt-20 w-full max-w-lg mx-auto">
+                <div className="flex flex-col justify-start h-full px-3 sm:px-6 pt-12 sm:pt-20 w-full max-w-lg mx-auto">
                     <div className={`p-8 md:p-12 ${frameBase} relative overflow-hidden bg-[#fdfdfd]`}>
                         <div className="text-lg leading-loose font-serif text-zinc-800 overflow-y-auto max-h-[60vh] custom-scrollbar relative z-10 text-justify">
                             {data.coreMessage}
@@ -252,7 +252,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
             id: "finale",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center text-center h-full px-8 relative z-20 max-w-lg mx-auto">
+                <div className="flex flex-col items-center justify-center text-center h-full px-4 sm:px-8 relative z-20 max-w-lg mx-auto">
                     <h1 className="text-2xl font-serif text-zinc-800 mb-12 uppercase tracking-[0.2em]">
                         The Masterpiece
                     </h1>

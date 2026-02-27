@@ -14,7 +14,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <main className="w-full relative z-10">
-        <section className="container max-w-7xl mx-auto px-6 pt-32 pb-20 text-center">
+        <section className="container max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-12 sm:pb-20 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30"
@@ -24,7 +24,7 @@ export default function Home() {
           </motion.div>
 
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[1.1]"
+            className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 sm:mb-8 leading-[1.1]"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
           >
             Make Their Birthday <br />
@@ -32,7 +32,7 @@ export default function Home() {
           </motion.h1>
 
           <motion.p
-            className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto mb-12 font-medium"
+            className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto mb-8 sm:mb-12 font-medium px-2"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
           >
             Ditch the boring text messages and basic WhatsApp forwards. Create a highly interactive, gamified, and emotional story-style birthday wish in 3 minutes. Stop sending plain text, start creating magic.
@@ -45,8 +45,8 @@ export default function Home() {
             <Link href="/create">
               <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-shadow">
                 <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
-                <div className="relative flex items-center gap-3 px-10 py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
-                  <span className="font-bold text-xl group-hover:text-white transition-colors">Create Free Birthday Wish</span>
+                <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
+                  <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Create Free Birthday Wish</span>
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
                 </div>
               </button>
@@ -58,9 +58,9 @@ export default function Home() {
         </section>
 
         {/* Feature Showcase Grid - SEO Optimized */}
-        <section className="container max-w-7xl mx-auto px-6 py-24 border-t border-white/5">
+        <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 border-t border-white/5">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Not Your Average Birthday Card!</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Not Your Average Birthday Card!</h2>
             <p className="text-foreground/60 max-w-2xl mx-auto text-lg">We&apos;ve engineered the ultimate emotional rollercoaster. From interactive puzzles to a stunning final celebration.</p>
           </div>
 
@@ -99,13 +99,13 @@ export default function Home() {
         </section>
 
         {/* Security & Privacy Section - NEW */}
-        <section className="container max-w-7xl mx-auto px-6 py-24 relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-background via-black/50 to-background border border-white/5 my-12">
+        <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 relative overflow-hidden rounded-2xl sm:rounded-[3rem] bg-gradient-to-br from-background via-black/50 to-background border border-white/5 my-6 sm:my-12">
           {/* Subtle glow behind the shield */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -z-10 pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 relative">
-              <div className="glass-panel p-8 md:p-12 rounded-3xl border border-emerald-500/20 relative overflow-hidden group">
+              <div className="glass-panel p-5 sm:p-8 md:p-12 rounded-3xl border border-emerald-500/20 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 blur-3xl rounded-full transition-transform duration-700 group-hover:scale-150" />
 
                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white">
@@ -152,7 +152,7 @@ export default function Home() {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
                   100% Private & Secure
                 </div>
-                <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Create Intimate Wishes Without The Fear.</h2>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 leading-tight">Create Intimate Wishes Without The Fear.</h2>
                 <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
                   We know that the best birthday wishes contain embarrassing photos, deep emotional texts, and inside jokes that no one else should ever see.
                 </p>
@@ -173,7 +173,7 @@ export default function Home() {
         {/* How it Works / Social Proof */}
         <section className="w-full bg-white/5 py-24">
           <div className="container max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-3xl md:text-5xl font-bold mb-16">How To Create The Best Birthday Surprise Online</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-12 sm:mb-16">How To Create The Best Birthday Surprise Online</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
               {/* Connector lines (Desktop only) */}
@@ -210,7 +210,7 @@ export default function Home() {
 
       {/* SEO Footer */}
       <footer className="w-full border-t border-white/10 glass-panel mt-12 py-12 px-6">
-        <div className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-sm">
+        <div className="container max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 text-sm">
           <div>
             <h4 className="font-bold text-lg mb-4 text-white">birthdaywisher.fun</h4>
             <p className="text-foreground/60">The ultimate aesthetic birthday wisher tool. Create interactive, emotional, and unforgettable web-based greeting cards online for free.</p>

@@ -107,7 +107,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
             content: (
                 <div className="flex flex-col items-start justify-center h-full text-left w-full max-w-lg mx-auto p-8">
                     <Terminal className="w-12 h-12 text-green-500 mb-6 drop-shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
-                    <h1 className="text-3xl font-bold text-green-400 mb-6 leading-tight uppercase">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-green-400 mb-6 leading-tight uppercase">
                         <TypewriterText text={`> INIT sequence...\n> TARGET: ${data.nickname || data.targetName}`} speed={40} />
                     </h1>
                     <div className="text-xl text-green-500/80 mt-4">
@@ -136,7 +136,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
             id: "quirks",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-8">
+                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-4 sm:p-8">
                     <h2 className="text-2xl font-bold mb-8 uppercase text-green-400">&gt; RUNNING ANOMALY SCAN...</h2>
                     <div className="flex flex-col gap-4">
                         {data.quirks.map((q, i) => (
@@ -159,7 +159,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
             id: "tale",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-8">
+                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-4 sm:p-8">
                     <h2 className="text-2xl font-bold mb-6 text-green-400">&gt; RETRIEVING ARCHIVED LOG...</h2>
                     <div className="text-lg leading-relaxed text-green-500 border border-green-500/30 p-4 bg-green-500/5 overflow-y-auto max-h-[50vh] custom-scrollbar">
                         <TypewriterText text={data.memoryTale} speed={20} />
@@ -200,7 +200,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
             id: "date",
             locked: !dateUnlocked,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8">
                     {!dateUnlocked ? (
                         <motion.div
                             animate={accessDenied ? { x: [-10, 10, -10, 10, 0] } : {}}
@@ -228,8 +228,8 @@ export function TerminalViewer({ data }: { data: WishData }) {
                     ) : (
                         <div className="text-green-500 text-center">
                             <Unlock className="w-16 h-16 mx-auto mb-6 text-green-400" />
-                            <h2 className="text-3xl font-bold mb-4">&gt; ENCRYPTION BYPASSED</h2>
-                            <div className="text-4xl font-black bg-green-500 text-black px-4 py-2 inline-block">
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-4">&gt; ENCRYPTION BYPASSED</h2>
+                            <div className="text-3xl sm:text-4xl font-black bg-green-500 text-black px-4 py-2 inline-block">
                                 {data.secretDate}
                             </div>
                         </div>
@@ -242,7 +242,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
             id: "core",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-8">
+                <div className="flex flex-col justify-center h-full w-full max-w-lg mx-auto p-4 sm:p-8">
                     <h2 className="text-xl font-bold mb-6 text-green-400 w-full text-left">&gt; DECRYPTING CORE.DAT...</h2>
                     <div className="text-lg leading-relaxed whitespace-pre-wrap font-medium p-6 border border-green-500/30 overflow-y-auto max-h-[60vh] custom-scrollbar text-green-500 bg-green-500/5">
                         <TypewriterText text={data.coreMessage} speed={15} />
@@ -259,7 +259,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
                     <motion.div
                         className="w-full max-w-[340px] border border-green-400 p-8 bg-black relative shadow-[0_0_30px_rgba(34,197,94,0.2)]"
                     >
-                        <h1 className="text-4xl font-black mb-2 leading-none text-green-400 uppercase">&gt;&gt; SYSTEM OK</h1>
+                        <h1 className="text-3xl sm:text-4xl font-black mb-2 leading-none text-green-400 uppercase">&gt;&gt; SYSTEM OK</h1>
                         <p className="text-xs opacity-60 mb-8 font-mono tracking-[0.3em] text-green-500 border-b border-green-500/30 pb-4">
                             TRANSMISSION COMPLETE
                         </p>

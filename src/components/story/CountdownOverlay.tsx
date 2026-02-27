@@ -84,16 +84,16 @@ export function CountdownOverlay({
                         <Lock className="w-10 h-10 text-white/50" />
                     </div>
 
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
                         No Peeking.
                     </h1>
 
-                    <p className="text-lg md:text-xl text-white/60 mb-16 max-w-lg mx-auto font-medium">
+                    <p className="text-base sm:text-lg md:text-xl text-white/60 mb-10 sm:mb-16 max-w-lg mx-auto font-medium px-2">
                         Your surprise is safely locked inside a time capsule. It will automatically open when the countdown reaches zero.
                     </p>
 
                     {/* The Ticking Clock */}
-                    <div className="grid grid-cols-4 gap-4 md:gap-8 w-full">
+                    <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-8 w-full">
                         <TimeUnit value={timeLeft.days} label="Days" />
                         <TimeUnit value={timeLeft.hours} label="Hours" />
                         <TimeUnit value={timeLeft.minutes} label="Minutes" />
@@ -124,7 +124,7 @@ function TimeUnit({ value, label }: { value: number, label: string }) {
             <div className="w-full aspect-square bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl flex items-center justify-center mb-3 md:mb-4 relative overflow-hidden backdrop-blur-xl">
                 {/* Glossy reflection */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent h-1/2 rounded-t-3xl" />
-                <span className="text-4xl md:text-7xl font-mono font-bold text-white relative z-10">
+                <span className="text-3xl sm:text-4xl md:text-7xl font-mono font-bold text-white relative z-10">
                     {value.toString().padStart(2, '0')}
                 </span>
             </div>

@@ -36,7 +36,7 @@ export function Step8Quirks() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Things I Love (The Quirks) ✨</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Things I Love (The Quirks) ✨</h2>
                 <p className="text-foreground/60 text-lg">
                     Select or add up to 5 unique traits that make them special.
                 </p>

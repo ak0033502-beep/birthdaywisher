@@ -74,7 +74,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "intro",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 relative z-20">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 relative z-20">
                     <motion.div
                         animate={{ y: [0, -15, 0], rotate: [0, 5, -5, 0] }}
                         transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
@@ -83,7 +83,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
                         <Moon className={`w-24 h-24 ${accent}`} strokeWidth={1} fill="rgba(168,85,247,0.2)" />
                     </motion.div>
 
-                    <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-6 drop-shadow-xl tracking-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-6 drop-shadow-xl tracking-tight">
                         Orbiting Sector {data.targetAge}
                     </h1>
 
@@ -99,9 +99,9 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "connection",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8">
                     <Orbit className={`w-16 h-16 ${accent} mb-8`} strokeWidth={1.5} />
-                    <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">
                         Gravitational Pull: <span className="uppercase font-black text-white ml-2">{data.relationship?.replace("-", " ")}</span>
                     </h2>
                     <p className="text-lg leading-relaxed text-blue-100/70 font-light">
@@ -116,7 +116,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "quirks",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full px-8 w-full max-w-md mx-auto">
+                <div className="flex flex-col justify-center h-full px-4 sm:px-8 w-full max-w-md mx-auto">
                     <h2 className="text-2xl font-bold mb-10 text-center tracking-widest uppercase text-purple-300 drop-shadow-md">
                         <Sparkles className="inline-block w-5 h-5 mr-3 mb-1 text-pink-400" />
                         Stellar Qualities
@@ -144,7 +144,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "tale",
             locked: false,
             content: (
-                <div className="flex flex-col justify-center h-full px-8 relative">
+                <div className="flex flex-col justify-center h-full px-4 sm:px-8 relative">
                     <Telescope className="absolute top-1/4 right-0 w-48 h-48 text-white/5 -z-10 tracking-widest" />
                     <h2 className="text-lg font-mono mb-4 text-pink-400 uppercase tracking-widest">&gt; Transmission Received</h2>
                     <div className={`p-8 rounded-3xl ${cardBg} relative overflow-hidden`}>
@@ -161,7 +161,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: `media-${idx}`,
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center h-full w-full px-6 relative">
+                <div className="flex flex-col items-center justify-center h-full w-full px-3 sm:px-6 relative">
                     <h2 className="text-sm font-mono tracking-[0.3em] uppercase mb-8 text-blue-300">Stardust Archive #{idx + 1}</h2>
                     <motion.div
                         className={`w-full max-w-sm p-4 rounded-[2rem] ${cardBg} relative`}
@@ -184,7 +184,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "date",
             locked: !dateUnlocked,
             content: (
-                <div className="flex flex-col items-center justify-center h-full text-center px-8 relative z-20">
+                <div className="flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 relative z-20">
                     {!dateUnlocked ? (
                         <div className={`w-full max-w-sm rounded-[2rem] p-8 ${cardBg} relative overflow-hidden backdrop-blur-3xl`}>
                             {/* Radar sweep effect */}
@@ -215,8 +215,8 @@ export function GalaxyViewer({ data }: { data: WishData }) {
                     ) : (
                         <div className="text-center z-20">
                             <Unlock className={`w-20 h-20 mx-auto mb-6 ${accent}`} strokeWidth={1} />
-                            <h2 className="text-3xl font-black mb-4 uppercase tracking-[0.2em] text-blue-200">Jump Completed</h2>
-                            <div className="text-5xl font-mono text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 drop-shadow-2xl">
+                            <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase tracking-[0.2em] text-blue-200">Jump Completed</h2>
+                            <div className="text-3xl sm:text-5xl font-mono text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 drop-shadow-2xl">
                                 {data.secretDate}
                             </div>
                         </div>
@@ -229,7 +229,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "core",
             locked: false,
             content: (
-                <div className="flex flex-col justify-start h-full px-6 pt-20 w-full max-w-lg mx-auto">
+                <div className="flex flex-col justify-start h-full px-3 sm:px-6 pt-12 sm:pt-20 w-full max-w-lg mx-auto">
                     <h2 className="text-sm font-mono uppercase tracking-[0.4em] mb-6 text-center text-purple-300">Captain&apos;s Log</h2>
                     <div className={`p-8 rounded-[2rem] ${cardBg} shadow-2xl overflow-hidden relative`}>
                         <div className="absolute right-0 top-0 w-64 h-64 bg-pink-500/10 blur-[50px] rounded-full pointer-events-none"></div>
@@ -245,10 +245,10 @@ export function GalaxyViewer({ data }: { data: WishData }) {
             id: "finale",
             locked: false,
             content: (
-                <div className="flex flex-col items-center justify-center text-center h-full px-8 relative z-20">
+                <div className="flex flex-col items-center justify-center text-center h-full px-4 sm:px-8 relative z-20">
                     <Satellite className="w-20 h-20 text-blue-400 mb-10 drop-shadow-[0_0_20px_rgba(96,165,250,0.8)]" strokeWidth={1} />
 
-                    <h1 className="text-3xl font-bold mb-8 text-blue-200 uppercase tracking-widest">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-blue-200 uppercase tracking-widest">
                         Incoming Signal
                     </h1>
 

@@ -17,7 +17,7 @@ export function Step9RoastMeter() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Roast vs. Toast 🎚️</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Roast vs. Toast 🎚️</h2>
                 <p className="text-foreground/60 text-lg">
                     Set the tone for the intro. How hard are we going in on them?
                 </p>

@@ -156,7 +156,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "intro",
             locked: false,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-6 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-3 sm:px-6 ${t.font}`}>
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.5 }} className={`w-20 h-20 ${t.accentBg} rounded-full flex items-center justify-center mb-6`}>
                         <Sparkles className={`w-10 h-10 ${t.accent}`} />
                     </motion.div>
@@ -184,13 +184,13 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "connection",
             locked: false,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-6 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-3 sm:px-6 ${t.font}`}>
                     <motion.div initial={{ opacity: 0, scale: 0.5, rotateY: 180 }} animate={{ opacity: 1, scale: 1, rotateY: 0 }} transition={{ duration: 1.5, type: "spring", bounce: 0.4 }} className="mb-6">
                         <Heart className={`w-20 h-20 ${t.accent} ${t.iconFill} drop-shadow-2xl`} />
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 1 }}
-                        className="text-4xl font-black mb-4 tracking-tight"
+                        className="text-3xl sm:text-4xl font-black mb-4 tracking-tight"
                     >
                         To my favorite <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5, duration: 2 }} className={`capitalize ${t.accent}`}>{data.relationship?.replace("-", " ")}</motion.span>...
                     </motion.h2>
@@ -205,8 +205,8 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "roast",
             locked: false,
             content: (
-                <div className={`flex flex-col justify-center h-full px-8 ${t.font}`}>
-                    <h2 className="text-3xl font-bold mb-8">The Roast Meter 🔥</h2>
+                <div className={`flex flex-col justify-center h-full px-4 sm:px-8 ${t.font}`}>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8">The Roast Meter 🔥</h2>
                     <p className="text-xl mb-6 opacity-80">I set the vibe meter for this to...</p>
 
                     <div className="relative h-6 bg-black/10 rounded-full overflow-hidden mb-4 shadow-inner">
@@ -232,7 +232,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "quirks",
             locked: false,
             content: (
-                <div className={`flex flex-col justify-center h-full px-8 ${t.font}`}>
+                <div className={`flex flex-col justify-center h-full px-4 sm:px-8 ${t.font}`}>
                     <h2 className="text-4xl font-bold mb-8 leading-tight">Things I absolutely love about you...</h2>
                     <div className="flex flex-col gap-4">
                         {data.quirks.map((q, i) => (
@@ -256,7 +256,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "tale",
             locked: false,
             content: (
-                <div className={`flex flex-col justify-center h-full px-8 relative overflow-hidden ${t.font}`}>
+                <div className={`flex flex-col justify-center h-full px-4 sm:px-8 relative overflow-hidden ${t.font}`}>
                     <Quote className="absolute top-10 left-4 w-32 h-32 opacity-5 -z-10" />
                     <h2 className={`text-3xl font-bold mb-8 ${t.accent}`}>Remember that time...</h2>
                     <motion.div
@@ -335,7 +335,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "date",
             locked: !dateUnlocked,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-8 bg-black/5 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 bg-black/5 ${t.font}`}>
                     {!dateUnlocked ? (
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
@@ -348,7 +348,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                 </div>
                             </motion.div>
 
-                            <h2 className="text-3xl font-bold mb-2">Memory Vault</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-2">Memory Vault</h2>
                             <p className="text-lg opacity-80 mb-8">Enter our secret date to unlock the rest of the wish. 🤫</p>
 
                             <motion.div animate={shakeError ? { x: [-10, 10, -10, 10, 0] } : {}} className="w-full relative z-50 pointer-events-auto">
@@ -386,7 +386,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "slidingpuzzle",
             locked: !slidingPuzzleUnlocked,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-6 bg-black/5 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-3 sm:px-6 bg-black/5 ${t.font}`}>
                     {!slidingPuzzleUnlocked ? (
                         <motion.div className="w-full flex flex-col items-center pointer-events-auto relative z-50">
                             <motion.div animate={shakeError ? { x: [-15, 15, -15, 15, 0], rotateZ: [-10, 10, -10, 10, 0] } : {}} className="relative mb-6">
@@ -394,7 +394,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                     <Puzzle className={`w-10 h-10 ${t.accent}`} strokeWidth={1.5} />
                                 </div>
                             </motion.div>
-                            <h2 className="text-3xl font-bold mb-4 drop-shadow-md">Picture Puzzle! 🧩</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-4 drop-shadow-md">Picture Puzzle! 🧩</h2>
                             <p className="text-lg opacity-80 mb-8 max-w-xs leading-tight">Tap adjacent tiles to slide and unscramble the image!</p>
 
                             <div className={`w-full max-w-[320px] p-2 rounded-2xl ${t.card} shadow-2xl`}>
@@ -413,7 +413,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                             <div className={`w-20 h-20 rounded-3xl ${t.accentBg} flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(255,255,255,0.3)]`}>
                                 <Unlock className={`w-10 h-10 ${t.accent}`} strokeWidth={1.5} />
                             </div>
-                            <h2 className="text-3xl font-black mb-6 drop-shadow-lg">Puzzle Solved!</h2>
+                            <h2 className="text-2xl sm:text-3xl font-black mb-6 drop-shadow-lg">Puzzle Solved!</h2>
                             <motion.div
                                 initial={{ rotateZ: -5, y: 50 }} animate={{ rotateZ: 2, y: 0 }} transition={{ type: "spring" }}
                                 className="w-[90%] max-w-sm bg-white p-4 pb-16 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative"
@@ -433,7 +433,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "quiz1",
             locked: !quiz1Unlocked,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-8 bg-black/5 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 bg-black/5 ${t.font}`}>
                     {!quiz1Unlocked ? (
                         <motion.div className="w-full flex flex-col items-center pointer-events-auto relative z-50 perspective-[1000px]">
                             <motion.div animate={shakeError ? { x: [-15, 15, -15, 15, 0], rotateZ: [-10, 10, -10, 10, 0] } : {}} className="relative mb-8">
@@ -443,7 +443,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                 </div>
                             </motion.div>
 
-                            <h2 className="text-3xl font-bold mb-6">Quiz Time! 🧠</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-6">Quiz Time! 🧠</h2>
                             <div className={`p-6 rounded-3xl w-full mb-8 font-medium text-xl shadow-xl ${t.card} border-t border-l bg-gradient-to-br from-white/10 to-transparent`}>
                                 &quot;{data.quizQ1}&quot;
                             </div>
@@ -470,7 +470,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                             <div className={`w-24 h-24 rounded-3xl ${t.accentBg} flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(255,255,255,0.3)]`}>
                                 <CheckIcon className={`w-12 h-12 ${t.accent}`} strokeWidth={1.5} />
                             </div>
-                            <h2 className="text-4xl font-black mb-4">{quiz1Msg || "Spot on!"}</h2>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4">{quiz1Msg || "Spot on!"}</h2>
                             <div className={`p-8 rounded-3xl font-medium text-2xl opacity-90 ${t.card} shadow-2xl`}>
                                 &quot;{data.quizA1}&quot;
                             </div>
@@ -484,7 +484,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "quiz2",
             locked: !quiz2Unlocked,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-8 bg-black/5 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 bg-black/5 ${t.font}`}>
                     {!quiz2Unlocked ? (
                         <motion.div className="w-full flex flex-col items-center pointer-events-auto relative z-50 perspective-[1000px]">
                             <motion.div animate={shakeError ? { x: [-15, 15, -15, 15, 0], rotateZ: [-10, 10, -10, 10, 0] } : {}} className="relative mb-8">
@@ -494,7 +494,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                 </div>
                             </motion.div>
 
-                            <h2 className="text-3xl font-bold mb-6">One more question! 🫣</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-6">One more question! 🫣</h2>
                             <div className={`p-6 rounded-3xl w-full mb-8 font-medium text-xl shadow-xl ${t.card} border-t border-l bg-gradient-to-br from-white/10 to-transparent`}>
                                 &quot;{data.quizQ2}&quot;
                             </div>
@@ -521,7 +521,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                             <div className={`w-24 h-24 rounded-3xl ${t.accentBg} flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(255,255,255,0.3)]`}>
                                 <PartyPopper className={`w-12 h-12 ${t.accent}`} strokeWidth={1.5} />
                             </div>
-                            <h2 className="text-4xl font-black mb-4">{quiz2Msg || "You did it!"}</h2>
+                            <h2 className="text-3xl sm:text-4xl font-black mb-4">{quiz2Msg || "You did it!"}</h2>
                             <div className={`text-3xl font-bold ${t.accent}`}>
                                 You truly know me well!
                             </div>
@@ -535,7 +535,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "award",
             locked: false,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-8 bg-black/5 ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 bg-black/5 ${t.font}`}>
                     <motion.div
                         initial={{ scale: 0, rotateY: 180 }}
                         animate={{ scale: 1, rotateY: 0 }}
@@ -564,14 +564,14 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "voice",
             locked: false,
             content: (
-                <div className={`flex flex-col items-center justify-center h-full text-center px-8 bg-black/5 pointer-events-auto ${t.font}`}>
+                <div className={`flex flex-col items-center justify-center h-full text-center px-4 sm:px-8 bg-black/5 pointer-events-auto ${t.font}`}>
                     <motion.div
                         animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}
                         className={`w-24 h-24 rounded-full ${t.card} flex items-center justify-center border-t border-l bg-gradient-to-br from-white/10 to-transparent shadow-[0_10px_30px_rgba(0,0,0,0.5)] mb-8`}
                     >
                         <Mic className={`w-12 h-12 ${t.accent} drop-shadow-[0_0_10px_currentColor]`} strokeWidth={1.5} />
                     </motion.div>
-                    <h2 className="text-4xl font-black mb-4 drop-shadow-md">Listen closely...</h2>
+                    <h2 className="text-3xl sm:text-4xl font-black mb-4 drop-shadow-md">Listen closely...</h2>
                     <p className="text-lg opacity-80 mb-10">Tap play to hear my voice.</p>
 
                     <motion.div
@@ -588,7 +588,7 @@ export function StoryViewer({ data }: { data: WishData }) {
             id: "gratitude",
             locked: false,
             content: (
-                <div className={`flex flex-col justify-center h-full px-8 bg-gradient-to-tr from-black/5 to-transparent ${t.font} relative overflow-hidden`}>
+                <div className={`flex flex-col justify-center h-full px-4 sm:px-8 bg-gradient-to-tr from-black/5 to-transparent ${t.font} relative overflow-hidden`}>
                     <Heart className={`absolute top-20 right-[-20%] w-96 h-96 ${t.iconFill} opacity-20 -z-10 rotate-12`} />
                     <h2 className={`text-3xl font-bold mb-10 flex items-center gap-4 ${t.accent} drop-shadow-md`}>
                         <div className={`p-3 rounded-2xl ${t.card} bg-white/10 backdrop-blur-md`}>
