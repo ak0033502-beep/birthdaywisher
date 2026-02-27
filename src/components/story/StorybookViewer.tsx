@@ -351,9 +351,15 @@ export function StorybookViewer({ data }: { data: WishData }) {
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Tap Navigation Zones */}
-                <div className="absolute inset-y-0 left-0 w-1/4 z-40 cursor-pointer" onClick={handlePrev} />
-                <div className="absolute inset-y-0 right-0 w-1/4 z-40 cursor-pointer" onClick={handleNext} />
+                {/* Visible Bottom Navigation Arrows */}
+                <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-between items-center px-4 pointer-events-none">
+                    <button onClick={handlePrev} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === 0 ? "opacity-0 pointer-events-none" : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"}`}>
+                        <ChevronRight className="w-6 h-6 rotate-180" />
+                    </button>
+                    <button onClick={handleNext} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === totalSlides - 1 ? "opacity-0 pointer-events-none" : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"}`}>
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
 
                 {slides[currentSlide].locked && (
                     <div className="absolute bottom-12 left-0 right-0 z-50 flex justify-center pointer-events-none">

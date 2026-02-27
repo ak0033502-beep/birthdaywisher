@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
-import { Terminal, Lock, Unlock, AlertTriangle, ShieldAlert } from "lucide-react";
+import { Terminal, Lock, Unlock, AlertTriangle, ShieldAlert , ChevronRight } from "lucide-react";
 import { LockTimer } from "@/components/story/LockTimer";
 
 // A simple typewriter effect component for that terminal feel
@@ -348,9 +348,15 @@ export function TerminalViewer({ data }: { data: WishData }) {
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Tap Navigation Zones */}
-                <div className="absolute inset-y-0 left-0 w-1/4 z-40 cursor-pointer" onClick={handlePrev} />
-                <div className="absolute inset-y-0 right-0 w-1/4 z-40 cursor-pointer" onClick={handleNext} />
+                {/* Visible Bottom Navigation Arrows */}
+                <div className="absolute bottom-10 left-0 right-0 z-50 flex justify-between items-center px-4 pointer-events-none">
+                    <button onClick={handlePrev} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === 0 ? "opacity-0 pointer-events-none" : "bg-black/60 border-green-500/30 text-green-400 hover:bg-green-500/10"}`}>
+                        <ChevronRight className="w-6 h-6 rotate-180" />
+                    </button>
+                    <button onClick={handleNext} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === totalSlides - 1 ? "opacity-0 pointer-events-none" : "bg-black/60 border-green-500/30 text-green-400 hover:bg-green-500/10"}`}>
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
 
                 {/* Status Bar */}
                 <div className="absolute bottom-0 left-0 right-0 p-2 z-50 text-[10px] bg-green-950/80 border-t border-green-500/30 flex justify-between text-green-400">

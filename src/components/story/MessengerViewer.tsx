@@ -368,8 +368,15 @@ export function MessengerViewer({ data }: { data: WishData }) {
                     </div>
                 </div>
 
-                {/* Tap Navigation Zones (Invisible Overlays over chat area) */}
-                <div className="absolute top-[88px] bottom-[90px] left-0 w-1/4 z-40 cursor-pointer" onClick={handlePrev} />
+                {/* Visible Bottom Navigation Arrows */}
+                <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-between items-center px-4 pointer-events-none">
+                    <button onClick={handlePrev} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === 0 ? "opacity-0 pointer-events-none" : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"}`}>
+                        <ChevronRight className="w-6 h-6 rotate-180" />
+                    </button>
+                    <button onClick={handleNext} className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === totalSlides - 1 ? "opacity-0 pointer-events-none" : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"}`}>
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
                 <div className="absolute top-[88px] bottom-[90px] right-0 w-3/4 z-40 cursor-pointer" onClick={handleNext} />
 
             </div>

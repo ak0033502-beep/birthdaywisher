@@ -865,35 +865,55 @@ export function StoryViewer({ data }: { data: WishData }) {
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Tap Navigation Zones (Invisible Overlays) */}
-                <div className="absolute inset-y-0 left-0 w-1/4 z-40 cursor-pointer" onClick={handlePrev} />
-                <div className="absolute inset-y-0 right-0 w-1/4 z-40 cursor-pointer" onClick={handleNext} />
+                {/* Visible Bottom Navigation Arrows */}
+                <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-between items-center px-4 pointer-events-none">
+                    {/* Back button */}
+                    <button
+                        onClick={handlePrev}
+                        className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${currentSlide === 0
+                            ? "opacity-0 pointer-events-none"
+                            : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"
+                            }`}
+                    >
+                        <ChevronRight className="w-6 h-6 rotate-180" />
+                    </button>
 
-                {/* Tap / Interaction Hint */}
-                {currentSlide === 0 && (
-                    <div className="absolute bottom-10 left-0 right-0 z-50 flex justify-center pointer-events-none">
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 2, repeat: Infinity, repeatType: "reverse", duration: 1 }}
-                            className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 text-white text-sm font-medium"
-                        >
-                            Tap right to continue <ChevronRight className="w-4 h-4" />
-                        </motion.div>
-                    </div>
-                )}
-
-                {slides[currentSlide].locked && (
-                    <div className="absolute bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+                    {/* Lock badge */}
+                    {slides[currentSlide].locked && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="bg-red-500/80 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 text-white text-xs font-bold"
+                            className="bg-red-500/80 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 text-white text-xs font-bold pointer-events-none"
                         >
-                            <Lock className="w-3 h-3" /> Locked
+                            <Lock className="w-3 h-3" /> Solve to continue
                         </motion.div>
-                    </div>
-                )}
+                    )}
+
+                    {/* Tap hint (only on first slide) */}
+                    {currentSlide === 0 && !slides[currentSlide].locked && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: [0, 1, 0] }}
+                            transition={{ delay: 2, repeat: Infinity, duration: 2 }}
+                            className="text-white/60 text-xs font-medium pointer-events-none"
+                        >
+                            Tap →
+                        </motion.div>
+                    )}
+
+                    {/* Forward button */}
+                    <button
+                        onClick={handleNext}
+                        className={`pointer-events-auto w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all active:scale-90 ${slides[currentSlide].locked
+                            ? "bg-red-500/30 border-red-500/40 text-red-300 animate-pulse"
+                            : currentSlide === totalSlides - 1
+                                ? "opacity-0 pointer-events-none"
+                                : "bg-black/40 border-white/20 text-white/80 hover:bg-white/10"
+                            }`}
+                    >
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
             </div>
         </div>
     );
