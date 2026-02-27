@@ -9,7 +9,7 @@ const getUseCaseData = (slug: string) => {
         "unique-birthday-gift-online": {
             title: "The Most Unique Birthday Gift Online",
             subtitle: "Why buy a boring physical gift when you can create an unforgettable digital experience?",
-            description: "In a world of Amazon deliveries, the most unique birthday gifts are the ones that evoke real emotion. BirthdayWisher lets you build a personalized, interactive, 20-step gamified story. It’s not just a digital greeting card—it’s an emotional rollercoaster wrapped in an interactive game.",
+            description: "In a world of Amazon deliveries, the most unique birthday gifts are the ones that evoke real emotion. BirthdayWisher.fun lets you build a personalized, interactive, 20-step gamified story. It’s not just a digital greeting card—it’s an emotional rollercoaster wrapped in an interactive game.",
             benefits: [
                 "100% Free & instant delivery via link.",
                 "Interactive puzzles (Memory Quiz, Secret Date).",
@@ -25,7 +25,7 @@ const getUseCaseData = (slug: string) => {
                 },
                 {
                     heading: "The Power of Gamification and Surprise",
-                    body: "Our unique platform forces the birthday boy or girl to truly interact. When was the last time a piece of folded cardboard made someone laugh out loud or tear up? BirthdayWisher combines interactive trivia about your relationship with stunning visual aesthetics, resulting in a 'WOW' moment when the final heartbeat photo fades in alongside your custom voice note."
+                    body: "Our unique platform forces the birthday boy or girl to truly interact. When was the last time a piece of folded cardboard made someone laugh out loud or tear up? BirthdayWisher.fun combines interactive trivia about your relationship with stunning visual aesthetics, resulting in a 'WOW' moment when the final heartbeat photo fades in alongside your custom voice note."
                 },
                 {
                     heading: "Instant, Free, and Private",
@@ -124,11 +124,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const data = getUseCaseData(resolvedParams.slug);
 
     if (!data) {
-        return { title: "Use Case Not Found | BirthdayWisher" };
+        return { title: "Use Case Not Found | BirthdayWisher.fun" };
     }
 
     return {
-        title: `${data.title} | BirthdayWisher`,
+        title: `${data.title} | BirthdayWisher.fun`,
         description: data.description,
         openGraph: {
             title: data.title,

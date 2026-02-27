@@ -1,13 +1,13 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Flame, Sparkles, Droplet } from "lucide-react";
+import { Flame, Droplet } from "lucide-react";
 
 const vibes = [
     { id: "tear-jerker", label: "Tear-Jerker", desc: "Pure emotional crying guaranteed.", icon: <Droplet className="w-8 h-8 text-blue-400" />, color: "border-blue-500", bg: "bg-blue-500/10" },
     { id: "hardcore-roast", label: "Hardcore Roast", desc: "No mercy. Savage jokes.", icon: <Flame className="w-8 h-8 text-orange-500" />, color: "border-orange-500", bg: "bg-orange-500/10" },
     { id: "pure-romance", label: "Pure Romance", desc: "Butterflies and deep love.", icon: <HeartIcon />, color: "border-pink-500", bg: "bg-pink-500/10" },
-    { id: "grand-celebration", label: "Grand Celebration", desc: "Hype, confetti, and party mode!", icon: <Sparkles className="w-8 h-8 text-yellow-400" />, color: "border-yellow-500", bg: "bg-yellow-500/10" },
+    { id: "grand-celebration", label: "Grand Celebration", desc: "Hype, confetti, and party mode!", icon: <Flame className="w-8 h-8 text-yellow-500" />, color: "border-yellow-500", bg: "bg-yellow-500/10" },
 ];
 
 function HeartIcon() {

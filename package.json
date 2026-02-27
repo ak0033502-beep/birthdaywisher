@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/postgres": "^0.10.0",
+    "@vladmandic/face-api": "^1.7.15",
     "canvas-confetti": "^1.9.4",
+    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.3",
     "lucide-react": "^0.575.0",

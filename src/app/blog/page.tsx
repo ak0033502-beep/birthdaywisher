@@ -3,7 +3,7 @@ import { ArrowRight, Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Birthday Wishes Ideas, Quotes & Inspiration | BirthdayWisher Blog",
+    title: "Birthday Wishes Ideas, Quotes & Inspiration | BirthdayWisher.fun Blog",
     description: "Discover the best birthday wishes, rare quotes, funny roasts, and unique gift ideas to make your loved ones feel truly special. Heart-touching ideas for best friends, partners, family, and coworkers.",
     keywords: "Birthday wishes, birthday quotes, happy birthday messages, birthday ideas, best friend birthday, romantic birthday wishes, funny birthday wishes, birthday wishes for brother, birthday wishes for sister, birthday wishes for husband, birthday wishes for wife, birthday wishes for mom, birthday wishes for dad",
 };
@@ -15,7 +15,7 @@ const blogPosts = [
         title: "Top 50 Heart-Touching Birthday Wishes for a Best Friend",
         excerpt: "Struggling to find the right words? Here are 50 unique, emotional, and funny birthday wishes guaranteed to make your bestie smile or cry (happy tears!).",
         date: "Oct 24, 2024",
-        author: "BirthdayWisher Team",
+        author: "BirthdayWisher.fun Team",
         category: "For Friends"
     },
     {
@@ -23,7 +23,7 @@ const blogPosts = [
         title: "10 Romantic Birthday Surprise Ideas for Your Boyfriend",
         excerpt: "Go beyond the standard gift. Discover 10 creative, romantic, and budget-friendly birthday surprise ideas for your boyfriend — including the ultimate digital surprise.",
         date: "Oct 15, 2024",
-        author: "BirthdayWisher Team",
+        author: "BirthdayWisher.fun Team",
         category: "For Partners"
     },
     {
@@ -39,7 +39,7 @@ const blogPosts = [
         title: "50+ Happy Birthday Wishes for Sister — Emotional, Funny & Heartfelt",
         excerpt: "Make your sister's birthday extra special with heart-touching emotional paragraphs and savage roasts that only a sibling can deliver.",
         date: "Nov 02, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Family"
     },
     {
@@ -47,7 +47,7 @@ const blogPosts = [
         title: "50+ Birthday Wishes for Brother — Emotional, Funny & Real",
         excerpt: "From heartfelt paragraphs to savage roasts, find the perfect birthday wish for your brother that actually means something. He won't admit it, but he'll love it.",
         date: "Nov 05, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Family"
     },
     {
@@ -55,7 +55,7 @@ const blogPosts = [
         title: "Romantic Birthday Wishes for Husband — Messages That Melt His Heart",
         excerpt: "Find the most romantic, emotional, and unique birthday wishes for your husband. From short texts to long heartfelt paragraphs for your hubby.",
         date: "Nov 10, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Partners"
     },
     {
@@ -63,7 +63,7 @@ const blogPosts = [
         title: "Birthday Wishes for Wife — Romantic Messages She Deserves",
         excerpt: "The most romantic, emotional, and unique birthday wishes for your wife. Long paragraphs, short texts, and creative surprise ideas to make her day unforgettable.",
         date: "Nov 12, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Partners"
     },
     {
@@ -71,7 +71,7 @@ const blogPosts = [
         title: "100+ Funny Birthday Wishes That Actually Make People Laugh",
         excerpt: "Skip the cringe. Genuinely funny birthday wishes, savage roasts, and sarcastic messages for friends, siblings, coworkers, and partners.",
         date: "Nov 18, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Everyone"
     },
     {
@@ -79,7 +79,7 @@ const blogPosts = [
         title: "Birthday Wishes for Mom & Dad — Heartfelt Messages for Parents",
         excerpt: "Express your love with the most emotional and touching birthday wishes for your mother and father. Gratitude messages that make them tear up.",
         date: "Nov 22, 2024",
-        author: "BirthdayWisher Editorial",
+        author: "BirthdayWisher.fun Editorial",
         category: "For Family"
     }
 ];

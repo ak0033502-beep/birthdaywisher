@@ -14,8 +14,9 @@ export interface WishData {
     // Step 4: Nicknames
     nickname: string;
     // Step 5: Media
-    mediaUrl: string;
-    mediaType: "photo" | "video" | null;
+    mediaUrl?: string; // Legacy
+    mediaType?: "photo" | "video" | null; // Legacy
+    mediaItems: Array<{ url: string; type: "photo" | "video" }>;
     // Step 6: Remember When
     memoryTale: string;
     // Step 7: Secret Date
@@ -49,6 +50,14 @@ export interface WishData {
     theme: string;
     // Step 20: Finale Layer
     finaleEffect: string;
+    // Step 21: Presentation Experience 
+    presentationStyle: string;
+
+    // --- NEW INTERACTIVE VIRAL LOCKS ---
+    // Step 19b: Innovative Locks
+    unlockDate: string; // ISO String or empty
+    requireSmileToUnlock: boolean;
+    showAsScratchOff: boolean;
 }
 
 const defaultWishData: WishData = {
@@ -60,6 +69,7 @@ const defaultWishData: WishData = {
     nickname: "",
     mediaUrl: "",
     mediaType: null,
+    mediaItems: [],
     memoryTale: "",
     secretDate: "",
     quirks: [],
@@ -78,6 +88,10 @@ const defaultWishData: WishData = {
     soundtrack: "lofi",
     theme: "elegant",
     finaleEffect: "confetti",
+    presentationStyle: "cinematic",
+    unlockDate: "",
+    requireSmileToUnlock: false,
+    showAsScratchOff: true, // Defaulting scratch-off as a cool viral feature
 };
 
 interface WishContextProps {

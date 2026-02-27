@@ -14,20 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BirthdayWisher | Create Next-Level Animated Birthday Wishes Online",
+  title: "BirthdayWisher.fun | Create Next-Level Animated Birthday Wishes Online",
   description: "Ditch the boring texts! Create a highly interactive, 20-step gamified birthday wish. Personalize puzzles, upload photos, add voice notes, and trigger confetti explosions for free.",
   keywords: "Happy Birthday Wishes, Unique Birthday Greetings, Online Birthday Card Maker, Best Birthday Gift Ideas, Romantic Birthday Surprise, Digital Greeting Card, Interactive Birthday Card",
   openGraph: {
-    title: "BirthdayWisher - Make Their Birthday Unforgettable",
+    title: "BirthdayWisher.fun - Make Their Birthday Unforgettable",
     description: "Create an interactive, gamified birthday surprise with puzzles, golden tickets, and confetti!",
-    url: "https://birthdaywisher.in",
-    siteName: "BirthdayWisher",
+    url: "https://birthdaywisher.fun",
+    siteName: "BirthdayWisher.fun",
     images: [
       {
         url: "/og-image.jpg", // We'll add a dummy placeholder path
         width: 1200,
         height: 630,
-        alt: "BirthdayWisher Interactive Preview",
+        alt: "BirthdayWisher.fun Interactive Preview",
       }
     ],
     locale: "en_US",

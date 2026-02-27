@@ -1,13 +1,13 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Sparkles, PartyPopper, HeartPulse } from "lucide-react";
+import { PartyPopper, HeartPulse, Flame } from "lucide-react";
 import confetti from "canvas-confetti";
 
 const effects = [
     { id: "confetti", label: "Confetti Explosion", icon: <PartyPopper className="w-8 h-8 text-blue-400" /> },
     { id: "hearts", label: "Virtual Hug & Hearts", icon: <HeartPulse className="w-8 h-8 text-pink-500" /> },
-    { id: "lanterns", label: "Floating Lanterns", icon: <Sparkles className="w-8 h-8 text-yellow-400" /> },
+    { id: "lanterns", label: "Floating Lanterns", icon: <Flame className="w-8 h-8 text-orange-400" /> },
 ];
 
 export function Step20Finale() {

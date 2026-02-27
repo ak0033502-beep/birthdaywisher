@@ -1,7 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 
 export function Step16FuturePromises() {
     const { wishData, updateWishData } = useWishContext();
@@ -18,7 +18,7 @@ export function Step16FuturePromises() {
             <div className="space-y-6 mt-4">
                 <div className="space-y-4">
                     <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-yellow-400" /> A promise for this year
+                        <Heart className="w-4 h-4 text-red-400" /> A promise for this year
                     </label>
                     <textarea
                         value={wishData.futurePromise}

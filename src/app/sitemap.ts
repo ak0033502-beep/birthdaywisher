@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://birthdaywisher.in'
+    const baseUrl = 'https://birthdaywisher.fun'
 
     // Dynamic routes could be fetched from a database here
     const blogPosts = [

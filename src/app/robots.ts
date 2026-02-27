@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/api/', '/wish/'], // Do not index people's private generated wishes
         },
-        sitemap: 'https://birthdaywisher.in/sitemap.xml',
+        sitemap: 'https://birthdaywisher.fun/sitemap.xml',
     }
 }

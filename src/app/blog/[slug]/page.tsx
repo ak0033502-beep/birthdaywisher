@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, Sparkles, Heart, ArrowRight } from "lucide-react";
+import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap } from "lucide-react";
 import { notFound } from "next/navigation";
 
 // Placeholder data - In production this would come from a CMS or MDX
@@ -11,7 +11,7 @@ const getPostData = (slug: string) => {
             description: "Struggling to find the right words? Here are 50 unique, emotional, and funny birthday wishes guaranteed to make your bestie smile.",
             keywords: "heart touching birthday wishes for best friend, happy birthday best friend, birthday quotes for BFF, emotional birthday wishes",
             date: "Oct 24, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "8 min read",
             category: "For Friends",
             content: (
@@ -54,7 +54,7 @@ const getPostData = (slug: string) => {
                     </p>
 
                     <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/10 text-center">
-                        <Sparkles className="w-8 h-8 mx-auto mb-4 text-primary" />
+                        <Zap className="w-8 h-8 mx-auto mb-4 text-primary" />
                         <h3 className="text-2xl font-bold mb-4">Want to make your wish truly unforgettable?</h3>
                         <p className="mb-6 text-foreground/80 text-lg">Don&apos;t just copy-paste text. Create an interactive, 20-step gamified story for them.</p>
                         <Link href="/create">
@@ -79,7 +79,7 @@ const getPostData = (slug: string) => {
                     <p className="text-xl mb-6 text-foreground/80 leading-relaxed font-medium">Why settle for a piece of folded paper or a 2-second WhatsApp text when you can give someone an entire interactive experience? The traditional greeting card industry has failed to innovate, leaving us with boring, static alternatives that don&apos;t capture the dynamism of our relationships.</p>
 
                     <h2 className="text-3xl font-bold mt-12 mb-6">Enter: The Gamified Wish</h2>
-                    <p className="mb-6 text-foreground/80 leading-relaxed">With BirthdayWisher, we&apos;ve revolutionized how you say &quot;Happy Birthday&quot;. Instead of just reading text, the birthday boy or girl has to <strong>earn</strong> their wish. A gamified birthday card transforms a passive reading moment into an active, engaging, and memorable event. This is what makes it the most <Link href="/use-cases/unique-birthday-gift-online" className="text-primary hover:text-secondary">unique birthday gift online</Link>.</p>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">With BirthdayWisher.fun, we&apos;ve revolutionized how you say &quot;Happy Birthday&quot;. Instead of just reading text, the birthday boy or girl has to <strong>earn</strong> their wish. A gamified birthday card transforms a passive reading moment into an active, engaging, and memorable event. This is what makes it the most <Link href="/use-cases/unique-birthday-gift-online" className="text-primary hover:text-secondary">unique birthday gift online</Link>.</p>
 
                     <p className="mb-10 text-foreground/80 leading-relaxed">Let&apos;s walk through exactly how you can use our free tool to build an unforgettable experience in less than 5 minutes.</p>
 
@@ -113,7 +113,7 @@ const getPostData = (slug: string) => {
             description: "Go beyond the standard gift. Discover 10 creative, romantic, and budget-friendly birthday surprise ideas for your boyfriend — including the ultimate digital surprise.",
             keywords: "birthday surprise for boyfriend, romantic birthday ideas for him, boyfriend birthday gift ideas, surprise birthday ideas for boyfriend, creative birthday surprise for boyfriend, long distance birthday surprise boyfriend",
             date: "Oct 15, 2024",
-            author: "BirthdayWisher Team",
+            author: "BirthdayWisher.fun Team",
             readTime: "9 min read",
             category: "For Partners",
             content: (
@@ -168,7 +168,7 @@ const getPostData = (slug: string) => {
             description: "Make your sister's birthday extra special with these heart-touching, funny, and unique birthday wishes. From emotional paragraphs to savage roasts.",
             keywords: "happy birthday wishes for sister, birthday quotes for sister, emotional birthday wishes for sister, funny birthday messages for sister, birthday paragraph for sister, birthday wishes for elder sister, birthday wishes for younger sister",
             date: "Nov 02, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "8 min read",
             category: "For Family",
             content: (
@@ -199,7 +199,7 @@ const getPostData = (slug: string) => {
                     <p className="mb-6 text-foreground/80 leading-relaxed">Instead of texting these quotes, why not deliver them in a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link>? Build a 20-step interactive story featuring childhood photos, sibling trivia, and your recorded voice note. It&apos;s the most <Link href="/use-cases/unique-birthday-gift-online" className="text-primary hover:text-secondary">unique birthday gift online</Link> your sister will ever receive.</p>
 
                     <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/10 text-center">
-                        <Sparkles className="w-8 h-8 mx-auto mb-4 text-primary" />
+                        <Zap className="w-8 h-8 mx-auto mb-4 text-primary" />
                         <h3 className="text-2xl font-bold mb-4">Surprise Your Sister with Something Special</h3>
                         <p className="mb-6 text-foreground/80 text-lg">Create an interactive gamified birthday wish she&apos;ll screenshot and save forever.</p>
                         <Link href="/create">
@@ -216,7 +216,7 @@ const getPostData = (slug: string) => {
             description: "From heartfelt paragraphs to savage roasts, find the perfect birthday wish for your brother that actually means something.",
             keywords: "birthday wishes for brother, happy birthday brother, funny birthday wishes for brother, emotional birthday message for brother, birthday paragraph for brother, birthday quotes for brother, birthday wishes for elder brother",
             date: "Nov 05, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "7 min read",
             category: "For Family",
             content: (
@@ -245,7 +245,7 @@ const getPostData = (slug: string) => {
                     <p className="mb-6 text-foreground/80 leading-relaxed">Brothers act tough, but a genuinely thoughtful birthday surprise will melt even the hardest exterior. Instead of sending a plain text, create a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> featuring childhood photo reveals, sibling trivia quizzes, and your actual voice note. Check out more ideas at our <Link href="/blog/best-friend-quotes" className="text-primary hover:text-secondary">best friend quotes collection</Link> — because the best brothers are also best friends.</p>
 
                     <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/10 text-center">
-                        <Sparkles className="w-8 h-8 mx-auto mb-4 text-primary" />
+                        <Zap className="w-8 h-8 mx-auto mb-4 text-primary" />
                         <h3 className="text-2xl font-bold mb-4">Make Your Brother&apos;s Birthday Legendary</h3>
                         <p className="mb-6 text-foreground/80 text-lg">Build an interactive gamified wish with puzzles, voice notes, and a heartbeat photo reveal.</p>
                         <Link href="/create">
@@ -262,7 +262,7 @@ const getPostData = (slug: string) => {
             description: "Find the most romantic, emotional, and unique birthday wishes for your husband. From short texts to long heartfelt paragraphs to make his birthday special.",
             keywords: "birthday wishes for husband, romantic birthday wishes for husband, happy birthday husband, birthday message for hubby, emotional birthday wishes for husband, birthday paragraph for husband, birthday surprise ideas for husband",
             date: "Nov 10, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "8 min read",
             category: "For Partners",
             content: (
@@ -307,7 +307,7 @@ const getPostData = (slug: string) => {
             description: "The most romantic, emotional, and unique birthday wishes for your wife. Long paragraphs, short texts, and creative surprise ideas to make her birthday unforgettable.",
             keywords: "birthday wishes for wife, romantic birthday wishes for wife, happy birthday wife, birthday message for wife, emotional birthday wishes for wife, birthday surprise for wife, birthday paragraph for wife, birthday gift ideas for wife",
             date: "Nov 12, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "8 min read",
             category: "For Partners",
             content: (
@@ -352,7 +352,7 @@ const getPostData = (slug: string) => {
             description: "Skip the cringe. These genuinely funny birthday wishes, roasts, and sarcastic messages will make anyone laugh. Perfect for friends, siblings, coworkers, and partners.",
             keywords: "funny birthday wishes, hilarious birthday messages, sarcastic birthday wishes, birthday roasts, funny birthday quotes, birthday memes text, funny happy birthday messages, humorous birthday wishes",
             date: "Nov 18, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "9 min read",
             category: "For Everyone",
             content: (
@@ -391,7 +391,7 @@ const getPostData = (slug: string) => {
                     <p className="mb-6 text-foreground/80 leading-relaxed">Take the funniest quote from above and make it the punchline of an entire interactive experience. With <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">our gamified birthday card maker</Link>, you can build a multi-step roast session complete with trivia that your friend has to survive before seeing your hilarious final message. Check out our <Link href="/blog/best-friend-quotes" className="text-primary hover:text-secondary">best friend birthday quotes</Link> for even more inspiration.</p>
 
                     <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-500/20 text-center">
-                        <Sparkles className="w-8 h-8 mx-auto mb-4 text-yellow-500" />
+                        <Zap className="w-8 h-8 mx-auto mb-4 text-yellow-500" />
                         <h3 className="text-2xl font-bold mb-4">The Ultimate Birthday Roast Experience</h3>
                         <p className="mb-6 text-foreground/80 text-lg">Build a gamified wish that roasts them through puzzles before delivering your real message. Free.</p>
                         <Link href="/create">
@@ -408,7 +408,7 @@ const getPostData = (slug: string) => {
             description: "Express your love with the most emotional and touching birthday wishes for your mother and father. From heartfelt paragraphs to gratitude messages that make them tear up.",
             keywords: "birthday wishes for mom, birthday wishes for dad, happy birthday mom, happy birthday dad, birthday message for mother, birthday message for father, emotional birthday wishes for parents, birthday paragraph for mom, birthday paragraph for dad",
             date: "Nov 22, 2024",
-            author: "BirthdayWisher Editorial",
+            author: "BirthdayWisher.fun Editorial",
             readTime: "8 min read",
             category: "For Family",
             content: (
@@ -459,11 +459,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const post = getPostData(resolvedParams.slug);
 
     if (!post) {
-        return { title: "Post Not Found | BirthdayWisher" };
+        return { title: "Post Not Found | BirthdayWisher.fun" };
     }
 
     return {
-        title: `${post.title} | BirthdayWisher Blog`,
+        title: `${post.title} | BirthdayWisher.fun Blog`,
         description: post.description,
         keywords: post.keywords,
         openGraph: {
@@ -518,7 +518,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     <h2 className="text-2xl font-bold mb-8">More Birthday Ideas</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Link href="/blog/best-friend-quotes" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-primary shrink-0" />
+                            <Zap className="w-5 h-5 text-primary shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">100+ Best Friend Quotes</div>
                                 <div className="text-sm text-foreground/50">Emotional, funny & roast wishes</div>

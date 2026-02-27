@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Romantic Birthday Wishes & Surprises for Boyfriend, Girlfriend & Partner | BirthdayWisher",
+    title: "Romantic Birthday Wishes & Surprises for Boyfriend, Girlfriend & Partner | BirthdayWisher.fun",
     description: "Find the most romantic birthday wishes, love quotes, surprise ideas, and creative digital gifts for your boyfriend, girlfriend, husband, or wife. Make their birthday truly unforgettable.",
     keywords: "romantic birthday wishes, birthday wishes for boyfriend, birthday wishes for girlfriend, romantic birthday quotes, birthday surprise for husband, birthday surprise for wife, love birthday messages, happy birthday my love, romantic birthday text messages, heart touching birthday wishes for lover, birthday gift ideas for partner, digital birthday surprise, long distance birthday wish for boyfriend, midnight birthday surprise ideas",
 };
@@ -131,7 +131,7 @@ export default function RomanticWishesPage() {
                     <h2 className="text-3xl font-bold mt-12 mb-6">📚 Explore More Birthday Ideas</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
                         <Link href="/blog/best-friend-quotes" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-primary shrink-0" />
+                            <Zap className="w-5 h-5 text-primary shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">100+ Best Friend Birthday Quotes</div>
                                 <div className="text-sm text-foreground/50">Emotional, funny & roast wishes</div>
@@ -155,7 +155,7 @@ export default function RomanticWishesPage() {
                             <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
                         </Link>
                         <Link href="/blog/how-to-create-a-gamified-birthday-card" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-green-500 shrink-0" />
+                            <Zap className="w-5 h-5 text-green-500 shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">How to Create a Gamified Card</div>
                                 <div className="text-sm text-foreground/50">Step-by-step guide</div>

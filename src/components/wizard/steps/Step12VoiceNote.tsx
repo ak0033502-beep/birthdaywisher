@@ -1,21 +1,67 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Mic, Play, Square } from "lucide-react";
-import { useState } from "react";
+import { Mic, Square, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
 
 export function Step12VoiceNote() {
     const { wishData, updateWishData } = useWishContext();
     const [isRecording, setIsRecording] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<BlobPart[]>([]);
 
-    // Mock recording
-    const toggleRecording = () => {
+    const toggleRecording = async () => {
         if (!isRecording) {
-            setIsRecording(true);
-            setTimeout(() => {
+            // Start Recording
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                mediaRecorderRef.current = mediaRecorder;
+                audioChunksRef.current = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunksRef.current.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                    stream.getTracks().forEach(track => track.stop());
+
+                    setIsUploading(true);
+                    try {
+                        const formData = new FormData();
+                        formData.append("file", audioBlob, "voicenote.mp3");
+
+                        const res = await fetch("/api/upload", {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        if (!res.ok) throw new Error("Audio upload failed");
+                        const data = await res.json();
+
+                        updateWishData({ audioUrl: data.url });
+                    } catch (error) {
+                        console.error(error);
+                        alert("Failed to upload audio. Please try again.");
+                    } finally {
+                        setIsUploading(false);
+                    }
+                };
+
+                mediaRecorder.start();
+                setIsRecording(true);
+            } catch (err) {
+                console.error("Microphone access denied", err);
+                alert("Please allow microphone access to record a voice note.");
+            }
+        } else {
+            // Stop Recording
+            if (mediaRecorderRef.current) {
+                mediaRecorderRef.current.stop();
                 setIsRecording(false);
-                updateWishData({ audioUrl: "mock_audio_url.mp3" });
-            }, 3000); // simulate 3 sec recording
+            }
         }
     };
 
@@ -31,12 +77,7 @@ export function Step12VoiceNote() {
             <div className="mt-8 flex flex-col items-center justify-center space-y-8">
                 {wishData.audioUrl ? (
                     <div className="w-full max-w-sm p-6 bg-primary/10 border border-primary/30 rounded-2xl flex flex-col items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                            <Play className="w-8 h-8 ml-1" />
-                        </div>
-                        <div className="w-full h-2 bg-white/10 rounded-full mt-2">
-                            <div className="w-1/3 h-full bg-primary rounded-full"></div>
-                        </div>
+                        <audio controls src={wishData.audioUrl} className="w-full" />
                         <button
                             onClick={() => updateWishData({ audioUrl: "" })}
                             className="mt-2 text-sm text-foreground/50 hover:text-red-400 transition-colors"
@@ -47,18 +88,21 @@ export function Step12VoiceNote() {
                 ) : (
                     <button
                         onClick={toggleRecording}
-                        className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${isRecording
-                                ? "bg-red-500/20 border-4 border-red-500 animate-pulse text-red-500"
-                                : "bg-black/50 border-4 border-white/10 hover:border-primary/50 hover:bg-white/5 text-foreground/50 hover:text-primary"
+                        disabled={isUploading}
+                        className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${isUploading ? "bg-black/50 border-4 border-white/10 text-primary" :
+                                isRecording
+                                    ? "bg-red-500/20 border-4 border-red-500 animate-pulse text-red-500"
+                                    : "bg-black/50 border-4 border-white/10 hover:border-primary/50 hover:bg-white/5 text-foreground/50 hover:text-primary"
                             }`}
                     >
-                        {isRecording ? <Square className="w-10 h-10" fill="currentColor" /> : <Mic className="w-12 h-12" />}
+                        {isUploading ? <Loader2 className="w-10 h-10 animate-spin" /> :
+                            isRecording ? <Square className="w-10 h-10" fill="currentColor" /> : <Mic className="w-12 h-12" />}
                     </button>
                 )}
 
                 {!wishData.audioUrl && (
-                    <p className={`text-sm font-medium ${isRecording ? "text-red-500 animate-pulse" : "text-foreground/50"}`}>
-                        {isRecording ? "Recording... (Tap to stop)" : "Tap to record"}
+                    <p className={`text-sm font-medium ${isRecording ? "text-red-500 animate-pulse" : isUploading ? "text-primary" : "text-foreground/50"}`}>
+                        {isUploading ? "Uploading recording..." : isRecording ? "Recording... (Tap to stop)" : "Tap to record"}
                     </p>
                 )}
             </div>

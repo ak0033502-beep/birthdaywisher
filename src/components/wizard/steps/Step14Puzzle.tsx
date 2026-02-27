@@ -1,20 +1,45 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Grid3X3, UploadCloud } from "lucide-react";
-import { useState } from "react";
+import { Grid3X3, UploadCloud, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
 
 export function Step14Puzzle() {
     const { wishData, updateWishData } = useWishContext();
     const [isUploading, setIsUploading] = useState(false);
 
-    const handleFileUpload = () => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 25 * 1024 * 1024) {
+            alert("File too large. Max 25MB.");
+            return;
+        }
+
         setIsUploading(true);
-        setTimeout(() => {
-            // Mock upload mapping for the puzzle background
-            updateWishData({ puzzleImageUrl: "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=800&auto=format&fit=crop" });
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+            const data = await res.json();
+
+            updateWishData({ puzzleImageUrl: data.url });
+        } catch (error) {
+            console.error(error);
+            alert("Failed to upload puzzle image.");
+        } finally {
             setIsUploading(false);
-        }, 1500);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
     };
 
     return (
@@ -45,15 +70,28 @@ export function Step14Puzzle() {
                         </div>
                     </div>
                 ) : (
-                    <button
-                        onClick={handleFileUpload}
-                        disabled={isUploading}
-                        className="w-full max-w-sm mx-auto flex flex-col items-center justify-center p-12 rounded-2xl border border-dashed border-white/20 bg-black/20 hover:bg-white/5 hover:border-accent/50 transition-all group aspect-square"
-                    >
-                        <UploadCloud className="w-12 h-12 text-accent mb-4 group-hover:scale-110 transition-transform" />
-                        <span className="font-medium text-lg">Upload Puzzle Image</span>
-                        <span className="text-sm text-foreground/50 mt-2 text-center">We will automatically chop this into a 3x3 sliding tile puzzle.</span>
-                    </button>
+                    <div className="w-full flex flex-col items-center">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                        />
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            className="w-full max-w-sm mx-auto flex flex-col items-center justify-center p-12 rounded-2xl border border-dashed border-white/20 bg-black/20 hover:bg-white/5 hover:border-accent/50 transition-all group aspect-square"
+                        >
+                            {isUploading ? (
+                                <Loader2 className="w-12 h-12 text-accent mb-4 animate-spin" />
+                            ) : (
+                                <UploadCloud className="w-12 h-12 text-accent mb-4 group-hover:scale-110 transition-transform" />
+                            )}
+                            <span className="font-medium text-lg">{isUploading ? "Chopping into pieces..." : "Upload Puzzle Image"}</span>
+                            <span className="text-sm text-foreground/50 mt-2 text-center">We will automatically chop this into a 3x3 sliding tile puzzle.</span>
+                        </button>
+                    </div>
                 )}
 
                 {isUploading && (

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Gift } from "lucide-react";
 
 export function Navbar() {
     return (
@@ -15,7 +15,7 @@ export function Navbar() {
             <div className="max-w-6xl mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center shadow-[0_0_20px_rgba(236,72,153,0.3)] group-hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all">
-                        <Sparkles className="w-5 h-5 text-white" />
+                        <Gift className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold tracking-tight">
                         Birthday<span className="text-gradient">Wisher</span>

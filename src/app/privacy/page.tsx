@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Privacy Policy | BirthdayWisher",
-    description: "Our commitment to your privacy. Learn how BirthdayWisher protects your data and handles your uploaded media with our self-destructing links.",
+    title: "Privacy Policy | BirthdayWisher.fun",
+    description: "Our commitment to your privacy. Learn how BirthdayWisher.fun protects your data and handles your uploaded media with our self-destructing links.",
 };
 
 export default function PrivacyPage() {
@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
                 <div className="prose prose-invert prose-lg max-w-none">
                     <p className="lead text-xl">
-                        At BirthdayWisher, your privacy is our absolute priority. We designed this platform specifically so that you can share intimate memories without worrying about them living on the internet forever.
+                        At BirthdayWisher.fun, your privacy is our absolute priority. We designed this platform specifically so that you can share intimate memories without worrying about them living on the internet forever.
                     </p>
 
                     <h2 className="text-2xl font-bold mt-12 mb-4">1. Data We Collect</h2>
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
                     </ul>
 
                     <h2 className="text-2xl font-bold mt-12 mb-4">5. Contact Us</h2>
-                    <p>If you have any questions about this Privacy Policy or wish to request manual deletion of a link before the self-destruct timer, please contact our support team at privacy@birthdaywisher.in.</p>
+                    <p>If you have any questions about this Privacy Policy or wish to request manual deletion of a link before the self-destruct timer, please contact our support team at privacy@birthdaywisher.fun.</p>
                 </div>
             </main>
         </div>

@@ -1,4 +1,5 @@
-import { StoryViewer } from "@/components/story/StoryViewer";
+import { StoryViewerRouter } from "@/components/story/StoryViewerRouter";
+import { WishTimeCapsuleWrapper } from "@/components/story/WishTimeCapsuleWrapper";
 import { getWish } from "@/lib/db";
 
 export default async function WishPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,8 +20,6 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     }
 
     return (
-        <main className="h-screen w-screen overflow-hidden bg-black flex items-center justify-center">
-            <StoryViewer data={wishData} />
-        </main>
+        <WishTimeCapsuleWrapper wishData={wishData} />
     );
 }

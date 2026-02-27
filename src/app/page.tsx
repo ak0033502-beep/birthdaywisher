@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Gift, Heart, Zap, Music, Ticket, Camera, Clock, MessageCircle, PlayCircle } from "lucide-react";
+import { ArrowRight, Gift, Heart, Zap, Music, Ticket, Camera, Clock, MessageCircle, PlayCircle, ShieldCheck, Lock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -19,7 +19,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30"
           >
-            <Sparkles className="w-4 h-4 text-primary" />
+            <ShieldCheck className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium tracking-wide">The #1 Online Birthday Card Maker & Wish Generator</span>
           </motion.div>
 
@@ -98,6 +98,78 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Security & Privacy Section - NEW */}
+        <section className="container max-w-7xl mx-auto px-6 py-24 relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-background via-black/50 to-background border border-white/5 my-12">
+          {/* Subtle glow behind the shield */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] -z-10 pointer-events-none" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1 relative">
+              <div className="glass-panel p-8 md:p-12 rounded-3xl border border-emerald-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 blur-3xl rounded-full transition-transform duration-700 group-hover:scale-150" />
+
+                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white">
+                  <ShieldCheck className="w-8 h-8 text-emerald-400" />
+                  Military-Grade Birthday Privacy
+                </h3>
+
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
+                      <Clock className="w-5 h-5 text-amber-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1 text-white">10-Hour Self Destruct</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">The timer doesn&apos;t start until they open the link. Exactly 10 hours later, the wish vanishes forever. It&apos;s an exclusive, fleeting experience that demands their full attention.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
+                      <Lock className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1 text-white">End-to-End Obfuscation</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">Unlike sending photos over WhatsApp, your memories and inside jokes are housed in a secure Vercel Postgres database accessible only via the generated shortlink.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner">
+                      <Trash2 className="w-5 h-5 text-rose-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1 text-white">Automated Media Wiping</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">Your uploaded photos and intimate voice notes are stored securely on Cloudinary. Once the 10 hours are up, our serverless cron automatically permadeletes the assets. We keep nothing.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 lg:order-2 text-left lg:pl-8 relative z-10">
+              <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
+                  100% Private & Secure
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black mb-6 leading-tight">Create Intimate Wishes Without The Fear.</h2>
+                <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
+                  We know that the best birthday wishes contain embarrassing photos, deep emotional texts, and inside jokes that no one else should ever see.
+                </p>
+                <p className="text-lg text-foreground/70 mb-10 leading-relaxed font-medium">
+                  That&apos;s why birthdaywisher.fun is engineered with a strict <span className="text-emerald-400 font-bold">\"Read & Destroy\"</span> philosophy. Share your heart out, knowing it will all disappear beautifully in 10 hours.
+                </p>
+
+                <Link href="/create">
+                  <button className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                    Create a Secure Wish <ArrowRight className="w-5 h-5" />
+                  </button>
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
         {/* How it Works / Social Proof */}
         <section className="w-full bg-white/5 py-24">
           <div className="container max-w-6xl mx-auto px-6 text-center">
@@ -140,7 +212,7 @@ export default function Home() {
       <footer className="w-full border-t border-white/10 glass-panel mt-12 py-12 px-6">
         <div className="container max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-sm">
           <div>
-            <h4 className="font-bold text-lg mb-4 text-white">BirthdayWisher.in</h4>
+            <h4 className="font-bold text-lg mb-4 text-white">birthdaywisher.fun</h4>
             <p className="text-foreground/60">The ultimate aesthetic birthday wisher tool. Create interactive, emotional, and unforgettable web-based greeting cards online for free.</p>
           </div>
           <div>
@@ -171,7 +243,7 @@ export default function Home() {
           </div>
         </div>
         <div className="text-center pt-8 border-t border-white/10 text-foreground/40 text-sm flex flex-col gap-2">
-          <p>© {new Date().getFullYear()} BirthdayWisher.in. Crafted with <Heart className="w-4 h-4 inline text-red-500 mx-1" /> to make birthdays special.</p>
+          <p>© {new Date().getFullYear()} birthdaywisher.fun. Crafted with <Heart className="w-4 h-4 inline text-red-500 mx-1" /> to make birthdays special.</p>
           <p className="font-medium text-foreground/50">Property of Akalloverservices | Contact: <a href="mailto:akalloverservices@gmail.com" className="hover:text-primary transition-colors">akalloverservices@gmail.com</a></p>
         </div>
       </footer>

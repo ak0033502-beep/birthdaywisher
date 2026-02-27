@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, Sparkles, ArrowRight, Heart } from "lucide-react";
+import { ArrowLeft, User, Calendar, Clock, Zap, ArrowRight, Heart } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "100+ Best Friend Birthday Quotes & Wishes That Hit Different | BirthdayWisher",
+    title: "100+ Best Friend Birthday Quotes & Wishes That Hit Different | BirthdayWisher.fun",
     description: "Find the most heart-touching, funny, and unique birthday wishes for your best friend. Copy-paste ready emotional quotes, roast messages, and creative surprise ideas to make their day unforgettable.",
     keywords: "best friend birthday quotes, funny birthday wishes for best friend, emotional birthday wishes, happy birthday bestie, heart touching birthday wishes for best friend, birthday wishes for BFF, cute birthday messages for best friend, long birthday paragraph for best friend, unique birthday gift for bestie, birthday wishes for close friend, sentimental birthday wishes, birthday quotes for soulmate friend",
 };
@@ -135,7 +135,7 @@ export default function BestFriendQuotesPage() {
                             <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
                         </Link>
                         <Link href="/blog/top-50-heart-touching-birthday-wishes-for-best-friend" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-yellow-500 shrink-0" />
+                            <Zap className="w-5 h-5 text-yellow-500 shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">Top 50 Heart-Touching Wishes</div>
                                 <div className="text-sm text-foreground/50">The ultimate curated list</div>
@@ -143,7 +143,7 @@ export default function BestFriendQuotesPage() {
                             <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
                         </Link>
                         <Link href="/use-cases/unique-birthday-gift-online" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-primary shrink-0" />
+                            <Zap className="w-5 h-5 text-primary shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">Unique Birthday Gift Online</div>
                                 <div className="text-sm text-foreground/50">Why digital gifts are the future</div>
@@ -151,7 +151,7 @@ export default function BestFriendQuotesPage() {
                             <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
                         </Link>
                         <Link href="/blog/how-to-create-a-gamified-birthday-card" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-green-500 shrink-0" />
+                            <Zap className="w-5 h-5 text-green-500 shrink-0" />
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">How to Create a Gamified Card</div>
                                 <div className="text-sm text-foreground/50">Step-by-step guide</div>
@@ -164,7 +164,7 @@ export default function BestFriendQuotesPage() {
                     <div className="my-16 p-8 rounded-[2rem] bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 text-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
                         <div className="relative z-10">
-                            <Sparkles className="w-10 h-10 mx-auto mb-6 text-primary animate-pulse" />
+                            <Zap className="w-10 h-10 mx-auto mb-6 text-primary animate-pulse" />
                             <h3 className="text-3xl font-black mb-4">Don't Just Text It. Make Them Play For It.</h3>
                             <p className="mb-8 text-foreground/80 text-lg max-w-2xl mx-auto">
                                 Take your favorite quote from above and bury it at the end of a 20-step interactive puzzle game. Make your best friend solve trivia quizzes about your friendship to unlock their message!

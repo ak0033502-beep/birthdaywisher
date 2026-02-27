@@ -20,7 +20,7 @@ import { Step13Gratitude } from "@/components/wizard/steps/Step13Gratitude";
 import { Step14Puzzle } from "@/components/wizard/steps/Step14Puzzle";
 import { Step15CoreMessage } from "@/components/wizard/steps/Step15CoreMessage";
 import { Step16FuturePromises } from "@/components/wizard/steps/Step16FuturePromises";
-import { Step17TimeCapsule } from "@/components/wizard/steps/Step17TimeCapsule";
+import { Step17InnovativeLocks } from "@/components/wizard/steps/Step17InnovativeLocks";
 import { Step18Soundtrack } from "@/components/wizard/steps/Step18Soundtrack";
 import { Step19Theme } from "@/components/wizard/steps/Step19Theme";
 import { Step20Finale } from "@/components/wizard/steps/Step20Finale";
@@ -46,7 +46,7 @@ export default function CreateWizard() {
             case 14: return <Step14Puzzle />;
             case 15: return <Step15CoreMessage />;
             case 16: return <Step16FuturePromises />;
-            case 17: return <Step17TimeCapsule />;
+            case 17: return <Step17InnovativeLocks />;
             case 18: return <Step18Soundtrack />;
             case 19: return <Step19Theme />;
             case 20: return <Step20Finale />;
