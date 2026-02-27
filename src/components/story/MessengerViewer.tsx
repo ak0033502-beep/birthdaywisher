@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { ChevronLeft, ChevronRight, Info, Send, Camera, Mic, Paperclip, Heart, Star, Sparkles, Smile, Image as ImageIcon, Video, Lock, Unlock, Phone, Video as VideoIcon } from "lucide-react";
+import { LockTimer } from "@/components/story/LockTimer";
 
 export function MessengerViewer({ data }: { data: WishData }) {
     const [opened, setOpened] = useState(false);

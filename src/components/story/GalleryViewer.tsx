@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { ChevronRight, KeyRound, Unlock, Ticket, Image as ImageIcon, Search } from "lucide-react";
+import { LockTimer } from "@/components/story/LockTimer";
 
 export function GalleryViewer({ data }: { data: WishData }) {
     const [entered, setEntered] = useState(false);
@@ -219,6 +220,7 @@ export function GalleryViewer({ data }: { data: WishData }) {
                                 Request Entry
                             </button>
                             {dateMsg && <p className="mt-4 text-xs font-serif italic text-red-600">{dateMsg}</p>}
+                            <LockTimer durationSeconds={60} onAutoUnlock={() => { setDateUnlocked(true); setDateMsg("Time's up! Here it is..."); }} />
                         </div>
                     ) : (
                         <div className="text-center z-20">

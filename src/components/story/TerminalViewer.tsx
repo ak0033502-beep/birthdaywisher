@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { Terminal, Lock, Unlock, AlertTriangle, ShieldAlert } from "lucide-react";
+import { LockTimer } from "@/components/story/LockTimer";
 
 // A simple typewriter effect component for that terminal feel
 function TypewriterText({ text, speed = 30, className = "", onComplete }: { text: string, speed?: number, className?: string, onComplete?: () => void }) {
@@ -224,6 +225,7 @@ export function TerminalViewer({ data }: { data: WishData }) {
                                 [ INITIATE DECRYPTION ]
                             </button>
                             {dateMsg && <p className="mt-4 text-xs font-bold text-red-500 animate-pulse">{dateMsg}</p>}
+                            <LockTimer durationSeconds={60} onAutoUnlock={() => { setDateUnlocked(true); setDateMsg("Time's up! Here it is..."); }} />
                         </motion.div>
                     ) : (
                         <div className="text-green-500 text-center">

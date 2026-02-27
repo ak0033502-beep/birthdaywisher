@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { BookOpen, ChevronRight, ChevronLeft, Heart, Star, Sparkles, BookHeart, Compass, Crown, KeyRound, Image as ImageIcon, Video, Mic, Unlock } from "lucide-react";
+import { LockTimer } from "@/components/story/LockTimer";
 
 export function StorybookViewer({ data }: { data: WishData }) {
     const [bookOpened, setBookOpened] = useState(false);
@@ -193,6 +194,7 @@ export function StorybookViewer({ data }: { data: WishData }) {
                                 Break the Seal
                             </button>
                             {dateMsg && <p className="mt-4 text-sm italic font-bold text-red-800">{dateMsg}</p>}
+                            <LockTimer durationSeconds={60} onAutoUnlock={() => { setDateUnlocked(true); setDateMsg("Time's up! Here it is..."); }} />
                         </div>
                     ) : (
                         <div className="text-amber-900 text-center">

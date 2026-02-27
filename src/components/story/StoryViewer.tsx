@@ -6,6 +6,7 @@ import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { ScratchCard } from "@/components/story/ScratchCard";
 import { SmileLock } from "@/components/story/SmileLock";
+import { LockTimer } from "@/components/story/LockTimer";
 import { ChevronRight, Heart, Star, Sparkles, Trophy, Quote, ScrollText, Lock, Unlock, HelpCircle, PartyPopper, Mic, Image as ImageIcon, Video, Puzzle, Mail } from "lucide-react";
 
 // Theme map defines how every element of the story should look based on the chosen preview style
@@ -365,6 +366,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                     Unlock 🔓
                                 </button>
                                 {dateMsg && <p className={`mt-4 text-sm font-bold animate-pulse text-red-400`}>{dateMsg}</p>}
+                                <LockTimer durationSeconds={60} onAutoUnlock={() => { setDateUnlocked(true); setDateMsg("Time's up! Here it is..."); confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } }); }} />
                             </motion.div>
                         </motion.div>
                     ) : (
@@ -407,6 +409,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                     }}
                                 />
                             </div>
+                            <LockTimer durationSeconds={60} onAutoUnlock={() => { setSlidingPuzzleUnlocked(true); confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } }); }} label="Skipping in" />
                         </motion.div>
                     ) : (
                         <motion.div initial={{ scale: 0.5, opacity: 0, rotateY: 180 }} animate={{ scale: 1, opacity: 1, rotateY: 0 }} transition={{ type: "spring", bounce: 0.4 }} className="flex flex-col items-center w-full perspective-[1000px]">
@@ -463,6 +466,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                     Submit
                                 </button>
                                 {quiz1Msg && <p className={`mt-4 text-sm font-bold animate-pulse text-red-400`}>{quiz1Msg}</p>}
+                                <LockTimer durationSeconds={60} onAutoUnlock={() => { setQuiz1Unlocked(true); setQuiz1Msg("Time's up! Let me show you..."); confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } }); }} />
                             </motion.div>
                         </motion.div>
                     ) : (
@@ -514,6 +518,7 @@ export function StoryViewer({ data }: { data: WishData }) {
                                     Submit
                                 </button>
                                 {quiz2Msg && <p className={`mt-4 text-sm font-bold animate-pulse text-red-400`}>{quiz2Msg}</p>}
+                                <LockTimer durationSeconds={60} onAutoUnlock={() => { setQuiz2Unlocked(true); setQuiz2Msg("Time's up! Here's the answer..."); confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } }); }} />
                             </motion.div>
                         </motion.div>
                     ) : (

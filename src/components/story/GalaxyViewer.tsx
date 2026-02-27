@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { WishData } from "@/lib/WishContext";
 import { Sparkles, Rocket, Star, Heart, Telescope, MapPin, KeyRound, Unlock, Orbit, Satellite, Moon } from "lucide-react";
+import { LockTimer } from "@/components/story/LockTimer";
 
 export function GalaxyViewer({ data }: { data: WishData }) {
     const [launched, setLaunched] = useState(false);
@@ -211,6 +212,7 @@ export function GalaxyViewer({ data }: { data: WishData }) {
                                 Initiate Jump
                             </button>
                             {dateMsg && <p className="mt-4 text-xs font-mono text-pink-400 animate-pulse uppercase tracking-widest">{dateMsg}</p>}
+                            <LockTimer durationSeconds={60} onAutoUnlock={() => { setDateUnlocked(true); setDateMsg(getRandomMsg(successMessages)); confetti({ particleCount: 100, spread: 360, colors: ['#a855f7', '#3b82f6', '#ec4899', '#ffffff'] }); }} />
                         </div>
                     ) : (
                         <div className="text-center z-20">
