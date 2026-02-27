@@ -35,11 +35,11 @@ export function Step12VoiceNote() {
                         const { signature, timestamp, cloudName, apiKey, folder } = await signRes.json();
 
                         const formData = new FormData();
-                        formData.append("file", audioBlob, "voicenote.mp3");
                         formData.append("api_key", apiKey);
                         formData.append("timestamp", timestamp);
                         formData.append("signature", signature);
                         formData.append("folder", folder);
+                        formData.append("file", audioBlob, "voicenote.mp3");
 
                         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
                             method: "POST",
