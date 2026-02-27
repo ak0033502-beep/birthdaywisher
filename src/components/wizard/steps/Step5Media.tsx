@@ -109,10 +109,10 @@ export function Step5Media() {
                 const isVideo = file.type.startsWith("video/");
 
                 const formData = new FormData();
-                formData.append("api_key", apiKey);
-                formData.append("timestamp", timestamp);
-                formData.append("signature", signature);
-                formData.append("folder", folder);
+                formData.append("api_key", String(apiKey));
+                formData.append("timestamp", String(timestamp));
+                formData.append("signature", String(signature));
+                formData.append("folder", String(folder));
                 formData.append("file", file);
 
                 // Start chunk byte count for this specific file

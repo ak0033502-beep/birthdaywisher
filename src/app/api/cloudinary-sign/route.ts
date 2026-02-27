@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
     try {
-        const timestamp = Math.round((new Date).getTime() / 1000);
+        const timestamp = Math.round((new Date).getTime() / 1000).toString();
         const folder = "birthday_wishes";
 
         const signature = cloudinary.utils.api_sign_request(
