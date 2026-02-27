@@ -92,6 +92,11 @@ export function Step5Media() {
         const newItems = [...wishData.mediaItems];
 
         try {
+            // Fetch Signature Once
+            const signRes = await fetch("/api/cloudinary-sign");
+            if (!signRes.ok) throw new Error("Failed to initialize secure upload");
+            const { signature, timestamp, cloudName, apiKey, folder } = await signRes.json();
+
             // Sequential upload with global progress tracking
             let overallUploadedBytes = 0;
             const startTime = Date.now();
@@ -102,8 +107,13 @@ export function Step5Media() {
             for (let i = 0; i < validFiles.length; i++) {
                 const file = validFiles[i];
                 const isVideo = file.type.startsWith("video/");
+
                 const formData = new FormData();
                 formData.append("file", file);
+                formData.append("api_key", apiKey);
+                formData.append("timestamp", timestamp);
+                formData.append("signature", signature);
+                formData.append("folder", folder);
 
                 // Start chunk byte count for this specific file
                 let fileUploadedBytes = 0;
@@ -159,7 +169,7 @@ export function Step5Media() {
                         if (xhr.status >= 200 && xhr.status < 300) {
                             try {
                                 const response = JSON.parse(xhr.responseText);
-                                resolve(response.url);
+                                resolve(response.secure_url);
                             } catch (e) {
                                 reject(new Error("Invalid JSON response from server"));
                             }
@@ -171,7 +181,7 @@ export function Step5Media() {
                     xhr.onerror = () => reject(new Error("Network error during upload"));
                     xhr.onabort = () => reject(new Error("Upload aborted by user"));
 
-                    xhr.open("POST", "/api/upload", true);
+                    xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, true);
                     xhr.send(formData);
                 });
 

@@ -8,19 +8,16 @@ import { Terminal, Lock, Unlock, AlertTriangle, ShieldAlert } from "lucide-react
 
 // A simple typewriter effect component for that terminal feel
 function TypewriterText({ text, speed = 30, className = "", onComplete }: { text: string, speed?: number, className?: string, onComplete?: () => void }) {
-    const [displayedText, setDisplayedText] = useState("");
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
-        setDisplayedText("");
         setIndex(0);
     }, [text]);
 
     useEffect(() => {
         if (index < text.length) {
             const timeout = setTimeout(() => {
-                setDisplayedText((prev) => prev + text.charAt(index));
-                setIndex(index + 1);
+                setIndex((prev) => prev + 1);
             }, speed);
             return () => clearTimeout(timeout);
         } else if (onComplete) {
@@ -30,7 +27,7 @@ function TypewriterText({ text, speed = 30, className = "", onComplete }: { text
 
     return (
         <span className={className}>
-            {displayedText}
+            {text.substring(0, index)}
             {index < text.length && <span className="animate-pulse bg-green-500 w-2 h-4 inline-block ml-1 align-middle" />}
         </span>
     );

@@ -30,10 +30,18 @@ export function Step12VoiceNote() {
 
                     setIsUploading(true);
                     try {
+                        const signRes = await fetch("/api/cloudinary-sign");
+                        if (!signRes.ok) throw new Error("Failed to initialize upload");
+                        const { signature, timestamp, cloudName, apiKey, folder } = await signRes.json();
+
                         const formData = new FormData();
                         formData.append("file", audioBlob, "voicenote.mp3");
+                        formData.append("api_key", apiKey);
+                        formData.append("timestamp", timestamp);
+                        formData.append("signature", signature);
+                        formData.append("folder", folder);
 
-                        const res = await fetch("/api/upload", {
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/video/upload`, {
                             method: "POST",
                             body: formData,
                         });
@@ -41,7 +49,7 @@ export function Step12VoiceNote() {
                         if (!res.ok) throw new Error("Audio upload failed");
                         const data = await res.json();
 
-                        updateWishData({ audioUrl: data.url });
+                        updateWishData({ audioUrl: data.secure_url });
                     } catch (error) {
                         console.error(error);
                         alert("Failed to upload audio. Please try again.");
@@ -90,9 +98,9 @@ export function Step12VoiceNote() {
                         onClick={toggleRecording}
                         disabled={isUploading}
                         className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${isUploading ? "bg-black/50 border-4 border-white/10 text-primary" :
-                                isRecording
-                                    ? "bg-red-500/20 border-4 border-red-500 animate-pulse text-red-500"
-                                    : "bg-black/50 border-4 border-white/10 hover:border-primary/50 hover:bg-white/5 text-foreground/50 hover:text-primary"
+                            isRecording
+                                ? "bg-red-500/20 border-4 border-red-500 animate-pulse text-red-500"
+                                : "bg-black/50 border-4 border-white/10 hover:border-primary/50 hover:bg-white/5 text-foreground/50 hover:text-primary"
                             }`}
                     >
                         {isUploading ? <Loader2 className="w-10 h-10 animate-spin" /> :

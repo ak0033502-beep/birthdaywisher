@@ -41,7 +41,7 @@ export function Step17InnovativeLocks() {
                             </label>
                             <input
                                 type="datetime-local"
-                                value={wishData.unlockDate}
+                                value={wishData.unlockDate || ""}
                                 onChange={(e) => updateWishData({ unlockDate: e.target.value })}
                                 className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all cursor-pointer"
                             />

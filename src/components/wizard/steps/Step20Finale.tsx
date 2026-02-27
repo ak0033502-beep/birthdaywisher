@@ -53,7 +53,6 @@ export function Step20Finale() {
             </div>
 
             <div className="mt-8 p-6 bg-gradient-to-br from-primary/20 via-background to-secondary/20 rounded-2xl border border-white/10 text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay"></div>
                 <div className="relative z-10 space-y-4">
                     <h3 className="text-2xl font-bold text-white">Ready to create magic?</h3>
                     <p className="text-foreground/70 text-sm max-w-sm mx-auto">
