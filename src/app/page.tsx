@@ -20,7 +20,7 @@ export default function Home() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30"
           >
             <ShieldCheck className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium tracking-wide">The #1 Online Birthday Card Maker & Wish Generator</span>
+            <span className="text-sm font-medium tracking-wide">The #1 Online Birthday & Anniversary Wish Creator</span>
           </motion.div>
 
           <motion.h1
@@ -35,7 +35,7 @@ export default function Home() {
             className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto mb-8 sm:mb-12 font-medium px-2"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Ditch the boring text messages and basic WhatsApp forwards. Create a highly interactive, gamified, and emotional story-style birthday wish in 3 minutes. Stop sending plain text, start creating magic.
+            Ditch the boring text messages and basic WhatsApp forwards. Create a highly interactive, gamified, and emotional story-style birthday wish or wedding anniversary wish for couple in 3 minutes. Perfect for birthdays, anniversaries, and celebrations. Stop sending plain text, start creating magic.
           </motion.p>
 
           <motion.div
@@ -60,8 +60,8 @@ export default function Home() {
         {/* Feature Showcase Grid - SEO Optimized */}
         <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 border-t border-white/5">
           <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Not Your Average Birthday Card!</h2>
-            <p className="text-foreground/60 max-w-2xl mx-auto text-lg">We&apos;ve engineered the ultimate emotional rollercoaster. From interactive puzzles to a stunning final celebration.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Not Your Average Birthday or Anniversary Card!</h2>
+            <p className="text-foreground/60 max-w-2xl mx-auto text-lg">We&apos;ve engineered the ultimate emotional rollercoaster for birthdays & wedding anniversary wishes for couple. From interactive puzzles to a stunning final celebration.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -94,6 +94,11 @@ export default function Home() {
               icon={<Heart className="w-6 h-6 text-red-500" />}
               title="Haptic Virtual Hug"
               desc="A long-press button that physically vibrates their phone, delivering a digital hug across the internet."
+            />
+            <FeatureCard
+              icon={<Gift className="w-6 h-6 text-amber-500" />}
+              title="Anniversary Wishes for Couple"
+              desc="Celebrate your wedding anniversary with a gamified, interactive wish. Perfect romantic anniversary wishes for couple — from 1st to 50th year."
             />
           </div>
         </section>
@@ -173,7 +178,7 @@ export default function Home() {
         {/* How it Works / Social Proof */}
         <section className="w-full bg-white/5 py-24">
           <div className="container max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-12 sm:mb-16">How To Create The Best Birthday Surprise Online</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-12 sm:mb-16">How To Create The Best Birthday & Anniversary Surprise Online</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
               {/* Connector lines (Desktop only) */}
@@ -213,7 +218,7 @@ export default function Home() {
         <div className="container max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 text-sm">
           <div>
             <h4 className="font-bold text-lg mb-4 text-white">birthdaywisher.fun</h4>
-            <p className="text-foreground/60">The ultimate aesthetic birthday wisher tool. Create interactive, emotional, and unforgettable web-based greeting cards online for free.</p>
+            <p className="text-foreground/60">The ultimate aesthetic birthday & anniversary wisher tool. Create interactive, emotional, and unforgettable web-based greeting cards & wedding anniversary wishes for couple online for free.</p>
           </div>
           <div>
             <h4 className="font-bold mb-4 text-white">Popular Nav</h4>
@@ -222,6 +227,7 @@ export default function Home() {
               <li><Link href="/blog" className="hover:text-primary transition-colors">Birthday Wish Ideas (Blog)</Link></li>
               <li><Link href="/blog/best-friend-quotes" className="hover:text-primary transition-colors">For Best Friends</Link></li>
               <li><Link href="/blog/romantic-wishes" className="hover:text-primary transition-colors">For Partner / Boyfriend / Girlfriend</Link></li>
+              <li><Link href="/blog/wedding-anniversary-wishes-for-couple" className="hover:text-primary transition-colors">Anniversary Wishes for Couple</Link></li>
             </ul>
           </div>
           <div>
@@ -239,6 +245,7 @@ export default function Home() {
               <li><Link href="/use-cases/digital-story-greeting-card" className="hover:text-primary transition-colors">Digital Story Greeting Card</Link></li>
               <li><Link href="/use-cases/boyfriend-birthday-surprise" className="hover:text-primary transition-colors">Boyfriend Birthday Surprise</Link></li>
               <li><Link href="/use-cases/girlfriend-birthday-surprise" className="hover:text-primary transition-colors">Girlfriend Birthday Surprise</Link></li>
+              <li><Link href="/use-cases/anniversary-wishes-for-couple" className="hover:text-primary transition-colors">Anniversary Wishes for Couple</Link></li>
             </ul>
           </div>
         </div>

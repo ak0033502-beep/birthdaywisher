@@ -87,6 +87,33 @@ const getUseCaseData = (slug: string) => {
                 }
             ]
         },
+        "anniversary-wishes-for-couple": {
+            title: "Wedding Anniversary Wishes for Couple — Interactive & Gamified",
+            subtitle: "Go beyond a boring text. Create an unforgettable interactive anniversary experience.",
+            description: "Celebrate any wedding anniversary with a deeply personal, gamified digital wish. BirthdayWisher.fun lets you build an interactive anniversary story for any couple — from 1st to 50th year. Upload wedding photos, record a heartfelt voice note, and add a 'How Well Do You Know Each Other?' quiz. The perfect wedding anniversary wishes for couple, delivered digitally.",
+            benefits: [
+                "Perfect for any milestone — 1st, 5th, 10th, 25th, or 50th anniversary.",
+                "Upload couple photos & record a heartfelt anniversary voice note.",
+                "Add a 'How Well Do You Know Your Partner?' interactive quiz.",
+                "Self-destructs after opening for complete privacy."
+            ],
+            ctaText: "Create Anniversary Wish",
+            heroIcon: <Heart className="w-16 h-16 text-amber-500 mb-6" />,
+            seoSections: [
+                {
+                    heading: "Why Digital Anniversary Wishes Are the Future",
+                    body: "In a world where couples have everything, the most meaningful wedding anniversary wish for a couple isn't something you buy — it's something you build. A personalized interactive anniversary story shows more love, effort, and thoughtfulness than any store-bought card ever could. Whether you're creating anniversary wishes for your own partner, your parents, or your favorite couple, the digital experience creates an emotional impact that lasts far beyond the day itself."
+                },
+                {
+                    heading: "Personalized Anniversary Wishes for Every Milestone",
+                    body: "From the excitement of a 1st anniversary to the gravitas of a golden 50th, every milestone deserves unique recognition. Our platform helps you craft wedding anniversary wishes for couple that match the significance of the occasion. Add memories from each year, create inside-joke trivia questions, and let the couple relive their love story through an interactive, tap-through experience that ends with a stunning celebration."
+                },
+                {
+                    heading: "The Perfect Couple Gift: An Interactive Love Story",
+                    body: "Forget the generic 'Happy Anniversary' text. With BirthdayWisher.fun, you create a multi-step interactive journey specifically designed for the couple. It includes a memory quiz where they prove how well they know each other, floating memory bubbles of their best moments, a heartbeat photo reveal of their favorite wedding photo, and a finale complete with confetti and your recorded voice note. It's not just anniversary wishes for couple — it's an experience they'll never forget."
+                }
+            ]
+        },
         "girlfriend-birthday-surprise": {
             title: "The Most Romantic Girlfriend Birthday Surprise",
             subtitle: "Give her the aesthetic, emotional, 'Instagram-worthy' wish she deserves.",

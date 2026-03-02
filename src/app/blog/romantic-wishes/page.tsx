@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap } from "lucide-react";
+import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap, Gift } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "Romantic Birthday Wishes & Surprises for Boyfriend, Girlfriend & Partner | BirthdayWisher.fun",
     description: "Find the most romantic birthday wishes, love quotes, surprise ideas, and creative digital gifts for your boyfriend, girlfriend, husband, or wife. Make their birthday truly unforgettable.",
-    keywords: "romantic birthday wishes, birthday wishes for boyfriend, birthday wishes for girlfriend, romantic birthday quotes, birthday surprise for husband, birthday surprise for wife, love birthday messages, happy birthday my love, romantic birthday text messages, heart touching birthday wishes for lover, birthday gift ideas for partner, digital birthday surprise, long distance birthday wish for boyfriend, midnight birthday surprise ideas",
+    keywords: "romantic birthday wishes, birthday wishes for boyfriend, birthday wishes for girlfriend, romantic birthday quotes, birthday surprise for husband, birthday surprise for wife, love birthday messages, happy birthday my love, romantic birthday text messages, heart touching birthday wishes for lover, birthday gift ideas for partner, digital birthday surprise, long distance birthday wish for boyfriend, midnight birthday surprise ideas, wedding anniversary wishes for couple, anniversary wishes for couple, romantic anniversary messages",
 };
 
 export default function RomanticWishesPage() {
@@ -95,6 +95,22 @@ export default function RomanticWishesPage() {
                         <p className="text-foreground/80 italic">"Hey babe, I know I'm not always the best with words, but today I'm going to try. You changed my life the moment you walked into it. Before you, I was going through the motions. After you, everything felt intentional, meaningful, and full of color. I love your laugh — the real one, not the polite one. I love how you care about people, even strangers. I love how you make me feel like I'm enough, even on days when I don't feel like it. Happy Birthday to my person. I'm so proud to be yours."</p>
                     </div>
 
+                    {/* Section — Wedding Anniversary Wishes for Couple */}
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-amber-400">💍 Wedding Anniversary Wishes for Couple</h2>
+                    <p className="mb-4 text-foreground/70">Not just for birthdays — your love story deserves celebration on every anniversary too. Here are heartfelt <strong>wedding anniversary wishes for couple</strong>:</p>
+
+                    <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                        <li>&quot;Happy Anniversary to the couple who proves that true love isn&apos;t just found in movies. Your love story is the most beautiful one I know.&quot;</li>
+                        <li>&quot;Every year with you is another chapter in the greatest love story ever told. Happy Wedding Anniversary, my love.&quot;</li>
+                        <li>&quot;From our first date to this anniversary — every moment with you has been worth it. Here&apos;s to a lifetime more.&quot;</li>
+                        <li>&quot;Our love has weathered every storm and danced through every sunshine. Happy Anniversary to us — the couple that never gives up.&quot;</li>
+                        <li>&quot;You are my today and all of my tomorrows. Happy Anniversary, partner. I choose you every single day.&quot;</li>
+                    </ul>
+
+                    <p className="mb-8 text-foreground/70">
+                        Looking for more? Check out our complete guide with <Link href="/blog/wedding-anniversary-wishes-for-couple" className="text-primary hover:text-secondary">100+ wedding anniversary wishes for couple</Link> — including milestone-specific wishes for 1st, 25th, and 50th anniversaries.
+                    </p>
+
                     {/* Section 5 — Midnight Surprise Ideas */}
                     <h2 className="text-3xl font-bold mt-12 mb-6">🌙 Midnight Birthday Surprise Ideas</h2>
                     <p className="mb-4 text-foreground/70">The clock strikes midnight and their phone lights up. Here are the top <strong>midnight birthday surprise ideas</strong> that create instant core memories:</p>
@@ -143,6 +159,14 @@ export default function RomanticWishesPage() {
                             <div>
                                 <div className="font-bold group-hover:text-primary transition-colors">Boyfriend Birthday Surprise</div>
                                 <div className="text-sm text-foreground/50">The ultimate roast + toast method</div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
+                        </Link>
+                        <Link href="/blog/wedding-anniversary-wishes-for-couple" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
+                            <Gift className="w-5 h-5 text-amber-500 shrink-0" />
+                            <div>
+                                <div className="font-bold group-hover:text-primary transition-colors">Wedding Anniversary Wishes for Couple</div>
+                                <div className="text-sm text-foreground/50">100+ romantic & funny wishes</div>
                             </div>
                             <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
                         </Link>

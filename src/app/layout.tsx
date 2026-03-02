@@ -14,20 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BirthdayWisher.fun | Create Next-Level Animated Birthday Wishes Online",
-  description: "Ditch the boring texts! Create a highly interactive, 20-step gamified birthday wish. Personalize puzzles, upload photos, add voice notes, and trigger confetti explosions for free.",
-  keywords: "Happy Birthday Wishes, Unique Birthday Greetings, Online Birthday Card Maker, Best Birthday Gift Ideas, Romantic Birthday Surprise, Digital Greeting Card, Interactive Birthday Card",
+  verification: {
+    google: "0U1YiEFE8R79Y3OBSHah0kzi2xrwwMaelRhnv9cjIeQ",
+  },
+  title: "BirthdayWisher.fun | Animated Birthday & Wedding Anniversary Wishes for Couple Online",
+  description: "Create interactive, gamified birthday wishes & wedding anniversary wishes for couple. Personalize puzzles, upload photos, add voice notes, and trigger confetti explosions — all for free. Perfect anniversary wishes for couple & birthday surprises.",
+  keywords: "Happy Birthday Wishes, Unique Birthday Greetings, Online Birthday Card Maker, Best Birthday Gift Ideas, Romantic Birthday Surprise, Digital Greeting Card, Interactive Birthday Card, wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, couple anniversary wishes, marriage anniversary wishes",
   openGraph: {
-    title: "BirthdayWisher.fun - Make Their Birthday Unforgettable",
-    description: "Create an interactive, gamified birthday surprise with puzzles, golden tickets, and confetti!",
+    title: "BirthdayWisher.fun - Birthday & Wedding Anniversary Wishes for Couple",
+    description: "Create interactive, gamified birthday & anniversary wishes for couple with puzzles, golden tickets, and confetti!",
     url: "https://birthdaywisher.fun",
     siteName: "BirthdayWisher.fun",
     images: [
       {
-        url: "/og-image.jpg", // We'll add a dummy placeholder path
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "BirthdayWisher.fun Interactive Preview",
+        alt: "BirthdayWisher.fun - Birthday & Anniversary Wishes Interactive Preview",
       }
     ],
     locale: "en_US",
@@ -35,8 +38,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Make Their Birthday Unforgettable",
-    description: "The #1 Online Birthday Card Maker. Interactive, gamified, and highly emotional.",
+    title: "Birthday & Wedding Anniversary Wishes for Couple — Make It Unforgettable",
+    description: "The #1 Online Birthday & Anniversary Wish Creator. Interactive, gamified, and highly emotional. Perfect wedding anniversary wishes for couple.",
     // images: ["/og-image.jpg"],
   }
 };

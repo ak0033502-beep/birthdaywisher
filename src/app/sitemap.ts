@@ -15,14 +15,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'birthday-wishes-for-husband',
         'birthday-wishes-for-wife',
         'funny-birthday-wishes',
-        'birthday-wishes-for-mom-dad'
+        'birthday-wishes-for-mom-dad',
+        'wedding-anniversary-wishes-for-couple'
     ];
 
     const useCases = [
         'unique-birthday-gift-online',
         'digital-story-greeting-card',
         'boyfriend-birthday-surprise',
-        'girlfriend-birthday-surprise'
+        'girlfriend-birthday-surprise',
+        'anniversary-wishes-for-couple'
     ];
 
     const blogUrls = blogPosts.map((slug) => ({

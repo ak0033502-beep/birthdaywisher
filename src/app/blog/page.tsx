@@ -3,9 +3,9 @@ import { ArrowRight, Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Birthday Wishes Ideas, Quotes & Inspiration | BirthdayWisher.fun Blog",
-    description: "Discover the best birthday wishes, rare quotes, funny roasts, and unique gift ideas to make your loved ones feel truly special. Heart-touching ideas for best friends, partners, family, and coworkers.",
-    keywords: "Birthday wishes, birthday quotes, happy birthday messages, birthday ideas, best friend birthday, romantic birthday wishes, funny birthday wishes, birthday wishes for brother, birthday wishes for sister, birthday wishes for husband, birthday wishes for wife, birthday wishes for mom, birthday wishes for dad",
+    title: "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration | BirthdayWisher.fun Blog",
+    description: "Discover the best birthday wishes, wedding anniversary wishes for couple, rare quotes, funny roasts, and unique gift ideas. Heart-touching ideas for best friends, partners, couples, family, and coworkers.",
+    keywords: "Birthday wishes, birthday quotes, happy birthday messages, birthday ideas, best friend birthday, romantic birthday wishes, funny birthday wishes, birthday wishes for brother, birthday wishes for sister, birthday wishes for husband, birthday wishes for wife, birthday wishes for mom, birthday wishes for dad, wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, marriage anniversary wishes",
 };
 
 // Mock data for initial SEO until a CMS is ready
@@ -81,6 +81,14 @@ const blogPosts = [
         date: "Nov 22, 2024",
         author: "BirthdayWisher.fun Editorial",
         category: "For Family"
+    },
+    {
+        slug: "wedding-anniversary-wishes-for-couple",
+        title: "100+ Wedding Anniversary Wishes for Couple — Romantic, Funny & Heartfelt",
+        excerpt: "The best wedding anniversary wishes for couple — from 1st to 50th year. Romantic, funny, and heart-touching anniversary messages for husband, wife, parents, and friends.",
+        date: "Mar 02, 2026",
+        author: "BirthdayWisher.fun Editorial",
+        category: "For Couples"
     }
 ];
 

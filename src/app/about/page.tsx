@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "About Us | BirthdayWisher.fun",
-    description: "Learn about the mission behind BirthdayWisher. We believe birthdays should be unforgettable, emotional, and interactive experiences.",
+    title: "About Us | BirthdayWisher.fun — Birthday & Anniversary Wishes",
+    description: "Learn about the mission behind BirthdayWisher. We believe birthdays and wedding anniversaries should be unforgettable, emotional, and interactive experiences. Create the perfect anniversary wishes for couple.",
 };
 
 export default function AboutPage() {
@@ -18,15 +18,15 @@ export default function AboutPage() {
 
                     <h2 className="text-3xl font-bold mt-12 mb-6">Our Story</h2>
                     <p>
-                        Birthdays are special. They are the one day a year dedicated entirely to celebrating someone's existence. Yet, in the digital age, we've resorted to sending identical, copied-and-pasted text messages or quickly tapping a reaction on social media.
+                        Birthdays and wedding anniversaries are special. They are the days dedicated entirely to celebrating someone's existence and the love between two people. Yet, in the digital age, we've resorted to sending identical, copied-and-pasted text messages or quickly tapping a reaction on social media.
                     </p>
                     <p>
-                        We realized that sending a plain text message for a birthday feels incredibly transactional. We wanted to build something that allowed people to put real thought, emotion, and fun back into digital greetings. That's how BirthdayWisher.fun was born.
+                        We realized that sending a plain text message for a birthday or anniversary feels incredibly transactional. We wanted to build something that allowed people to put real thought, emotion, and fun back into digital greetings — whether it's birthday wishes, wedding anniversary wishes for couple, or any celebration of love. That's how BirthdayWisher.fun was born.
                     </p>
 
                     <h2 className="text-3xl font-bold mt-12 mb-6">What We Do</h2>
                     <p>
-                        BirthdayWisher.fun is an online platform that empowers anyone to create highly interactive, gamified, and deeply emotional birthday "stories." Think of it as a beautifully animated digital greeting card crossed with a personalized mini-game.
+                        BirthdayWisher.fun is an online platform that empowers anyone to create highly interactive, gamified, and deeply emotional birthday and anniversary "stories." Think of it as a beautifully animated digital greeting card crossed with a personalized mini-game — perfect for birthday wishes, wedding anniversary wishes for couple, and every celebration in between.
                     </p>
                     <p>
                         Our 20-step wizard helps you craft a unique journey for your loved one, complete with inside jokes, memory quizzes, voice notes, and stunning visual finales.
