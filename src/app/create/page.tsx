@@ -2,6 +2,8 @@
 
 import { useWishContext } from "@/lib/WishContext";
 import { WizardLayout } from "@/components/wizard/WizardLayout";
+import { useSearchParams } from "next/navigation";
+import { useEffect, Suspense } from "react";
 
 // Steps Imports 
 import { Step1Target } from "@/components/wizard/steps/Step1Target";
@@ -25,40 +27,58 @@ import { Step18Soundtrack } from "@/components/wizard/steps/Step18Soundtrack";
 import { Step19Theme } from "@/components/wizard/steps/Step19Theme";
 import { Step20Finale } from "@/components/wizard/steps/Step20Finale";
 
-export default function CreateWizard() {
-    const { currentStep } = useWishContext();
+// Birthday: full 20-step sequence
+const birthdaySteps = [
+    Step1Target, Step2Connection, Step3Vibe, Step4Nicknames, Step5Media,
+    Step6MemoryTale, Step7SecretDate, Step8Quirks, Step9RoastMeter, Step10Quiz,
+    Step11Awards, Step12VoiceNote, Step13Gratitude, Step14Puzzle, Step15CoreMessage,
+    Step16FuturePromises, Step17InnovativeLocks, Step18Soundtrack, Step19Theme, Step20Finale,
+];
 
-    const renderStep = () => {
-        switch (currentStep) {
-            case 1: return <Step1Target />;
-            case 2: return <Step2Connection />;
-            case 3: return <Step3Vibe />;
-            case 4: return <Step4Nicknames />;
-            case 5: return <Step5Media />;
-            case 6: return <Step6MemoryTale />;
-            case 7: return <Step7SecretDate />;
-            case 8: return <Step8Quirks />;
-            case 9: return <Step9RoastMeter />;
-            case 10: return <Step10Quiz />;
-            case 11: return <Step11Awards />;
-            case 12: return <Step12VoiceNote />;
-            case 13: return <Step13Gratitude />;
-            case 14: return <Step14Puzzle />;
-            case 15: return <Step15CoreMessage />;
-            case 16: return <Step16FuturePromises />;
-            case 17: return <Step17InnovativeLocks />;
-            case 18: return <Step18Soundtrack />;
-            case 19: return <Step19Theme />;
-            case 20: return <Step20Finale />;
-            default:
-                return (
+// Anniversary: curated 16-step sequence (removes Roast, Awards, Puzzle, InnovativeLocks)
+const anniversarySteps = [
+    Step1Target, Step2Connection, Step3Vibe, Step4Nicknames, Step5Media,
+    Step6MemoryTale, Step7SecretDate, Step8Quirks, Step10Quiz, Step12VoiceNote,
+    Step13Gratitude, Step15CoreMessage, Step16FuturePromises, Step18Soundtrack,
+    Step19Theme, Step20Finale,
+];
+
+// Detects ?type=anniversary and sets wishType in context
+function AnniversaryDetector() {
+    const searchParams = useSearchParams();
+    const { updateWishData } = useWishContext();
+
+    useEffect(() => {
+        const type = searchParams.get("type");
+        if (type === "anniversary") {
+            updateWishData({ wishType: "anniversary" });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return null;
+}
+
+export default function CreateWizard() {
+    const { currentStep, wishData } = useWishContext();
+    const isAnniversary = wishData.wishType === "anniversary";
+    const steps = isAnniversary ? anniversarySteps : birthdaySteps;
+    const totalSteps = steps.length;
+    const StepComponent = steps[currentStep - 1];
+
+    return (
+        <>
+            <Suspense fallback={null}>
+                <AnniversaryDetector />
+            </Suspense>
+            <WizardLayout totalSteps={totalSteps}>
+                {StepComponent ? <StepComponent /> : (
                     <div className="text-center py-20">
                         <h2 className="text-3xl font-bold mb-4">Step {currentStep} 🚧</h2>
                         <p className="text-foreground/60">This step is under construction.</p>
                     </div>
-                );
-        }
-    };
-
-    return <WizardLayout>{renderStep()}</WizardLayout>;
+                )}
+            </WizardLayout>
+        </>
+    );
 }

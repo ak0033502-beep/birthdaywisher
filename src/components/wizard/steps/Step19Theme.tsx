@@ -60,20 +60,83 @@ const presentationStyles = [
     },
 ];
 
+const anniversaryStyles = [
+    {
+        id: "rosegold-elegance",
+        label: "Rose Gold Elegance",
+        desc: "Luxurious rose-gold gradients with shimmering particles.",
+        icon: "🌹",
+        preview: "bg-gradient-to-br from-rose-400/30 via-pink-300/20 to-amber-200/30",
+        overlayText: "text-rose-300",
+        borderAccent: "border-rose-400/40",
+    },
+    {
+        id: "golden-anniversary",
+        label: "Golden Anniversary",
+        desc: "Regal gold tones with warm champagne glow & confetti.",
+        icon: "👑",
+        preview: "bg-gradient-to-br from-yellow-600/30 via-amber-400/20 to-orange-300/30",
+        overlayText: "text-yellow-300",
+        borderAccent: "border-yellow-500/40",
+    },
+    {
+        id: "moonlit-romance",
+        label: "Moonlit Romance",
+        desc: "Starry night sky with soft moonlight and floating hearts.",
+        icon: "🌙",
+        preview: "bg-gradient-to-br from-slate-900 via-indigo-900/60 to-purple-900/40",
+        overlayText: "text-indigo-300",
+        borderAccent: "border-indigo-400/40",
+    },
+    {
+        id: "vintage-love",
+        label: "Vintage Love Letters",
+        desc: "Aged paper texture with handwritten-style love notes.",
+        icon: "💌",
+        preview: "bg-gradient-to-br from-amber-900/40 via-orange-100/20 to-yellow-800/30",
+        overlayText: "text-amber-200",
+        borderAccent: "border-amber-600/40",
+    },
+    {
+        id: "cherry-blossom",
+        label: "Cherry Blossom",
+        desc: "Soft pink petals falling over a serene garden scene.",
+        icon: "🌸",
+        preview: "bg-gradient-to-br from-pink-200/30 via-pink-400/20 to-fuchsia-300/30",
+        overlayText: "text-pink-200",
+        borderAccent: "border-pink-300/40",
+    },
+    {
+        id: "royal-navy",
+        label: "Royal Navy",
+        desc: "Deep navy blue with gold accents and regal typography.",
+        icon: "⚓",
+        preview: "bg-gradient-to-br from-blue-950 via-blue-900/60 to-yellow-900/30",
+        overlayText: "text-blue-200",
+        borderAccent: "border-blue-400/40",
+    },
+];
+
 export function Step19Theme() {
     const { wishData, updateWishData } = useWishContext();
+    const isAnniversary = wishData.wishType === "anniversary";
+    const styles = isAnniversary ? anniversaryStyles : presentationStyles;
 
     return (
         <div className="flex flex-col gap-6">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">Presentation Experience 🎭</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
+                    {isAnniversary ? "Anniversary Theme 🌹" : "Presentation Experience 🎭"}
+                </h2>
                 <p className="text-foreground/60 text-base sm:text-lg">
-                    How should they experience this wish? Choose a completely unique UI theme.
+                    {isAnniversary
+                        ? "Choose an elegant, premium theme for the anniversary experience."
+                        : "How should they experience this wish? Choose a completely unique UI theme."}
                 </p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-2 max-h-[55vh] overflow-y-auto hide-scrollbar p-1">
-                {presentationStyles.map((style) => {
+                {styles.map((style) => {
                     const isSelected = wishData.presentationStyle === style.id;
                     return (
                         <button

@@ -6,6 +6,7 @@ import { useState, useRef } from "react";
 
 export function Step12VoiceNote() {
     const { wishData, updateWishData } = useWishContext();
+    const isAnniversary = wishData.wishType === "anniversary";
     const [isRecording, setIsRecording] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -76,9 +77,13 @@ export function Step12VoiceNote() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">The Voice Note 🎙️</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                    {isAnniversary ? "Your Anniversary Voice Note 🎤" : "The Voice Note 🎙️"}
+                </h2>
                 <p className="text-foreground/60 text-lg">
-                    Sing Happy Birthday or just leave a raw, unedited voice message.
+                    {isAnniversary
+                        ? "Record a heartfelt anniversary message. It plays during the finale!"
+                        : "Sing Happy Birthday or just leave a raw, unedited voice message."}
                 </p>
             </div>
 

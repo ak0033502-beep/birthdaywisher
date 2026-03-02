@@ -39,18 +39,40 @@ export default function Home() {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+            className="flex flex-col items-center justify-center gap-6"
             initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Link href="/create">
-              <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-shadow">
-                <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <Link href="/create">
+                <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-shadow">
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
+                  <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
+                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Create Birthday Wish</span>
+                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
+                  </div>
+                </button>
+              </Link>
+              <Link href="/anniversary">
+                <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-amber-500/20 hover:shadow-amber-500/40 transition-shadow">
+                  <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-pink-500 to-amber-500 animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
+                  <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
+                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Anniversary Wish 💍</span>
+                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
+                  </div>
+                </button>
+              </Link>
+            </div>
+
+            <a href="https://guesskaro.games/couples" target="_blank" rel="noopener noreferrer">
+              <button className="relative group overflow-hidden rounded-full p-[3px] shadow-xl shadow-pink-500/10 hover:shadow-pink-500/30 transition-shadow">
+                <span className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
                 <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
-                  <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Create Free Birthday Wish</span>
+                  <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">🎮 Play Couple Quiz Game</span>
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
                 </div>
               </button>
-            </Link>
+            </a>
+
             <span className="text-sm text-foreground/50 font-medium flex items-center gap-2">
               <Clock className="w-4 h-4" /> Takes just 3 minutes • 100% Free
             </span>

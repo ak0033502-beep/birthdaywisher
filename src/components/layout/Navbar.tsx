@@ -22,6 +22,7 @@ export function Navbar() {
                     </span>
                 </Link>
                 <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground/80">
+                    <Link href="/anniversary" className="hover:text-amber-500 transition-colors">Anniversary</Link>
                     <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
                     <Link href="/about" className="hover:text-primary transition-colors">About</Link>
                 </nav>

@@ -4,7 +4,7 @@ import { useWishContext } from "@/lib/WishContext";
 import { Tag, Plus, X } from "lucide-react";
 import { useState } from "react";
 
-const presetQuirks = [
+const birthdayQuirks = [
     "Always 30 mins late",
     "Your weird laugh",
     "Making the best maggi",
@@ -13,9 +13,22 @@ const presetQuirks = [
     "Never letting me pay",
 ];
 
+const anniversaryQuirks = [
+    "Finishing each other's sentences",
+    "Stealing the blanket at night",
+    "Saying 'I told you so' lovingly",
+    "Dancing together in the kitchen",
+    "Always ordering for each other",
+    "Your perfectly timed forehead kisses",
+    "Arguing about whose turn it is to cook",
+    "Making me laugh at the worst times",
+];
+
 export function Step8Quirks() {
     const { wishData, updateWishData } = useWishContext();
     const [customQuirk, setCustomQuirk] = useState("");
+    const isAnniversary = wishData.wishType === "anniversary";
+    const presetQuirks = isAnniversary ? anniversaryQuirks : birthdayQuirks;
 
     const handleToggleQuirk = (quirk: string) => {
         if (wishData.quirks.includes(quirk)) {
@@ -36,7 +49,9 @@ export function Step8Quirks() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Things I Love (The Quirks) ✨</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                    {isAnniversary ? "Things I Love About Us ✨" : "Things I Love (The Quirks) ✨"}
+                </h2>
                 <p className="text-foreground/60 text-lg">
                     Select or add up to 5 unique traits that make them special.
                 </p>
@@ -90,8 +105,8 @@ export function Step8Quirks() {
                                 onClick={() => handleToggleQuirk(quirk)}
                                 disabled={!wishData.quirks.includes(quirk) && wishData.quirks.length >= 5}
                                 className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${wishData.quirks.includes(quirk)
-                                        ? "bg-white/10 border-white/30 text-white"
-                                        : "border-white/10 text-foreground/60 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-foreground/60"
+                                    ? "bg-white/10 border-white/30 text-white"
+                                    : "border-white/10 text-foreground/60 hover:border-white/30 hover:text-white disabled:opacity-30 disabled:hover:border-white/10 disabled:hover:text-foreground/60"
                                     }`}
                             >
                                 {quirk}

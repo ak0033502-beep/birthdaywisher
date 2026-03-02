@@ -3,10 +3,15 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export interface WishData {
+    // Wish Type
+    wishType: "birthday" | "anniversary";
     // Step 1: Target
     targetName: string;
     targetAge: string;
     targetGender: string;
+    // Anniversary-specific
+    anniversaryYear: string;
+    coupleName: string;
     // Step 2: Connection
     relationship: string;
     // Step 3: Vibe
@@ -61,9 +66,12 @@ export interface WishData {
 }
 
 const defaultWishData: WishData = {
+    wishType: "birthday",
     targetName: "",
     targetAge: "",
     targetGender: "",
+    anniversaryYear: "",
+    coupleName: "",
     relationship: "",
     vibe: "Pure Romance",
     nickname: "",
@@ -114,7 +122,7 @@ export function WishProvider({ children }: { children: ReactNode }) {
     };
 
     const nextStep = () => {
-        setCurrentStep((prev) => Math.min(prev + 1, 20));
+        setCurrentStep((prev) => prev + 1);
     };
 
     const prevStep = () => {

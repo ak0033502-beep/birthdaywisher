@@ -5,13 +5,26 @@ import { HelpCircle, AlertCircle } from "lucide-react";
 
 export function Step10Quiz() {
     const { wishData, updateWishData } = useWishContext();
+    const isAnniversary = wishData.wishType === "anniversary";
+
+    const q1Suggestions = isAnniversary
+        ? ["Where was our first date?", "What was our wedding venue?", "What song did we dance to at our wedding?"]
+        : ["What is my favorite movie?", "What's my comfort food?", "What's my biggest fear?"];
+
+    const q2Suggestions = isAnniversary
+        ? ["Where did we go on our honeymoon?", "What did I wear on our first date?", "What's my love language?"]
+        : ["Who usually pays for the food?", "What's my dream vacation?", "What's my guilty pleasure song?"];
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">The Gateway Quiz 🧠</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                    {isAnniversary ? "How Well Do You Know Me? 💕" : "The Gateway Quiz 🧠"}
+                </h2>
                 <p className="text-foreground/60 text-lg">
-                    Set up 2 questions they MUST answer correctly to read your main message.
+                    {isAnniversary
+                        ? "Set 2 questions they must answer correctly to prove their love!"
+                        : "Set up 2 questions they MUST answer correctly to read your main message."}
                 </p>
             </div>
 
@@ -31,9 +44,16 @@ export function Step10Quiz() {
                             type="text"
                             value={wishData.quizQ1}
                             onChange={(e) => updateWishData({ quizQ1: e.target.value })}
-                            placeholder="e.g. What is my favorite movie?"
+                            placeholder={isAnniversary ? "e.g. Where was our first date?" : "e.g. What is my favorite movie?"}
                             className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-white/20"
                         />
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                            {q1Suggestions.map((s) => (
+                                <button key={s} onClick={() => updateWishData({ quizQ1: s })} className="text-xs px-2.5 py-1 rounded-full border border-white/10 text-foreground/50 hover:text-white hover:border-white/30 transition-colors">
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -65,9 +85,16 @@ export function Step10Quiz() {
                             type="text"
                             value={wishData.quizQ2}
                             onChange={(e) => updateWishData({ quizQ2: e.target.value })}
-                            placeholder="e.g. Who usually pays for the food?"
+                            placeholder={isAnniversary ? "e.g. Where did we go on our honeymoon?" : "e.g. Who usually pays for the food?"}
                             className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all placeholder:text-white/20"
                         />
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                            {q2Suggestions.map((s) => (
+                                <button key={s} onClick={() => updateWishData({ quizQ2: s })} className="text-xs px-2.5 py-1 rounded-full border border-white/10 text-foreground/50 hover:text-white hover:border-white/30 transition-colors">
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-2">

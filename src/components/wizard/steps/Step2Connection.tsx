@@ -1,9 +1,9 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
-import { Link2, Users, Heart } from "lucide-react";
+import { Link2, Users, Heart, Gift } from "lucide-react";
 
-const connections = [
+const birthdayConnections = [
     { id: "partner", label: "Partner / Lover", icon: <Heart className="w-6 h-6" /> },
     { id: "bff", label: "Best Friend Forever", icon: <Users className="w-6 h-6" /> },
     { id: "sibling", label: "Sibling / Family", icon: <Link2 className="w-6 h-6" /> },
@@ -12,15 +12,28 @@ const connections = [
     { id: "other", label: "Just Someone Special", icon: <Link2 className="w-6 h-6 text-yellow-500" /> },
 ];
 
+const anniversaryConnections = [
+    { id: "my-spouse", label: "My Partner / Spouse", icon: <Heart className="w-6 h-6 text-pink-500" /> },
+    { id: "my-parents", label: "My Parents", icon: <Users className="w-6 h-6 text-amber-500" /> },
+    { id: "couple-i-know", label: "A Couple I Know", icon: <Gift className="w-6 h-6 text-purple-500" /> },
+    { id: "friends-anniversary", label: "Friends' Anniversary", icon: <Users className="w-6 h-6 text-blue-500" /> },
+];
+
 export function Step2Connection() {
     const { wishData, updateWishData } = useWishContext();
+    const isAnniversary = wishData.wishType === "anniversary";
+    const connections = isAnniversary ? anniversaryConnections : birthdayConnections;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">What&apos;s the Connection? 🤝</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
+                    {isAnniversary ? "Whose Anniversary Is It? 💍" : "What\u0027s the Connection? 🤝"}
+                </h2>
                 <p className="text-foreground/60 text-lg">
-                    How do you know {wishData.targetName || "them"}? This sets the underlying tone.
+                    {isAnniversary
+                        ? `Who are you creating this anniversary wish for?`
+                        : `How do you know ${wishData.targetName || "them"}? This sets the underlying tone.`}
                 </p>
             </div>
 
@@ -44,3 +57,4 @@ export function Step2Connection() {
         </div>
     );
 }
+
