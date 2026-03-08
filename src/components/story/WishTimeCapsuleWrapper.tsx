@@ -24,6 +24,8 @@ export function WishTimeCapsuleWrapper({ wishData }: { wishData: WishData }) {
                 <CountdownOverlay
                     unlockDate={wishData.unlockDate}
                     onUnlock={() => setIsLocked(false)}
+                    targetName={wishData.targetName}
+                    wishType={wishData.wishType}
                 />
             )}
 

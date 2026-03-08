@@ -6,10 +6,14 @@ import { Clock, Lock, ArrowRight } from "lucide-react";
 
 export function CountdownOverlay({
     unlockDate,
-    onUnlock
+    onUnlock,
+    targetName,
+    wishType,
 }: {
     unlockDate: string;
     onUnlock: () => void;
+    targetName?: string;
+    wishType?: "birthday" | "anniversary";
 }) {
     const [timeLeft, setTimeLeft] = useState<{
         days: number;
@@ -85,11 +89,15 @@ export function CountdownOverlay({
                     </div>
 
                     <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
-                        No Peeking.
+                        {targetName
+                            ? `${targetName}'s ${wishType === "anniversary" ? "Anniversary" : "Birthday"} Surprise`
+                            : "No Peeking."}
                     </h1>
 
                     <p className="text-base sm:text-lg md:text-xl text-white/60 mb-10 sm:mb-16 max-w-lg mx-auto font-medium px-2">
-                        Your surprise is safely locked inside a time capsule. It will automatically open when the countdown reaches zero.
+                        {wishType === "anniversary"
+                            ? "💕 This anniversary surprise is locked until the special day. Come back when the countdown hits zero!"
+                            : "🎂 This birthday surprise is locked until the big day. Come back when the countdown hits zero!"}
                     </p>
 
                     {/* The Ticking Clock */}

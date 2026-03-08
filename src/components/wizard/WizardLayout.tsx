@@ -1,6 +1,6 @@
 "use client";
 
-import { useWishContext } from "@/lib/WishContext";
+import { useWishContext, clearWizardProgress } from "@/lib/WishContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Copy, CheckCircle2, Wand2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -48,6 +48,7 @@ export function WizardLayout({
                 if (data.id) {
                     setGeneratedId(data.id);
                     setIsGenerated(true);
+                    clearWizardProgress(); // Clear saved progress after successful generation
                 } else {
                     console.error("Failed to generate link.", data);
                     alert("Something went wrong creating the link.");
