@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Heart, ShieldCheck, Lock, Clock, Trash2, Camera, Music, Zap, MessageCircle, Gift, Ticket } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { WishCounter } from "@/components/ui/WishCounter";
 
 export default function AnniversaryPage() {
     return (
@@ -66,6 +67,8 @@ export default function AnniversaryPage() {
                         <span className="text-sm text-foreground/50 font-medium flex items-center gap-2">
                             <Clock className="w-4 h-4" /> Takes 3 minutes • 100% Free • 100% Private
                         </span>
+
+                        <WishCounter variant="anniversary" />
                     </motion.div>
                 </section>
 

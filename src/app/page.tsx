@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Gift, Heart, Zap, Music, Ticket, Camera, Clock, MessageCircle, PlayCircle, ShieldCheck, Lock, Trash2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { WishCounter } from "@/components/ui/WishCounter";
 
 export default function Home() {
   return (
@@ -76,6 +77,8 @@ export default function Home() {
             <span className="text-sm text-foreground/50 font-medium flex items-center gap-2">
               <Clock className="w-4 h-4" /> Takes just 3 minutes • 100% Free
             </span>
+
+            <WishCounter variant="full" />
           </motion.div>
         </section>
 
