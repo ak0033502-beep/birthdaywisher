@@ -280,7 +280,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ଏକ ସ୍ମୃତି 📖", step7Title: "ଗୋପନ ତାରିଖ 🔐",
         step8Title: "ସେମାନଙ୍କ ଅଭ୍ୟାସ 😂", step9Title: "ରୋଷ୍ ବା ଟୋଷ୍? 🔥",
         step10Title: "କ୍ୱିଜ ଟାଇମ! 🧠", step15Title: "ମୁଖ୍ୟ ବାର୍ତ୍ତା 💌",
-        step19Title: "ଥିମ ବାଛନ୍ତୁ 🎨", step18Title: "ସାଉଣ୍ଡଟ୍ରାକ୍ 🎵", step20Title: "ଫାଇନାଲ ପ୍ରିଭ୍ୟୁ 🎉",
+        step18Title: "ସାଉଣ୍ଡଟ୍ରାକ୍ 🎵", step19Title: "ଥିମ ବାଛନ୍ତୁ 🎨", step20Title: "ଫାଇନାଲ ପ୍ରିଭ୍ୟୁ 🎉",
         howCta: "ଏବେ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ",
     }),
     pa: mkLang({
@@ -296,7 +296,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ਇੱਕ ਯਾਦ 📖", step7Title: "ਸੀਕ੍ਰੇਟ ਤਾਰੀਖ 🔐",
         step8Title: "ਉਨ੍ਹਾਂ ਦੀਆਂ ਆਦਤਾਂ 😂", step9Title: "ਰੋਸਟ ਜਾਂ ਟੋਸਟ? 🔥",
         step10Title: "ਕੁਇਜ਼ ਟਾਈਮ! 🧠", step15Title: "ਮੁੱਖ ਸੁਨੇਹਾ 💌",
-        step19Title: "ਥੀਮ ਚੁਣੋ 🎨", step18Title: "ਸਾਊਂਡਟ੍ਰੈਕ 🎵", step20Title: "ਫ਼ਾਈਨਲ ਪ੍ਰੀਵਿਊ 🎉",
+        step18Title: "ਸਾਊਂਡਟ੍ਰੈਕ 🎵", step19Title: "ਥੀਮ ਚੁਣੋ 🎨", step20Title: "ਫ਼ਾਈਨਲ ਪ੍ਰੀਵਿਊ 🎉",
         howCta: "ਹੁਣੇ ਕਸਟਮਾਈਜ਼ ਕਰੋ",
     }),
     ur: mkLang({
@@ -312,7 +312,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ایک یاد 📖", step7Title: "خفیہ تاریخ 🔐",
         step8Title: "ان کی عادتیں 😂", step9Title: "روسٹ یا ٹوسٹ؟ 🔥",
         step10Title: "کوئز ٹائم! 🧠", step15Title: "اصل پیغام 💌",
-        step19Title: "تھیم چنیں 🎨", step18Title: "ساؤنڈ ٹریک 🎵", step20Title: "فائنل پریویو 🎉",
+        step18Title: "ساؤنڈ ٹریک 🎵", step19Title: "تھیم چنیں 🎨", step20Title: "فائنل پریویو 🎉",
         howCta: "ابھی کسٹمائز کریں",
     }),
     es: mkLang({
