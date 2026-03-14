@@ -5,12 +5,95 @@ import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap, Gift } from "
 export const metadata: Metadata = {
     title: "100+ Wedding Anniversary Wishes for Couple — Romantic, Funny & Heartfelt | BirthdayWisher.fun",
     description: "Find the best wedding anniversary wishes for couple. Romantic, funny, and heart-touching anniversary messages for husband, wife, parents, and friends. Perfect anniversary wishes for couple to celebrate every milestone year.",
-    keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, funny anniversary wishes, anniversary wishes for husband, anniversary wishes for wife, marriage anniversary wishes, 1st anniversary wishes, 25th anniversary wishes, 50th anniversary wishes, anniversary quotes for couple, happy wedding anniversary, anniversary wishes for parents, couple anniversary wishes, romantic anniversary wishes for couple, heart touching anniversary wishes",
+    keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, funny anniversary wishes, anniversary wishes for husband, anniversary wishes for wife, marriage anniversary wishes, 1st anniversary wishes, 25th anniversary wishes, 50th anniversary wishes, anniversary quotes for couple, happy wedding anniversary, anniversary wishes for parents, couple anniversary wishes, romantic anniversary wishes for couple, heart touching anniversary wishes, short anniversary wishes for couple, anniversary wishes for couple from friend, happy wedding anniversary wishes for couple, heart touching anniversary wishes for couple, wedding anniversary wishes for couple in english",
 };
 
 export default function WeddingAnniversaryWishesPage() {
+    const articleJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "100+ Wedding Anniversary Wishes for Couple — Romantic, Funny & Heartfelt",
+        description: "Find the best wedding anniversary wishes for couple. Romantic, funny, and heart-touching anniversary messages for husband, wife, parents, and friends.",
+        author: {
+            "@type": "Organization",
+            name: "BirthdayWisher.fun",
+            url: "https://birthdaywisher.fun",
+        },
+        publisher: {
+            "@type": "Organization",
+            name: "BirthdayWisher.fun",
+            url: "https://birthdaywisher.fun",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://birthdaywisher.fun/og-image.jpg",
+            },
+        },
+        datePublished: "2026-03-02",
+        dateModified: "2026-03-14",
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": "https://birthdaywisher.fun/blog/wedding-anniversary-wishes-for-couple",
+        },
+        keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages",
+    };
+
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "What do you write in a wedding anniversary card for a couple?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Write heartfelt wedding anniversary wishes for the couple that celebrate their love and journey together. Include a personal memory, mention their qualities as a couple, and wish them more years of happiness. For example: 'Happy Anniversary! Your love inspires everyone around you. Here's to many more beautiful years together.'",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How do you wish a couple a happy anniversary?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "You can wish a couple a happy anniversary through a heartfelt message, a handwritten card, or by creating an interactive digital anniversary wish on BirthdayWisher.fun. The best anniversary wishes for couple are personal, reference specific memories, and express genuine emotion. You can choose romantic, funny, or heart-touching tones depending on your relationship with the couple.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is the best anniversary wish message?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "The best anniversary wish message is one that feels personal and genuine. A great example: 'Happy Anniversary to two people who make love look effortless. Your bond is a beautiful reminder that true love is patient, kind, and forever.' For maximum impact, pair your message with an interactive anniversary experience using photos, voice notes, and personalized quizzes.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How to make anniversary wishes special?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Make anniversary wishes special by going beyond a simple text message. Create an interactive, gamified anniversary wish that includes the couple's photos, a voice recording of your message, and a personalized quiz. Tools like BirthdayWisher.fun let you build a multi-step digital experience that the couple taps through, ending with fireworks and your heartfelt message. It takes just 3 minutes and is completely free.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is the difference between wedding anniversary and marriage anniversary?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Wedding anniversary and marriage anniversary mean the same thing — both celebrate the date a couple got married. 'Wedding anniversary' is the more commonly used term globally, while 'marriage anniversary' is popular in South Asian countries. Whether you search for 'wedding anniversary wishes for couple' or 'marriage anniversary wishes,' you're looking for the same type of heartfelt messages.",
+                },
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-background pt-32 pb-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
             <main className="container max-w-4xl mx-auto px-6">
 
                 <Link href="/blog" className="inline-flex items-center gap-2 text-foreground/50 hover:text-primary transition-colors mb-8 font-medium">
@@ -135,7 +218,47 @@ export default function WeddingAnniversaryWishesPage() {
                         <li>&quot;Your marriage is the best love story ever written — and we&apos;re the lucky characters in it. Happy Wedding Anniversary, Mom & Dad!&quot;</li>
                     </ul>
 
-                    {/* Section 7 — Long Paragraphs */}
+                    {/* Section 7 — Short Anniversary Wishes */}
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-cyan-400">✨ Short Anniversary Wishes for Couple</h2>
+                    <p className="mb-4 text-foreground/70">Sometimes fewer words carry more weight. These <strong>short anniversary wishes for couple</strong> are perfect for cards, texts, and quick messages:</p>
+
+                    <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                        <li>&quot;Two hearts, one love, infinite years. Happy Anniversary!&quot;</li>
+                        <li>&quot;Still the best couple I know. Happy Anniversary!&quot;</li>
+                        <li>&quot;Your love is timeless. Happy Wedding Anniversary!&quot;</li>
+                        <li>&quot;Made for each other, stronger together. Happy Anniversary!&quot;</li>
+                        <li>&quot;Love looks beautiful on you two. Happy Anniversary!&quot;</li>
+                        <li>&quot;Another year, another reason to celebrate you. Happy Anniversary!&quot;</li>
+                        <li>&quot;Forever never looked so good. Happy Wedding Anniversary!&quot;</li>
+                    </ul>
+
+                    {/* Section 8 — Heart Touching Anniversary Wishes */}
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-rose-400">🥹 Heart Touching Anniversary Wishes for Couple</h2>
+                    <p className="mb-4 text-foreground/70">These <strong>heart touching anniversary wishes for couple</strong> will make any couple emotional — perfect when you want your words to truly resonate:</p>
+
+                    <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                        <li>&quot;The way you look at each other after all these years tells a story that words can&apos;t capture. Happy Anniversary to the most beautiful couple.&quot;</li>
+                        <li>&quot;Your love didn&apos;t just survive time — it bloomed in it. Every year together has only made you more beautiful. Happy Wedding Anniversary.&quot;</li>
+                        <li>&quot;I&apos;ve seen couples. And then I&apos;ve seen you two. There&apos;s no comparison. Your love is the kind that heals, inspires, and reminds us all that real love exists. Happy Anniversary.&quot;</li>
+                        <li>&quot;The world can be loud and chaotic, but the love between you two is the quietest, most powerful thing I&apos;ve ever witnessed. Happy Anniversary.&quot;</li>
+                        <li>&quot;You didn&apos;t just build a marriage — you built a home, a family, and a legacy of love. That&apos;s the most beautiful thing anyone can do. Happy Wedding Anniversary.&quot;</li>
+                        <li>&quot;When I think of what love should look like, I think of you two. Happy Anniversary to a couple that makes the world a little more beautiful just by existing.&quot;</li>
+                    </ul>
+
+                    {/* Section 9 — Anniversary Wishes from Friend */}
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-indigo-400">👫 Anniversary Wishes for Couple from Friend</h2>
+                    <p className="mb-4 text-foreground/70">When your friends celebrate their anniversary, send them <strong>anniversary wishes for couple from friend</strong> that show how much their relationship means to you:</p>
+
+                    <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                        <li>&quot;Being friends with a couple this amazing is a privilege. Happy Anniversary to two people who make love look like the best adventure ever!&quot;</li>
+                        <li>&quot;You two are the reason I still believe in love. Happy Anniversary, friends! Here&apos;s to another year of being couple goals.&quot;</li>
+                        <li>&quot;As your friend, I&apos;ve had a front-row seat to your love story — and honestly, it&apos;s better than any movie. Happy Wedding Anniversary!&quot;</li>
+                        <li>&quot;Happy Anniversary to the couple who hosted the most fun parties, gave the best relationship advice, and showed me what real partnership looks like. Love you both!&quot;</li>
+                        <li>&quot;To my favorite couple: thank you for being the gold standard of love and friendship. Happy Anniversary!&quot;</li>
+                        <li>&quot;You two don&apos;t just make a great couple — you make everyone around you better. Happy Anniversary, dear friends!&quot;</li>
+                    </ul>
+
+                    {/* Section 10 — Long Paragraphs */}
                     <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">💌 Long Anniversary Paragraphs for Couple</h2>
                     <p className="mb-4 text-foreground/70">When a one-liner isn&apos;t enough to express your anniversary feelings, pour your heart out with these full <strong>wedding anniversary paragraphs for couple</strong>:</p>
 
@@ -154,7 +277,7 @@ export default function WeddingAnniversaryWishesPage() {
                     <div className="space-y-4 mb-8">
                         <div className="glass-panel p-5 rounded-2xl border border-white/10">
                             <h3 className="font-bold text-lg mb-1">1. The Interactive Anniversary Story</h3>
-                            <p className="text-foreground/70">Create a <Link href="/create" className="text-primary hover:text-secondary">gamified anniversary wish</Link> on BirthdayWisher.fun. Add your wedding photos, record a heartfelt voice note, and set up a &quot;How Well Do You Know Your Spouse?&quot; quiz. The couple taps through an emotional, interactive story that ends with fireworks and your custom message.</p>
+                            <p className="text-foreground/70">Create a <Link href="/create?type=anniversary" className="text-primary hover:text-secondary">gamified anniversary wish</Link> on BirthdayWisher.fun. Add your wedding photos, record a heartfelt voice note, and set up a &quot;How Well Do You Know Your Spouse?&quot; quiz. The couple taps through an emotional, interactive story that ends with fireworks and your custom message. Visit our <Link href="/anniversary" className="text-primary hover:text-secondary">anniversary wish creator</Link> to get started.</p>
                         </div>
                         <div className="glass-panel p-5 rounded-2xl border border-white/10">
                             <h3 className="font-bold text-lg mb-1">2. The Memory Lane Video</h3>
@@ -169,6 +292,22 @@ export default function WeddingAnniversaryWishesPage() {
                     {/* Internal Linking Section */}
                     <h2 className="text-3xl font-bold mt-12 mb-6">📚 Explore More Wishes & Ideas</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+                        <Link href="/anniversary" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-amber-500/30 transition-colors group flex items-center gap-3">
+                            <Heart className="w-5 h-5 text-amber-500 shrink-0" />
+                            <div>
+                                <div className="font-bold group-hover:text-amber-400 transition-colors">Create Anniversary Wish</div>
+                                <div className="text-sm text-foreground/50">Interactive, gamified anniversary experience</div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
+                        </Link>
+                        <Link href="/use-cases/anniversary-wishes-for-couple" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
+                            <Gift className="w-5 h-5 text-amber-500 shrink-0" />
+                            <div>
+                                <div className="font-bold group-hover:text-primary transition-colors">Anniversary Wishes for Couple</div>
+                                <div className="text-sm text-foreground/50">Create an interactive anniversary surprise</div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
+                        </Link>
                         <Link href="/blog/romantic-wishes" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
                             <Heart className="w-5 h-5 text-pink-500 shrink-0" />
                             <div>
@@ -203,6 +342,61 @@ export default function WeddingAnniversaryWishesPage() {
                         </Link>
                     </div>
 
+                    {/* FAQ Section */}
+                    <h2 className="text-3xl font-bold mt-12 mb-6">❓ Frequently Asked Questions About Anniversary Wishes</h2>
+
+                    <div className="space-y-4 mb-8">
+                        <details className="glass-panel rounded-2xl border border-white/10 overflow-hidden group">
+                            <summary className="p-5 font-bold text-lg cursor-pointer hover:bg-white/5 transition-colors list-none flex items-center justify-between">
+                                <span>What do you write in a wedding anniversary card for a couple?</span>
+                                <ArrowRight className="w-5 h-5 text-foreground/30 group-open:rotate-90 transition-transform shrink-0" />
+                            </summary>
+                            <div className="px-5 pb-5 text-foreground/70 leading-relaxed">
+                                Write heartfelt <strong>wedding anniversary wishes for couple</strong> that celebrate their love and journey together. Include a personal memory, mention their qualities as a couple, and wish them more years of happiness. For example: &quot;Happy Anniversary! Your love inspires everyone around you. Here&apos;s to many more beautiful years together.&quot; For an extra-special touch, <Link href="/create?type=anniversary" className="text-primary hover:text-secondary">create an interactive anniversary wish</Link> with photos and voice notes.
+                            </div>
+                        </details>
+
+                        <details className="glass-panel rounded-2xl border border-white/10 overflow-hidden group">
+                            <summary className="p-5 font-bold text-lg cursor-pointer hover:bg-white/5 transition-colors list-none flex items-center justify-between">
+                                <span>How do you wish a couple a happy anniversary?</span>
+                                <ArrowRight className="w-5 h-5 text-foreground/30 group-open:rotate-90 transition-transform shrink-0" />
+                            </summary>
+                            <div className="px-5 pb-5 text-foreground/70 leading-relaxed">
+                                You can wish a couple a happy anniversary through a heartfelt message, a handwritten card, or by creating an interactive digital <strong>anniversary wish for couple</strong> on <Link href="/anniversary" className="text-primary hover:text-secondary">BirthdayWisher.fun</Link>. The best anniversary wishes are personal, reference specific memories, and express genuine emotion. You can choose romantic, funny, or heart-touching tones depending on your relationship with the couple.
+                            </div>
+                        </details>
+
+                        <details className="glass-panel rounded-2xl border border-white/10 overflow-hidden group">
+                            <summary className="p-5 font-bold text-lg cursor-pointer hover:bg-white/5 transition-colors list-none flex items-center justify-between">
+                                <span>What is the best anniversary wish message?</span>
+                                <ArrowRight className="w-5 h-5 text-foreground/30 group-open:rotate-90 transition-transform shrink-0" />
+                            </summary>
+                            <div className="px-5 pb-5 text-foreground/70 leading-relaxed">
+                                The best anniversary wish message is one that feels personal and genuine. A great example: &quot;Happy Anniversary to two people who make love look effortless. Your bond is a beautiful reminder that true love is patient, kind, and forever.&quot; For maximum impact, pair your message with an <Link href="/use-cases/anniversary-wishes-for-couple" className="text-primary hover:text-secondary">interactive anniversary experience</Link> using photos, voice notes, and personalized quizzes.
+                            </div>
+                        </details>
+
+                        <details className="glass-panel rounded-2xl border border-white/10 overflow-hidden group">
+                            <summary className="p-5 font-bold text-lg cursor-pointer hover:bg-white/5 transition-colors list-none flex items-center justify-between">
+                                <span>How to make anniversary wishes special?</span>
+                                <ArrowRight className="w-5 h-5 text-foreground/30 group-open:rotate-90 transition-transform shrink-0" />
+                            </summary>
+                            <div className="px-5 pb-5 text-foreground/70 leading-relaxed">
+                                Make <strong>anniversary wishes for couple</strong> special by going beyond a simple text message. Create an interactive, gamified anniversary wish that includes the couple&apos;s photos, a voice recording of your message, and a personalized quiz. <Link href="/create?type=anniversary" className="text-primary hover:text-secondary">BirthdayWisher.fun</Link> lets you build a multi-step digital experience that the couple taps through, ending with fireworks and your heartfelt message. It takes just 3 minutes and is completely free.
+                            </div>
+                        </details>
+
+                        <details className="glass-panel rounded-2xl border border-white/10 overflow-hidden group">
+                            <summary className="p-5 font-bold text-lg cursor-pointer hover:bg-white/5 transition-colors list-none flex items-center justify-between">
+                                <span>What is the difference between wedding anniversary and marriage anniversary?</span>
+                                <ArrowRight className="w-5 h-5 text-foreground/30 group-open:rotate-90 transition-transform shrink-0" />
+                            </summary>
+                            <div className="px-5 pb-5 text-foreground/70 leading-relaxed">
+                                Wedding anniversary and marriage anniversary mean the same thing — both celebrate the date a couple got married. &quot;Wedding anniversary&quot; is the more commonly used term globally, while &quot;marriage anniversary&quot; is popular in South Asian countries. Whether you search for &quot;<strong>wedding anniversary wishes for couple</strong>&quot; or &quot;marriage anniversary wishes,&quot; you&apos;re looking for the same type of heartfelt messages to celebrate a couple&apos;s love.
+                            </div>
+                        </details>
+                    </div>
+
                     {/* CTA */}
                     <div className="my-16 p-8 rounded-[2rem] bg-gradient-to-br from-amber-500/20 to-pink-500/20 border border-amber-500/30 text-center relative overflow-hidden">
                         <div className="relative z-10">
@@ -211,7 +405,7 @@ export default function WeddingAnniversaryWishesPage() {
                             <p className="mb-8 text-foreground/80 text-lg max-w-2xl mx-auto">
                                 Don&apos;t just send a text. Build an interactive, gamified wedding anniversary wish with photos, voice notes, puzzles, and a stunning celebration finale. The perfect wedding anniversary wishes for couple — created by you, experienced by them.
                             </p>
-                            <Link href="/create">
+                            <Link href="/create?type=anniversary">
                                 <button className="px-10 py-5 bg-amber-500 text-white font-black rounded-full hover:bg-amber-600 transition-all text-xl shadow-[0_0_30px_rgba(245,158,11,0.5)]">
                                     Create Anniversary Wish For Free
                                 </button>
