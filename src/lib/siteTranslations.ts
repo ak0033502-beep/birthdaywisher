@@ -11,7 +11,7 @@ export type SiteStrings = {
     step4Title: string; step5Title: string; step6Title: string; step7Title: string;
     step8Title: string; step9Title: string; step10Title: string; step11Title: string;
     step12Title: string; step13Title: string; step14Title: string; step15Title: string;
-    step16Title: string; step17Title: string; step19Title: string; step20Title: string;
+    step16Title: string; step17Title: string; step18Title: string; step19Title: string; step20Title: string;
     giftCardTitle: string; customLinkTitle: string;
     feat1: string; feat1d: string; feat2: string; feat2d: string;
     feat3: string; feat3d: string; feat4: string; feat4d: string;
@@ -44,7 +44,7 @@ const en: SiteStrings = {
     step12Title: "Voice Note 🎙️", step13Title: "Gratitude Message 🙏",
     step14Title: "Picture Puzzle 🧩", step15Title: "The Core Message 💌",
     step16Title: "Future Promises ✨", step17Title: "Innovative Locks 🔒",
-    step19Title: "Choose Theme 🎨", step20Title: "Final Preview 🎉",
+    step18Title: "The Soundtrack 🎵", step19Title: "Choose Theme 🎨", step20Title: "Final Preview 🎉",
     giftCardTitle: "Attach a Gift Card 🎁", customLinkTitle: "Custom Link 🔗",
     feat1: "Heartbeat Photo Reveal", feat1d: "Their favorite photo slowly fades in, beating like a heart.",
     feat2: "The Golden Ticket", feat2d: "A glowing, customized ticket displaying your 'Future Promise'.",
@@ -87,7 +87,7 @@ const hi: SiteStrings = {
     step12Title: "वॉइस नोट 🎙️", step13Title: "शुक्रिया संदेश 🙏",
     step14Title: "तस्वीर पज़ल 🧩", step15Title: "मुख्य संदेश 💌",
     step16Title: "भविष्य के वादे ✨", step17Title: "लॉक्स 🔒",
-    step19Title: "थीम चुनो 🎨", step20Title: "फ़ाइनल प्रीव्यू 🎉",
+    step18Title: "साउंडट्रैक 🎵", step19Title: "थीम चुनो 🎨", step20Title: "फ़ाइनल प्रीव्यू 🎉",
     giftCardTitle: "गिफ्ट कार्ड जोड़ें 🎁", customLinkTitle: "कस्टम लिंक 🔗",
     feat1: "दिल की धड़कन फोटो", feat1d: "उनकी पसंदीदा तस्वीर धीरे-धीरे दिल की धड़कन की तरह दिखती है।",
     feat2: "गोल्डन टिकट", feat2d: "एक चमकता टिकट जो आपका 'भविष्य का वादा' दिखाता है।",
@@ -138,7 +138,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "ভয়েস নোট 🎙️", step13Title: "ধন্যবাদ বার্তা 🙏",
         step14Title: "ছবি পাজল 🧩", step15Title: "মূল বার্তা 💌",
         step16Title: "ভবিষ্যতের প্রতিশ্রুতি ✨", step17Title: "লক 🔒",
-        step19Title: "থিম বেছে নাও 🎨", step20Title: "ফাইনাল প্রিভিউ 🎉",
+        step18Title: "সাউন্ডট্র্যাক 🎵", step19Title: "থিম বেছে নাও 🎨", step20Title: "ফাইনাল প্রিভিউ 🎉",
         giftCardTitle: "গিফট কার্ড যোগ করো 🎁", customLinkTitle: "কাস্টম লিংক 🔗",
         feat1: "হার্টবিট ফটো", feat1d: "তাদের পছন্দের ছবি ধীরে ধীরে হৃদয়ের মতো ধড়কায়।",
         feat5: "ইন্টারেক্টিভ পাজল", feat5d: "তাদের সিক্রেট তারিখ ও কুইজ পাস করতে হবে।",
@@ -165,7 +165,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "వాయిస్ నోట్ 🎙️", step13Title: "కృతజ్ఞత సందేశం 🙏",
         step14Title: "పిక్చర్ పజిల్ 🧩", step15Title: "ముఖ్య సందేశం 💌",
         step16Title: "భవిష్యత్ వాగ్దానాలు ✨", step17Title: "లాక్‌లు 🔒",
-        step19Title: "థీమ్ ఎంచుకోండి 🎨", step20Title: "ఫైనల్ ప్రివ్యూ 🎉",
+        step18Title: "సౌండ్‌ట్రాక్ 🎵", step19Title: "థీమ్ ఎంచుకోండి 🎨", step20Title: "ఫైనల్ ప్రివ్యూ 🎉",
         howCta: "ఇప్పుడు కస్టమైజ్ చేయండి",
     }),
     mr: mkLang({
@@ -186,7 +186,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "व्हॉईस नोट 🎙️", step13Title: "आभार संदेश 🙏",
         step14Title: "पिक्चर पझल 🧩", step15Title: "मुख्य संदेश 💌",
         step16Title: "भविष्याचे वचन ✨", step17Title: "लॉक्स 🔒",
-        step19Title: "थीम निवडा 🎨", step20Title: "फायनल प्रीव्ह्यू 🎉",
+        step18Title: "साउंडट्रॅक 🎵", step19Title: "थीम निवडा 🎨", step20Title: "फायनल प्रीव्ह्यू 🎉",
         howCta: "आता कस्टमाइज़ करा",
     }),
     ta: mkLang({
@@ -207,7 +207,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "குரல் குறிப்பு 🎙️", step13Title: "நன்றி செய்தி 🙏",
         step14Title: "படப் புதிர் 🧩", step15Title: "முக்கிய செய்தி 💌",
         step16Title: "எதிர்கால வாக்குறுதிகள் ✨", step17Title: "பூட்டுகள் 🔒",
-        step19Title: "தீம் தேர்வு 🎨", step20Title: "இறுதி முன்னோட்டம் 🎉",
+        step18Title: "சவுண்ட்டிராக் 🎵", step19Title: "தீம் தேர்வு 🎨", step20Title: "இறுதி முன்னோட்டம் 🎉",
         howCta: "இப்போது கஸ்டமைஸ் செய்யுங்கள்",
     }),
     gu: mkLang({
@@ -228,7 +228,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "વોઈસ નોટ 🎙️", step13Title: "આભાર સંદેશ 🙏",
         step14Title: "પિક્ચર પઝલ 🧩", step15Title: "મુખ્ય સંદેશ 💌",
         step16Title: "ભવિષ્યના વચનો ✨", step17Title: "લૉક્સ 🔒",
-        step19Title: "થીમ પસંદ કરો 🎨", step20Title: "ફાઈનલ પ્રીવ્યૂ 🎉",
+        step18Title: "સાઉન્ડટ્રૅક 🎵", step19Title: "થીમ પસંદ કરો 🎨", step20Title: "ફાઈનલ પ્રીવ્યૂ 🎉",
         howCta: "હવે કસ્ટમાઈઝ કરો",
     }),
     kn: mkLang({
@@ -247,7 +247,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "ವಾಯ್ಸ್ ನೋಟ್ 🎙️", step13Title: "ಕೃತಜ್ಞತೆ ಸಂದೇಶ 🙏",
         step14Title: "ಪಿಕ್ಚರ್ ಪಜಲ್ 🧩", step15Title: "ಮುಖ್ಯ ಸಂದೇಶ 💌",
         step16Title: "ಭವಿಷ್ಯದ ವಾಗ್ದಾನ ✨", step17Title: "ಲಾಕ್‌ಗಳು 🔒",
-        step19Title: "ಥೀಮ್ ಆಯ್ಕೆ 🎨", step20Title: "ಫೈನಲ್ ಪ್ರಿವ್ಯೂ 🎉",
+        step18Title: "ಸೌಂಡ್‌ಟ್ರ್ಯಾಕ್ 🎵", step19Title: "ಥೀಮ್ ಆಯ್ಕೆ 🎨", step20Title: "ಫೈನಲ್ ಪ್ರಿವ್ಯೂ 🎉",
         howCta: "ಈಗ ಕಸ್ಟಮೈಜ್ ಮಾಡಿ",
     }),
     ml: mkLang({
@@ -266,7 +266,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "വോയ്‌സ് നോട്ട് 🎙️", step13Title: "നന്ദി സന്ദേശം 🙏",
         step14Title: "പിക്ചർ പസിൽ 🧩", step15Title: "പ്രധാന സന്ദേശം 💌",
         step16Title: "ഭാവി വാഗ്ദാനങ്ങൾ ✨", step17Title: "ലോക്കുകൾ 🔒",
-        step19Title: "തീം തിരഞ്ഞെടുക്കൂ 🎨", step20Title: "ഫൈനൽ പ്രിവ്യൂ 🎉",
+        step18Title: "സൗണ്ട്ട്രാക്ക് 🎵", step19Title: "തീം തിരഞ്ഞെടുക്കൂ 🎨", step20Title: "ഫൈനൽ പ്രിവ്യൂ 🎉",
         howCta: "ഇപ്പോൾ കസ്റ്റമൈസ് ചെയ്യൂ",
     }),
     od: mkLang({
@@ -280,7 +280,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ଏକ ସ୍ମୃତି 📖", step7Title: "ଗୋପନ ତାରିଖ 🔐",
         step8Title: "ସେମାନଙ୍କ ଅଭ୍ୟାସ 😂", step9Title: "ରୋଷ୍ ବା ଟୋଷ୍? 🔥",
         step10Title: "କ୍ୱିଜ ଟାଇମ! 🧠", step15Title: "ମୁଖ୍ୟ ବାର୍ତ୍ତା 💌",
-        step19Title: "ଥିମ ବାଛନ୍ତୁ 🎨", step20Title: "ଫାଇନାଲ ପ୍ରିଭ୍ୟୁ 🎉",
+        step19Title: "ଥିମ ବାଛନ୍ତୁ 🎨", step18Title: "ସାଉଣ୍ଡଟ୍ରାକ୍ 🎵", step20Title: "ଫାଇନାଲ ପ୍ରିଭ୍ୟୁ 🎉",
         howCta: "ଏବେ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ",
     }),
     pa: mkLang({
@@ -296,7 +296,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ਇੱਕ ਯਾਦ 📖", step7Title: "ਸੀਕ੍ਰੇਟ ਤਾਰੀਖ 🔐",
         step8Title: "ਉਨ੍ਹਾਂ ਦੀਆਂ ਆਦਤਾਂ 😂", step9Title: "ਰੋਸਟ ਜਾਂ ਟੋਸਟ? 🔥",
         step10Title: "ਕੁਇਜ਼ ਟਾਈਮ! 🧠", step15Title: "ਮੁੱਖ ਸੁਨੇਹਾ 💌",
-        step19Title: "ਥੀਮ ਚੁਣੋ 🎨", step20Title: "ਫ਼ਾਈਨਲ ਪ੍ਰੀਵਿਊ 🎉",
+        step19Title: "ਥੀਮ ਚੁਣੋ 🎨", step18Title: "ਸਾਊਂਡਟ੍ਰੈਕ 🎵", step20Title: "ਫ਼ਾਈਨਲ ਪ੍ਰੀਵਿਊ 🎉",
         howCta: "ਹੁਣੇ ਕਸਟਮਾਈਜ਼ ਕਰੋ",
     }),
     ur: mkLang({
@@ -312,7 +312,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step6Title: "ایک یاد 📖", step7Title: "خفیہ تاریخ 🔐",
         step8Title: "ان کی عادتیں 😂", step9Title: "روسٹ یا ٹوسٹ؟ 🔥",
         step10Title: "کوئز ٹائم! 🧠", step15Title: "اصل پیغام 💌",
-        step19Title: "تھیم چنیں 🎨", step20Title: "فائنل پریویو 🎉",
+        step19Title: "تھیم چنیں 🎨", step18Title: "ساؤنڈ ٹریک 🎵", step20Title: "فائنل پریویو 🎉",
         howCta: "ابھی کسٹمائز کریں",
     }),
     es: mkLang({
@@ -333,7 +333,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "Nota de Voz 🎙️", step13Title: "Mensaje de Gratitud 🙏",
         step14Title: "Rompecabezas 🧩", step15Title: "Mensaje Principal 💌",
         step16Title: "Promesas Futuras ✨", step17Title: "Candados 🔒",
-        step19Title: "Elegir Tema 🎨", step20Title: "Vista Previa Final 🎉",
+        step18Title: "Banda Sonora 🎵", step19Title: "Elegir Tema 🎨", step20Title: "Vista Previa Final 🎉",
         feat1: "Foto al Ritmo del Corazón", feat1d: "Su foto favorita aparece latiendo como un corazón.",
         feat5: "Juegos de Rompecabezas", feat5d: "Deben adivinar tu fecha secreta y pasar un quiz.",
         secBadge: "100% Privado y Seguro", secTitle: "Crea deseos íntimos sin miedo.",
@@ -358,7 +358,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         step12Title: "Note Vocale 🎙️", step13Title: "Message de Gratitude 🙏",
         step14Title: "Puzzle Photo 🧩", step15Title: "Message Principal 💌",
         step16Title: "Promesses Futures ✨", step17Title: "Cadenas 🔒",
-        step19Title: "Choisir un Thème 🎨", step20Title: "Aperçu Final 🎉",
+        step18Title: "Bande Sonore 🎵", step19Title: "Choisir un Thème 🎨", step20Title: "Aperçu Final 🎉",
         secBadge: "100% Privé et Sécurisé", secTitle: "Crée des vœux intimes sans crainte.",
         howTitle: "Comment Créer La Meilleure Surprise", howCta: "Commencer à Personnaliser",
         footerMade: "Fait avec ❤️ pour des anniversaires spéciaux.",

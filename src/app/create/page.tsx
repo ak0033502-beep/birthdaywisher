@@ -23,27 +23,28 @@ import { Step14Puzzle } from "@/components/wizard/steps/Step14Puzzle";
 import { Step15CoreMessage } from "@/components/wizard/steps/Step15CoreMessage";
 import { Step16FuturePromises } from "@/components/wizard/steps/Step16FuturePromises";
 import { Step17InnovativeLocks } from "@/components/wizard/steps/Step17InnovativeLocks";
+import { Step18Soundtrack } from "@/components/wizard/steps/Step18Soundtrack";
 import { Step19Theme } from "@/components/wizard/steps/Step19Theme";
 import { Step20Finale } from "@/components/wizard/steps/Step20Finale";
 import { StepCustomLink } from "@/components/wizard/steps/StepCustomLink";
 import { StepLanguage } from "@/components/wizard/steps/StepLanguage";
 import { StepGiftCard } from "@/components/wizard/steps/StepGiftCard";
 
-// Birthday: full 20-step sequence
+// Birthday: full 23-step sequence
 const birthdaySteps = [
     StepLanguage, Step1Target, Step2Connection, Step3Vibe, Step4Nicknames, Step5Media,
     Step6MemoryTale, Step7SecretDate, Step8Quirks, Step9RoastMeter, Step10Quiz,
     Step11Awards, Step12VoiceNote, Step13Gratitude, Step14Puzzle, Step15CoreMessage,
-    Step16FuturePromises, Step17InnovativeLocks, Step19Theme, Step20Finale,
+    Step16FuturePromises, Step17InnovativeLocks, Step18Soundtrack, Step19Theme, Step20Finale,
     StepGiftCard, StepCustomLink,
 ];
 
-// Anniversary: curated 16-step sequence (removes Roast, Awards, Puzzle, InnovativeLocks)
+// Anniversary: curated 19-step sequence (removes Roast, Awards, Puzzle, InnovativeLocks)
 const anniversarySteps = [
     StepLanguage, Step1Target, Step2Connection, Step3Vibe, Step4Nicknames, Step5Media,
     Step6MemoryTale, Step7SecretDate, Step8Quirks, Step10Quiz, Step12VoiceNote,
     Step13Gratitude, Step15CoreMessage, Step16FuturePromises,
-    Step19Theme, Step20Finale, StepGiftCard, StepCustomLink,
+    Step18Soundtrack, Step19Theme, Step20Finale, StepGiftCard, StepCustomLink,
 ];
 
 // Detects ?type=anniversary and sets wishType in context
