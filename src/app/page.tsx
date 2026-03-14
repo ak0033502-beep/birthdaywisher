@@ -236,6 +236,57 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Testimonials / Social Proof */}
+        <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-6 border-primary/30">
+              <Heart className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium tracking-wide">Loved by Real People</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">What People Are Saying</h2>
+            <p className="text-foreground/60 max-w-2xl mx-auto text-lg">Real reactions from people who received interactive birthday wishes.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TestimonialCard
+              quote="My girlfriend literally cried happy tears when the voice note played over the photo reveal. This is 1000x better than a WhatsApp text."
+              name="Rahul M."
+              context="Created a birthday wish for his girlfriend"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="I was skeptical about a digital gift, but the puzzle and quiz made it so interactive. My best friend screenshotted every step before it self-destructed!"
+              name="Priya K."
+              context="Created a birthday wish for her best friend"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="Used this for my parents' 25th wedding anniversary. The floating memory bubbles with our family inside jokes made my mom tear up. Best free tool I've found."
+              name="Amit S."
+              context="Created an anniversary wish for his parents"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="The roast section had my brother absolutely dying. Then the emotional voice note hit and he went silent. Perfect balance of funny and heartfelt."
+              name="Sneha R."
+              context="Created a birthday wish for her brother"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="I forgot my friend's birthday and found this at 11 PM. Made the whole thing in 3 minutes and she thought I'd been planning it for weeks. Lifesaver."
+              name="Karan D."
+              context="Last-minute birthday wish for a friend"
+              rating={5}
+            />
+            <TestimonialCard
+              quote="We're in a long-distance relationship and this was the most personal digital gift I've ever sent. The Golden Ticket for our next date was such a sweet touch."
+              name="Meera J."
+              context="Created a birthday wish for her boyfriend"
+              rating={5}
+            />
+          </div>
+        </section>
+
       </main>
 
       {/* SEO Footer */}
@@ -259,6 +310,7 @@ export default function Home() {
             <h4 className="font-bold mb-4 text-white">Legal & Trust</h4>
             <ul className="space-y-2 text-foreground/60">
               <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/faq" className="hover:text-primary transition-colors">FAQ</Link></li>
               <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link href="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link></li>
             </ul>
@@ -308,4 +360,23 @@ function StepCard({ number, title, desc }: { number: string, title: string, desc
       <p className="text-foreground/60 px-4 leading-relaxed">{desc}</p>
     </div>
   )
+}
+
+function TestimonialCard({ quote, name, context, rating }: { quote: string, name: string, context: string, rating: number }) {
+  return (
+    <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 flex flex-col h-full">
+      <div className="flex gap-1 mb-4">
+        {Array.from({ length: rating }).map((_, i) => (
+          <span key={i} className="text-yellow-400 text-lg">★</span>
+        ))}
+      </div>
+      <blockquote className="text-foreground/80 leading-relaxed flex-grow mb-6 text-sm sm:text-base">
+        &ldquo;{quote}&rdquo;
+      </blockquote>
+      <div className="pt-4 border-t border-white/5">
+        <p className="font-bold text-white text-sm">{name}</p>
+        <p className="text-foreground/50 text-xs">{context}</p>
+      </div>
+    </div>
+  );
 }

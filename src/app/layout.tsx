@@ -49,8 +49,72 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "BirthdayWisher.fun",
+    url: "https://birthdaywisher.fun",
+    logo: "https://birthdaywisher.fun/og-image.jpg",
+    sameAs: [],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: "akalloverservices@gmail.com",
+      contactType: "customer support",
+    },
+  };
+
+  const webSiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "BirthdayWisher.fun",
+    url: "https://birthdaywisher.fun",
+    description:
+      "Create interactive, gamified birthday wishes & wedding anniversary wishes for couple. Personalize puzzles, upload photos, add voice notes, and trigger confetti explosions — all for free.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://birthdaywisher.fun/blog?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const webAppJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "BirthdayWisher.fun",
+    url: "https://birthdaywisher.fun/create",
+    applicationCategory: "EntertainmentApplication",
+    operatingSystem: "Any",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "Create interactive, gamified birthday wishes with puzzles, voice notes, photo reveals, and confetti celebrations. 100% free.",
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(webSiteJsonLd),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(webAppJsonLd),
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
