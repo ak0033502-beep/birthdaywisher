@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 // Data specific for the high-converting "Use Case" landing pages in the footer
 const getUseCaseData = (slug: string) => {
-    const useCases: Record<string, { title: string, subtitle: string, description: string, benefits: string[], ctaText: string, heroIcon: React.ReactNode, seoSections: { heading: string, body: string }[] }> = {
+    const useCases: Record<string, { title: string, subtitle: string, description: string, benefits: string[], ctaText: string, ctaLink: string, heroIcon: React.ReactNode, seoSections: { heading: string, body: string }[] }> = {
         "unique-birthday-gift-online": {
             title: "The Most Unique Birthday Gift Online",
             subtitle: "Why buy a boring physical gift when you can create an unforgettable digital experience?",
@@ -17,6 +17,7 @@ const getUseCaseData = (slug: string) => {
                 "Self-destructs after opening for ultimate privacy."
             ],
             ctaText: "Create the Ultimate Gift",
+            ctaLink: "/create",
             heroIcon: <Gift className="w-16 h-16 text-primary mb-6" />,
             seoSections: [
                 {
@@ -44,6 +45,7 @@ const getUseCaseData = (slug: string) => {
                 "Looks incredible on mobile devices."
             ],
             ctaText: "Start Your Story Card",
+            ctaLink: "/create",
             heroIcon: <Sparkles className="w-16 h-16 text-secondary mb-6" />,
             seoSections: [
                 {
@@ -71,6 +73,7 @@ const getUseCaseData = (slug: string) => {
                 "Include a secret time-capsule message."
             ],
             ctaText: "Surprise Your Boyfriend",
+            ctaLink: "/create",
             heroIcon: <Heart className="w-16 h-16 text-blue-500 mb-6" />,
             seoSections: [
                 {
@@ -98,6 +101,7 @@ const getUseCaseData = (slug: string) => {
                 "Self-destructs after opening for complete privacy."
             ],
             ctaText: "Create Anniversary Wish",
+            ctaLink: "/create?type=anniversary",
             heroIcon: <Heart className="w-16 h-16 text-amber-500 mb-6" />,
             seoSections: [
                 {
@@ -125,6 +129,7 @@ const getUseCaseData = (slug: string) => {
                 "Make her laugh with custom inside jokes."
             ],
             ctaText: "Create Her Perfect Surprise",
+            ctaLink: "/create",
             heroIcon: <Heart className="w-16 h-16 text-pink-500 mb-6" />,
             seoSections: [
                 {
@@ -154,9 +159,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         return { title: "Use Case Not Found | BirthdayWisher.fun" };
     }
 
+    const isAnniversary = resolvedParams.slug === "anniversary-wishes-for-couple";
+
     return {
         title: `${data.title} | BirthdayWisher.fun`,
         description: data.description,
+        ...(isAnniversary && {
+            keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, interactive anniversary card, digital anniversary gift, couple anniversary wishes, marriage anniversary wishes",
+        }),
         openGraph: {
             title: data.title,
             description: data.description,
@@ -202,7 +212,7 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
                             ))}
                         </div>
 
-                        <Link href="/create">
+                        <Link href={data.ctaLink}>
                             <button className="px-10 py-5 bg-primary text-white font-black rounded-full hover:shadow-[0_0_30px_rgba(255,105,180,0.5)] transition-all hover:-translate-y-1 text-lg w-full sm:w-auto text-center">
                                 {data.ctaText}
                             </button>
