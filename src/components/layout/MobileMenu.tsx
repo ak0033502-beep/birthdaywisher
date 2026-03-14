@@ -14,6 +14,7 @@ export function MobileMenu() {
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-lg hover:bg-white/10 transition-colors"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
             >
                 {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
