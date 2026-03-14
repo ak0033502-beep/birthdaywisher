@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Smile } from "lucide-react";
 
 const birthdaySuggestions = ["Potato", "Pookie", "Boss", "Bubba", "Chhotu", "Pagal"];
@@ -8,15 +9,14 @@ const anniversarySuggestions = ["Jaan", "My Love", "Hubby", "Wifey", "Babu", "So
 
 export function Step4Nicknames() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step4Nicknames");
     const isAnniversary = wishData.wishType === "anniversary";
     const suggestions = isAnniversary ? anniversarySuggestions : birthdaySuggestions;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Pet Names & Love Language 💕" : "Nicknames & Alter Egos 🎭"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? `What do you lovingly call ${wishData.targetName || "them"}?`

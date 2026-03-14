@@ -16,7 +16,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'birthday-wishes-for-wife',
         'funny-birthday-wishes',
         'birthday-wishes-for-mom-dad',
-        'wedding-anniversary-wishes-for-couple'
+        'wedding-anniversary-wishes-for-couple',
+        'birthday-wishes-for-colleague',
+        'birthday-wishes-for-crush',
+        'long-distance-birthday-ideas'
     ];
 
     const useCases = [
@@ -24,7 +27,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'digital-story-greeting-card',
         'boyfriend-birthday-surprise',
         'girlfriend-birthday-surprise',
-        'anniversary-wishes-for-couple'
+        'anniversary-wishes-for-couple',
+        'long-distance-birthday-surprise',
+        'colleague-birthday-wish',
+        'parents-birthday-surprise'
     ];
 
     const blogUrls = blogPosts.map((slug) => ({

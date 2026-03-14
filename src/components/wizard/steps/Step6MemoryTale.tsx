@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { BookOpen, Lightbulb } from "lucide-react";
 
 const birthdayPrompts = [
@@ -19,15 +20,14 @@ const anniversaryPrompts = [
 
 export function Step6MemoryTale() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step6MemoryTale");
     const isAnniversary = wishData.wishType === "anniversary";
     const prompts = isAnniversary ? anniversaryPrompts : birthdayPrompts;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Your Love Story 📖" : "\"Remember When...\" 📖"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "Share a beautiful moment from your journey together."

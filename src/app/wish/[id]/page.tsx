@@ -1,5 +1,6 @@
 import { StoryViewerRouter } from "@/components/story/StoryViewerRouter";
 import { WishTimeCapsuleWrapper } from "@/components/story/WishTimeCapsuleWrapper";
+import { AnalyticsTracker } from "@/components/story/AnalyticsTracker";
 import { getWish } from "@/lib/db";
 
 export default async function WishPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,6 +21,9 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     }
 
     return (
-        <WishTimeCapsuleWrapper wishData={wishData} />
+        <>
+            <AnalyticsTracker />
+            <WishTimeCapsuleWrapper wishData={wishData} />
+        </>
     );
 }

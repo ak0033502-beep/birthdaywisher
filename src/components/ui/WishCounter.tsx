@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Gift, Heart, Sparkles } from "lucide-react";
+import { Gift, Heart } from "lucide-react";
 
 function AnimatedNumber({ value }: { value: number }) {
     const motionVal = useMotionValue(0);
@@ -103,7 +103,7 @@ export function WishCounter({ variant = "full" }: { variant?: "full" | "birthday
                 </span>
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border border-white/10">
-                <Sparkles className="w-4 h-4 text-purple-400" />
+                <Gift className="w-4 h-4 text-purple-400" />
                 <span className="text-foreground/60">
                     <span className="font-bold text-white"><AnimatedNumber value={stats.total} /></span> Total
                 </span>

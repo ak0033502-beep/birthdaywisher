@@ -2,17 +2,17 @@
 
 import { useWishContext } from "@/lib/WishContext";
 import { User, Calendar, Heart, Gift } from "lucide-react";
+import { useStepTitle } from "@/lib/useStepTitle";
 
 export function Step1Target() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step1Target");
     const isAnniversary = wishData.wishType === "anniversary";
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Who is this anniversary wish for? 💍" : "Who is the lucky one? 🎯"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "Let's set up this special anniversary wish."

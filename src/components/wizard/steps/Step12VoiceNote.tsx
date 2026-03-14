@@ -1,10 +1,12 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Mic, Square, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 
 export function Step12VoiceNote() {
+    const title = useStepTitle("Step12VoiceNote");
     const { wishData, updateWishData } = useWishContext();
     const isAnniversary = wishData.wishType === "anniversary";
     const [isRecording, setIsRecording] = useState(false);
@@ -77,9 +79,7 @@ export function Step12VoiceNote() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Your Anniversary Voice Note 🎤" : "The Voice Note 🎙️"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "Record a heartfelt anniversary message. It plays during the finale!"

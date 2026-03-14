@@ -1,10 +1,12 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Grid3X3, UploadCloud, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 
 export function Step14Puzzle() {
+    const title = useStepTitle("Step14Puzzle");
     const { wishData, updateWishData } = useWishContext();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -74,7 +76,7 @@ export function Step14Puzzle() {
     return (
         <div className="flex flex-col gap-6">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">The Interactive Puzzle 🧩</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">{title}</h2>
                 <p className="text-foreground/60 text-base sm:text-lg">
                     Upload an image they will have to unscramble (sliding tile puzzle) to unlock your final message!
                 </p>

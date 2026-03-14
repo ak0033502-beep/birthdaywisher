@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Tag, Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -26,6 +27,7 @@ const anniversaryQuirks = [
 
 export function Step8Quirks() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step8Quirks");
     const [customQuirk, setCustomQuirk] = useState("");
     const isAnniversary = wishData.wishType === "anniversary";
     const presetQuirks = isAnniversary ? anniversaryQuirks : birthdayQuirks;
@@ -49,9 +51,7 @@ export function Step8Quirks() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Things I Love About Us ✨" : "Things I Love (The Quirks) ✨"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     Select or add up to 5 unique traits that make them special.
                 </p>

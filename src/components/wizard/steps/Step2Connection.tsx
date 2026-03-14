@@ -2,6 +2,7 @@
 
 import { useWishContext } from "@/lib/WishContext";
 import { Link2, Users, Heart, Gift } from "lucide-react";
+import { useStepTitle } from "@/lib/useStepTitle";
 
 const birthdayConnections = [
     { id: "partner", label: "Partner / Lover", icon: <Heart className="w-6 h-6" /> },
@@ -21,15 +22,14 @@ const anniversaryConnections = [
 
 export function Step2Connection() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step2Connection");
     const isAnniversary = wishData.wishType === "anniversary";
     const connections = isAnniversary ? anniversaryConnections : birthdayConnections;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Whose Anniversary Is It? 💍" : "What\u0027s the Connection? 🤝"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? `Who are you creating this anniversary wish for?`

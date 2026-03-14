@@ -448,6 +448,157 @@ const getPostData = (slug: string) => {
                     </div>
                 </>
             )
+        },
+        "birthday-wishes-for-colleague": {
+            title: "Birthday Wishes for Colleague & Coworker — Professional Yet Heartfelt",
+            description: "Find the perfect birthday wishes for your colleague or coworker. From professional to funny, these messages strike the right balance between warmth and workplace appropriateness.",
+            keywords: "birthday wishes for colleague, birthday wishes for coworker, professional birthday wishes, office birthday messages, birthday wishes for boss, birthday wishes for work friend, workplace birthday greetings",
+            date: "Mar 05, 2026",
+            author: "BirthdayWisher.fun Editorial",
+            readTime: "7 min read",
+            category: "For Coworkers",
+            content: (
+                <>
+                    <p className="text-xl mb-6 text-foreground/80 leading-relaxed font-medium">Your colleague spends more waking hours with you than most people in your life. Whether they&apos;re the one who saves you seats in meetings or the one who always shares snacks — they deserve a <strong>birthday wish</strong> that goes beyond the generic office email.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">Professional Yet Warm Birthday Wishes</h2>
+                    <p className="mb-4 text-foreground/70">These <strong>birthday wishes for colleagues</strong> are perfect for the office — warm enough to mean something, professional enough to send on Slack:</p>
+                    <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
+                        <li>&quot;Happy Birthday! Working with you makes even Monday mornings bearable. Wishing you an amazing year ahead.&quot;</li>
+                        <li>&quot;To the best teammate anyone could ask for — Happy Birthday! May your inbox be empty and your coffee always hot today.&quot;</li>
+                        <li>&quot;Happy Birthday! You bring so much positive energy to the team. We&apos;re lucky to have you. Enjoy your special day!&quot;</li>
+                        <li>&quot;Wishing you a birthday filled with as much joy as you bring to this workplace every single day. Happy Birthday, colleague!&quot;</li>
+                        <li>&quot;Happy Birthday! Here&apos;s to another year of crushing deadlines and making the impossible possible. You&apos;re a rockstar.&quot;</li>
+                    </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-secondary">Funny Birthday Wishes for Coworkers</h2>
+                    <p className="mb-4 text-foreground/70">For the colleague who&apos;s more of a friend — bring on the humor:</p>
+                    <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
+                        <li>&quot;Happy Birthday! I promise not to CC the boss on this embarrassing message. Today is YOUR day.&quot;</li>
+                        <li>&quot;Happy Birthday to the only person who makes team meetings tolerable. Don&apos;t ever leave. Seriously.&quot;</li>
+                        <li>&quot;Another year older, another year of pretending to understand Excel formulas. Happy Birthday!&quot;</li>
+                        <li>&quot;Happy Birthday! Your gift is that I won&apos;t schedule any meetings with you today. You&apos;re welcome.&quot;</li>
+                        <li>&quot;To the coworker who keeps me sane: Happy Birthday! Without you, I&apos;d have quit ages ago.&quot;</li>
+                    </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-gold">Birthday Wishes for Your Boss</h2>
+                    <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
+                        <li>&quot;Happy Birthday, Boss! Thank you for being a leader who inspires rather than intimidates. Here&apos;s to your amazing year ahead.&quot;</li>
+                        <li>&quot;Wishing the best birthday to someone who makes this team feel like family. Happy Birthday!&quot;</li>
+                        <li>&quot;Happy Birthday! Your leadership makes coming to work something we actually look forward to.&quot;</li>
+                    </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6">Go Beyond the Office Email</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Instead of the same old Slack message, surprise your work friend with something truly memorable. Create a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> featuring work inside jokes, team trivia, and a heartfelt message. It&apos;s the most <Link href="/use-cases/unique-birthday-gift-online" className="text-primary hover:text-secondary">unique birthday gift online</Link> your colleague will ever get.</p>
+
+                    <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-white/10 text-center">
+                        <Zap className="w-8 h-8 mx-auto mb-4 text-primary" />
+                        <h3 className="text-2xl font-bold mb-4">Surprise Your Colleague</h3>
+                        <p className="mb-6 text-foreground/80 text-lg">Create an interactive birthday wish that&apos;ll be the talk of the office.</p>
+                        <Link href="/create">
+                            <button className="px-8 py-4 bg-primary text-white font-bold rounded-full hover:shadow-[0_0_20px_rgba(255,105,180,0.5)] transition-all">
+                                Create Their Birthday Wish
+                            </button>
+                        </Link>
+                    </div>
+                </>
+            )
+        },
+        "birthday-wishes-for-crush": {
+            title: "Birthday Wishes for Crush — Sweet, Subtle & Smooth Messages",
+            description: "Don't know what to say to your crush on their birthday? These sweet, subtle, and smooth birthday wishes help you express your feelings without being too forward.",
+            keywords: "birthday wishes for crush, happy birthday crush, birthday message for crush, what to say to crush on birthday, cute birthday wishes for crush, birthday text for crush, birthday wishes for someone you like",
+            date: "Mar 06, 2026",
+            author: "BirthdayWisher.fun Editorial",
+            readTime: "7 min read",
+            category: "For Crush",
+            content: (
+                <>
+                    <p className="text-xl mb-6 text-foreground/80 leading-relaxed font-medium">Sending a <strong>birthday wish to your crush</strong> is one of the most nerve-wracking texts you&apos;ll ever type. Too casual and it means nothing. Too intense and you scare them off. These wishes hit the perfect sweet spot — thoughtful enough to stand out, smooth enough to leave them wondering.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-pink-500">Sweet & Subtle Birthday Wishes for Your Crush</h2>
+                    <p className="mb-4 text-foreground/70">These say &quot;I care about you&quot; without screaming &quot;I&apos;M OBSESSED&quot;:</p>
+                    <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
+                        <li>&quot;Happy Birthday! I just wanted you to know — the world got a little better the day you were born. Have an amazing day. ✨&quot;</li>
+                        <li>&quot;Hey, Happy Birthday! You deserve all the good things today and every day. Just saying.&quot;</li>
+                        <li>&quot;Happy Birthday to someone who makes every room a little brighter just by being in it. Hope your day is as special as you are.&quot;</li>
+                        <li>&quot;Wishing the happiest birthday to someone I always look forward to talking to. Here&apos;s to your incredible year ahead. 🎂&quot;</li>
+                        <li>&quot;Happy Birthday! I don&apos;t say this often, but knowing you is one of the best parts of my life right now.&quot;</li>
+                    </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-secondary">Bold & Flirty Birthday Messages</h2>
+                    <p className="mb-4 text-foreground/70">Feeling brave? These birthday wishes add a hint of flirtation:</p>
+                    <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
+                        <li>&quot;Happy Birthday! If I could gift-wrap good vibes, you&apos;d be getting a lifetime supply from me. 😏&quot;</li>
+                        <li>&quot;Today&apos;s the birthday of someone I can&apos;t stop thinking about. Happy Birthday — you know who you are. 🎁&quot;</li>
+                        <li>&quot;Happy Birthday! I was going to play it cool, but honestly? You&apos;re kind of amazing and I wanted you to know.&quot;</li>
+                        <li>&quot;Wishing you the best birthday ever. And if you need someone to celebrate with... my calendar just happens to be free. 😊&quot;</li>
+                    </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6">The Ultimate Move: A Digital Surprise</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Want to absolutely stand out from every other &quot;HBD&quot; text they&apos;ll get? Create a personalized <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> for them. It shows effort, creativity, and thoughtfulness — three things that instantly make you more attractive. Plus, the link auto-destructs after 10 hours, so it feels exclusive and private. Check out more <Link href="/blog/romantic-wishes" className="text-primary hover:text-secondary">romantic birthday wishes</Link> for inspiration.</p>
+
+                    <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/20 text-center">
+                        <Heart className="w-8 h-8 mx-auto mb-4 text-pink-500" />
+                        <h3 className="text-2xl font-bold mb-4">Make Your Move</h3>
+                        <p className="mb-6 text-foreground/80 text-lg">Create an interactive birthday wish that&apos;ll make your crush&apos;s heart skip a beat.</p>
+                        <Link href="/create">
+                            <button className="px-8 py-4 bg-pink-500 text-white font-bold rounded-full hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all">
+                                Create a Crush-Worthy Wish
+                            </button>
+                        </Link>
+                    </div>
+                </>
+            )
+        },
+        "long-distance-birthday-ideas": {
+            title: "Long Distance Birthday Surprise Ideas — Make Miles Feel Like Inches",
+            description: "Being far away doesn't mean you can't make their birthday unforgettable. Here are the best long-distance birthday surprise ideas that bridge the gap with love and creativity.",
+            keywords: "long distance birthday ideas, long distance birthday surprise, birthday surprise for long distance boyfriend, long distance birthday gift, virtual birthday surprise, online birthday surprise ideas, birthday ideas for long distance relationship, birthday wishes from far away",
+            date: "Mar 07, 2026",
+            author: "BirthdayWisher.fun Editorial",
+            readTime: "9 min read",
+            category: "Long Distance",
+            content: (
+                <>
+                    <p className="text-xl mb-6 text-foreground/80 leading-relaxed font-medium">Being miles apart doesn&apos;t mean you can&apos;t make their birthday magical. In fact, the effort you put into a <strong>long-distance birthday surprise</strong> often means MORE because they know you went above and beyond despite the distance. Here are the best ideas to make them feel loved from anywhere in the world.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">1. The Midnight Text Countdown</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Start texting exactly at midnight their time. Send one message per minute counting down reasons you love them: &quot;Reason #10: You always know what to say when I&apos;m spiraling...&quot; By the time you hit reason #1, follow up with the link to their interactive birthday wish you created on <Link href="/create" className="text-primary hover:text-secondary">BirthdayWisher.fun</Link>.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">2. The Interactive Digital Love Story</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">This is THE ultimate long-distance birthday surprise. Create a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> featuring your best memories together, trivia about your relationship (that they have to solve!), a heartbeat photo reveal of your favorite photo together, and your actual voice recording saying &quot;Happy Birthday.&quot; It&apos;s like being there without being there. Perfect for a <Link href="/use-cases/boyfriend-birthday-surprise" className="text-primary hover:text-secondary">boyfriend birthday surprise</Link> or <Link href="/use-cases/girlfriend-birthday-surprise" className="text-primary hover:text-secondary">girlfriend birthday surprise</Link>.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">3. Surprise Delivery Chain</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Coordinate with a local friend or family member to deliver a series of small surprises throughout the day: flowers in the morning, their favorite snack at lunch, and a heartfelt handwritten letter in the evening. Each package contains a QR code that leads to a different digital surprise.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">4. Virtual Birthday Party</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Set up a surprise video call with all their friends and family. Ask everyone to hold up letters spelling &quot;HAPPY BIRTHDAY&quot; when the call starts. Record the whole thing and add it to your interactive wish card.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">5. The &quot;Open At&quot; Email Series</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Schedule emails throughout their birthday: &quot;Open at 8 AM&quot; (a childhood photo), &quot;Open at 12 PM&quot; (a voice note), &quot;Open at 6 PM&quot; (the link to their gamified wish). Each one builds anticipation for the next.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">6. Spotify Secret Message Playlist</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Create a playlist where the first letter of each song title spells out a message like &quot;I LOVE YOU HAPPY BDAY.&quot; Name the playlist something mysterious and send it without explanation.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">7. Online Gift Card + Digital Surprise Combo</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">An Amazon or DoorDash gift card for something practical, PLUS a gamified interactive wish for the emotional punch. The gift card says &quot;I care about your comfort&quot; and the wish says &quot;I care about your heart.&quot; It&apos;s the most <Link href="/use-cases/unique-birthday-gift-online" className="text-primary hover:text-secondary">unique birthday gift online</Link>.</p>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6">Why Digital Surprises Work Best for Long Distance</h2>
+                    <p className="mb-6 text-foreground/80 leading-relaxed">Physical gifts can get lost in shipping. Video calls depend on schedules and time zones. But a <Link href="/use-cases/digital-story-greeting-card" className="text-primary hover:text-secondary">digital story greeting card</Link> is available the instant you share it — no shipping delays, no timezone coordination. They open it on their terms, and the 10-hour self-destruct feature makes it feel urgent, exclusive, and deeply personal. Browse more ideas in our <Link href="/blog/best-friend-quotes" className="text-primary hover:text-secondary">best friend quotes collection</Link>.</p>
+
+                    <div className="my-16 p-8 rounded-3xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20 text-center">
+                        <Heart className="w-8 h-8 mx-auto mb-4 text-blue-400" />
+                        <h3 className="text-2xl font-bold mb-4">Bridge the Distance with Love</h3>
+                        <p className="mb-6 text-foreground/80 text-lg">Create a personalized interactive wish that makes miles feel like inches.</p>
+                        <Link href="/create">
+                            <button className="px-8 py-4 bg-blue-500 text-white font-bold rounded-full hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all">
+                                Create a Long-Distance Surprise
+                            </button>
+                        </Link>
+                    </div>
+                </>
+            )
         }
     };
 
@@ -490,6 +641,60 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
     return (
         <div className="min-h-screen bg-background pt-32 pb-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Article",
+                        "headline": post.title,
+                        "description": post.description,
+                        "author": {
+                            "@type": "Organization",
+                            "name": post.author
+                        },
+                        "datePublished": post.date,
+                        "publisher": {
+                            "@type": "Organization",
+                            "name": "BirthdayWisher.fun",
+                            "url": "https://birthdaywisher.fun"
+                        },
+                        "mainEntityOfPage": {
+                            "@type": "WebPage",
+                            "@id": `https://birthdaywisher.fun/blog/${resolvedParams.slug}`
+                        }
+                    })
+                }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                            {
+                                "@type": "ListItem",
+                                "position": 1,
+                                "name": "Home",
+                                "item": "https://birthdaywisher.fun"
+                            },
+                            {
+                                "@type": "ListItem",
+                                "position": 2,
+                                "name": "Blog",
+                                "item": "https://birthdaywisher.fun/blog"
+                            },
+                            {
+                                "@type": "ListItem",
+                                "position": 3,
+                                "name": post.title,
+                                "item": `https://birthdaywisher.fun/blog/${resolvedParams.slug}`
+                            }
+                        ]
+                    })
+                }}
+            />
             <main className="container max-w-4xl mx-auto px-6">
 
                 <Link href="/blog" className="inline-flex items-center gap-2 text-foreground/50 hover:text-primary transition-colors mb-8 font-medium">

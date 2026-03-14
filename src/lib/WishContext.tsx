@@ -63,6 +63,17 @@ export interface WishData {
     unlockDate: string; // ISO String or empty
     requireSmileToUnlock: boolean;
     showAsScratchOff: boolean;
+
+    // Custom short link
+    customSlug?: string;
+
+    // Language
+    language: string;
+
+    // Gift Card
+    giftCardType?: string; // amazon | flipkart | dineout | custom
+    giftCardUrl?: string;  // Cloudinary PDF URL
+    giftCardMessage?: string;
 }
 
 const defaultWishData: WishData = {
@@ -100,6 +111,7 @@ const defaultWishData: WishData = {
     unlockDate: "",
     requireSmileToUnlock: false,
     showAsScratchOff: true,
+    language: "en",
 };
 
 const STORAGE_KEY = "birthdaywisher_wizard_progress";

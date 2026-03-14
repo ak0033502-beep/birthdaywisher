@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { HeartHandshake, Lightbulb } from "lucide-react";
 
 const birthdayExamples = [
@@ -16,15 +17,14 @@ const anniversaryExamples = [
 
 export function Step15CoreMessage() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step15CoreMessage");
     const isAnniversary = wishData.wishType === "anniversary";
     const examples = isAnniversary ? anniversaryExamples : birthdayExamples;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "The Anniversary Love Letter 💌" : "The Heart-To-Heart 💌"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "This is the main anniversary message. Pour your heart out."

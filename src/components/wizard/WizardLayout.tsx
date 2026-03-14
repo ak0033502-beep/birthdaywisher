@@ -2,9 +2,13 @@
 
 import { useWishContext, clearWizardProgress } from "@/lib/WishContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Copy, CheckCircle2, Wand2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, CheckCircle2, Wand2, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import confetti from "canvas-confetti";
+import { ShareModal } from "@/components/ui/ShareModal";
+import { useSiteLanguage } from "@/lib/SiteLanguageContext";
+import { getSiteTranslations } from "@/lib/siteTranslations";
 
 export function WizardLayout({
     children,
@@ -20,6 +24,8 @@ export function WizardLayout({
     totalSteps?: number;
 }) {
     const { currentStep, nextStep, prevStep, wishData } = useWishContext();
+    const { lang } = useSiteLanguage();
+    const s = getSiteTranslations(lang);
     const isAnniversary = wishData.wishType === "anniversary";
     const progressPercent = (currentStep / totalSteps) * 100;
     const isLastStep = currentStep === totalSteps;
@@ -28,6 +34,7 @@ export function WizardLayout({
     const [copied, setCopied] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedId, setGeneratedId] = useState<string | null>(null);
+    const [showShare, setShowShare] = useState(false);
 
     const shareLink = typeof window !== "undefined" && generatedId
         ? `${window.location.origin}/wish/${generatedId}`
@@ -48,7 +55,13 @@ export function WizardLayout({
                 if (data.id) {
                     setGeneratedId(data.id);
                     setIsGenerated(true);
-                    clearWizardProgress(); // Clear saved progress after successful generation
+                    clearWizardProgress();
+                    // Save creator token for analytics dashboard
+                    if (data.creatorToken) {
+                        try {
+                            localStorage.setItem(`creator_token_${data.id}`, data.creatorToken);
+                        } catch { /* ignore */ }
+                    }
                 } else {
                     console.error("Failed to generate link.", data);
                     alert("Something went wrong creating the link.");
@@ -75,6 +88,29 @@ export function WizardLayout({
         try {
             await navigator.clipboard.writeText(shareLink);
             setCopied(true);
+            // Celebrate with confetti! 🎉
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ec4899', '#8b5cf6', '#3b82f6', '#fbbf24']
+            });
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.7 },
+                    colors: ['#ec4899', '#fbbf24']
+                });
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.7 },
+                    colors: ['#8b5cf6', '#3b82f6']
+                });
+            }, 200);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             console.error("Failed to copy", err);
@@ -102,7 +138,7 @@ export function WizardLayout({
             {/* Progress Bar Container */}
             <div className="fixed top-16 sm:top-20 left-0 right-0 z-40 px-4 sm:px-6 max-w-3xl mx-auto w-full">
                 <div className="flex justify-between text-xs font-semibold text-foreground/50 mb-2">
-                    <span>Step {currentStep} of {totalSteps}</span>
+                    <span>Step {currentStep} / {totalSteps}</span>
                     <span>{Math.round(progressPercent)}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
@@ -151,7 +187,7 @@ export function WizardLayout({
                             }`}
                     >
                         <ArrowLeft className="w-5 h-5" />
-                        Back
+                        {s.back}
                     </button>
 
                     <button
@@ -165,7 +201,7 @@ export function WizardLayout({
                             : "bg-gradient-to-r from-primary to-secondary"
                             }`} />
                         <span className="relative z-10 flex items-center gap-2 text-white">
-                            {isLastStep ? (isGenerating ? "Generating..." : "Generate Link") : "Next Step"}
+                            {isLastStep ? (isGenerating ? s.generating : "Generate Link") : s.next}
                             {isLastStep ? (
                                 <Wand2 className={`w-5 h-5 transition-transform ${isGenerating ? "animate-pulse" : "group-hover:rotate-12"}`} />
                             ) : (
@@ -202,7 +238,7 @@ export function WizardLayout({
                                 <CheckCircle2 className={`w-10 h-10 ${isAnniversary ? "text-amber-500" : "text-primary"}`} />
                             </div>
 
-                            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Magic Created! ✨</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold mb-4">{lang === 'en' ? 'Magic Created! ✨' : s.generating.replace('...', '! ✨')}</h2>
                             <p className="text-foreground/70 mb-8 leading-relaxed">
                                 Your personalized, interactive {isAnniversary ? "anniversary" : "birthday"} wish is ready. Send this unique link to them.
                                 <br /><span className="text-xs text-secondary/80 font-bold mt-2 block">Note: This link will self-destruct 10 hours after they open it!</span>
@@ -221,12 +257,30 @@ export function WizardLayout({
                                 </button>
                             </div>
 
+                            {/* Share Button */}
+                            <button
+                                onClick={() => setShowShare(true)}
+                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-sm hover:opacity-90 transition-all flex items-center justify-center gap-2 mb-4"
+                            >
+                                <Share2 className="w-4 h-4" /> Share via WhatsApp / Email
+                            </button>
+
                             <button
                                 onClick={() => router.push(`/wish/${generatedId}`)}
                                 className="text-sm font-medium text-foreground/50 hover:text-white transition-colors underline underline-offset-4"
                             >
                                 Preview it myself first
                             </button>
+
+                            {/* Custom Slug URL */}
+                            {wishData.customSlug && (
+                                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-sm">
+                                    <p className="text-green-400 font-medium">🔗 Custom Link Active:</p>
+                                    <p className="font-mono text-white/80 text-xs mt-1">
+                                        {typeof window !== "undefined" ? window.location.origin : ""}/w/{wishData.customSlug}
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="flex flex-col sm:flex-row items-center gap-3 mt-6 pt-6 border-t border-white/10 w-full">
                                 <button
@@ -235,19 +289,34 @@ export function WizardLayout({
                                 >
                                     ← Go Home
                                 </button>
-                                <a
-                                    href="https://guesskaro.games/couples"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 w-full px-4 py-3 rounded-xl text-sm font-semibold text-center text-white bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 transition-all"
+                                <button
+                                    onClick={() => router.push(`/dashboard/${generatedId}`)}
+                                    className="flex-1 w-full px-4 py-3 rounded-xl text-sm font-semibold text-center text-white bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 transition-all"
                                 >
-                                    🎮 Play Couple Quiz Game
-                                </a>
+                                    📊 View Analytics
+                                </button>
                             </div>
+
+                            <a
+                                href="https://guesskaro.games/couples"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-3 text-xs text-foreground/30 hover:text-foreground/50 transition-colors"
+                            >
+                                🎮 Also try: Couple Quiz Game
+                            </a>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={showShare}
+                onClose={() => setShowShare(false)}
+                shareLink={shareLink}
+                recipientName={wishData.targetName}
+            />
         </div>
     );
 }

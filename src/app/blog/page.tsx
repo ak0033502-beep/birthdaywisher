@@ -89,12 +89,53 @@ const blogPosts = [
         date: "Mar 02, 2026",
         author: "BirthdayWisher.fun Editorial",
         category: "For Couples"
+    },
+    {
+        slug: "birthday-wishes-for-colleague",
+        title: "Birthday Wishes for Colleague & Coworker — Professional Yet Heartfelt",
+        excerpt: "Find the perfect birthday wishes for your colleague or coworker. From professional to funny, these messages strike the right balance between warmth and workplace appropriateness.",
+        date: "Mar 05, 2026",
+        author: "BirthdayWisher.fun Editorial",
+        category: "For Coworkers"
+    },
+    {
+        slug: "birthday-wishes-for-crush",
+        title: "Birthday Wishes for Crush — Sweet, Subtle & Smooth Messages",
+        excerpt: "Don't know what to say to your crush on their birthday? These sweet, subtle, and smooth birthday wishes help you express your feelings without being too forward.",
+        date: "Mar 06, 2026",
+        author: "BirthdayWisher.fun Editorial",
+        category: "For Crush"
+    },
+    {
+        slug: "long-distance-birthday-ideas",
+        title: "Long Distance Birthday Surprise Ideas — Make Miles Feel Like Inches",
+        excerpt: "Being far away doesn't mean you can't make their birthday unforgettable. The best long-distance birthday surprise ideas that bridge the gap with love and creativity.",
+        date: "Mar 07, 2026",
+        author: "BirthdayWisher.fun Editorial",
+        category: "Long Distance"
     }
 ];
 
 export default function BlogIndex() {
     return (
         <div className="min-h-screen bg-background pt-32 pb-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        "name": "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration",
+                        "description": "Discover the best birthday wishes, wedding anniversary wishes for couple, rare quotes, funny roasts, and unique gift ideas.",
+                        "url": "https://birthdaywisher.fun/blog",
+                        "isPartOf": {
+                            "@type": "WebSite",
+                            "name": "BirthdayWisher.fun",
+                            "url": "https://birthdaywisher.fun"
+                        }
+                    })
+                }}
+            />
             <div className="container max-w-5xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">Idea <span className="text-gradient">Vault.</span></h1>

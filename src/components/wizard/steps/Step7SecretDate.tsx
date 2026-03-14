@@ -1,18 +1,18 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Lock } from "lucide-react";
 
 export function Step7SecretDate() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step7SecretDate");
     const isAnniversary = wishData.wishType === "anniversary";
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Your Wedding Date 💒" : "The Secret Date 🔒"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "When did the couple tie the knot? They'll have to guess this!"

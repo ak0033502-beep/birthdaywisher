@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Image as ImageIcon, Video, Loader2, X, Plus, UploadCloud } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +19,7 @@ interface UploadProgress {
 
 export function Step5Media() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step5Media");
     const [isUploading, setIsUploading] = useState(false);
 
     // Progress Tracking State
@@ -225,7 +227,7 @@ export function Step5Media() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">The Memory Vault 📸</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     Build a beautiful gallery. Upload up to {MAX_PHOTOS} photos and {MAX_VIDEOS} videos.
                 </p>

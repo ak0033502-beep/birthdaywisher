@@ -1,10 +1,12 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { HelpCircle, AlertCircle } from "lucide-react";
 
 export function Step10Quiz() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step10Quiz");
     const isAnniversary = wishData.wishType === "anniversary";
 
     const q1Suggestions = isAnniversary
@@ -18,9 +20,7 @@ export function Step10Quiz() {
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "How Well Do You Know Me? 💕" : "The Gateway Quiz 🧠"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "Set 2 questions they must answer correctly to prove their love!"

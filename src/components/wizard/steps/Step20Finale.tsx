@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { PartyPopper, HeartPulse, Flame } from "lucide-react";
 import confetti from "canvas-confetti";
 

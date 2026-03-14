@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Heart, Lightbulb } from "lucide-react";
 
 const birthdayPromises = [
@@ -18,15 +19,14 @@ const anniversaryPromises = [
 
 export function Step16FuturePromises() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step16FuturePromises");
     const isAnniversary = wishData.wishType === "anniversary";
     const suggestions = isAnniversary ? anniversaryPromises : birthdayPromises;
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-                    {isAnniversary ? "Promises for Next Year 💞" : "Future Promises 🌟"}
-                </h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     {isAnniversary
                         ? "What do you promise for the next year of your journey together?"

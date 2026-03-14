@@ -1,9 +1,11 @@
 "use client";
 
 import { useWishContext } from "@/lib/WishContext";
+import { useStepTitle } from "@/lib/useStepTitle";
 import { Clock, SmilePlus, Hand } from "lucide-react";
 
 export function Step17InnovativeLocks() {
+    const title = useStepTitle("Step17InnovativeLocks");
     const { wishData, updateWishData } = useWishContext();
 
     return (

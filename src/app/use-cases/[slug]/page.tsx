@@ -140,6 +140,87 @@ const getUseCaseData = (slug: string) => {
                     body: "Text can easily be misinterpreted, but a voice note carries your exact tone, emotion, and sincerity. The climax of this Girlfriend Birthday Surprise allows your unedited, raw audio to play in the background while fireworks animate on the screen. It's a digital serenity that bridges physical distance and delivers a level of intimacy that physical cards simply cannot match."
                 }
             ]
+        },
+        "long-distance-birthday-surprise": {
+            title: "Long Distance Birthday Surprise Online",
+            subtitle: "Miles apart, but the love hits close to home.",
+            description: "Being in a long-distance relationship doesn't mean you can't make their birthday magical. Create an interactive, gamified birthday wish that delivers your love instantly — no shipping delays, no timezone headaches. Just pure, personalized emotion delivered via a secret link.",
+            benefits: [
+                "Instant delivery via link — works anywhere in the world.",
+                "Record a voice note so they hear YOUR voice on their birthday.",
+                "Add your best couple photos to a heartbeat photo reveal.",
+                "Self-destructs after 10 hours for intimate, private experience."
+            ],
+            ctaText: "Bridge the Distance Now",
+            heroIcon: <Heart className="w-16 h-16 text-blue-500 mb-6" />,
+            seoSections: [
+                {
+                    heading: "Why Long-Distance Birthday Surprises Matter Even More",
+                    body: "When you're in a long-distance relationship, every gesture carries extra weight. A birthday wish isn't just a formality — it's proof that distance hasn't dimmed your love. The effort you invest in creating something personal and interactive shows your partner that you're thinking about them deeply, even when you can't be physically present. That's why BirthdayWisher.fun is the perfect tool for long-distance couples."
+                },
+                {
+                    heading: "The Digital Advantage Over Physical Gifts",
+                    body: "Physical gifts shipped internationally face customs delays, damaged packaging, and unpredictable delivery windows. A digital birthday surprise, however, arrives instantly. The second you share the link, your partner can begin their interactive journey — complete with puzzles about your relationship, your recorded voice, and a stunning visual celebration. No tracking numbers needed."
+                },
+                {
+                    heading: "Making It Feel Like You're Right There",
+                    body: "The voice note feature is a game-changer for long-distance couples. As the final fireworks explode on screen, your actual voice plays — raw, unedited, sincere. It's the closest thing to being there in person. Combined with your photos, inside jokes, and memory quizzes, this creates an experience that transcends physical distance."
+                }
+            ]
+        },
+        "colleague-birthday-wish": {
+            title: "Birthday Wish for Colleague & Coworker",
+            subtitle: "Go beyond the generic Slack message. Make it memorable.",
+            description: "Your colleague deserves more than a 'Happy Birthday' on the team channel. Create a fun, interactive birthday wish featuring work inside jokes, team trivia, and a heartfelt message. It's the most creative office birthday surprise — and it's completely free.",
+            benefits: [
+                "Perfect balance of professional and personal.",
+                "Feature work inside jokes and team memories.",
+                "Easy to share via Slack, Teams, or email link.",
+                "Fun interactive elements that will entertain the whole team."
+            ],
+            ctaText: "Create Colleague's Birthday Wish",
+            heroIcon: <Sparkles className="w-16 h-16 text-amber-500 mb-6" />,
+            seoSections: [
+                {
+                    heading: "Why Personalized Colleague Birthday Wishes Stand Out",
+                    body: "In a typical office, birthdays are celebrated with a mass email or a signed card that people barely glance at. A personalized, interactive birthday wish for a colleague shows genuine care and effort. It features their specific contributions, work style, and the funny moments that make your professional relationship special. It's the kind of gesture that strengthens team bonds."
+                },
+                {
+                    heading: "Perfect for Remote Teams",
+                    body: "If your team works remotely, traditional birthday celebrations are even harder. You can't bring a cake or decorate their desk. But you CAN send a gamified digital wish that the entire team can enjoy. Add trivia questions like 'What's their go-to coffee order?' or 'What's their famous catchphrase in meetings?' — it becomes a fun team activity."
+                },
+                {
+                    heading: "From Casual to Heartfelt",
+                    body: "Whether they're your work bestie or a valued professional connection, BirthdayWisher.fun lets you customize the tone. Set the vibe slider to 'Celebration' for a light, fun experience, or go with 'Pure Romance' for a closer work friend who's practically family. Either way, it beats the standard office birthday email chain."
+                }
+            ]
+        },
+        "parents-birthday-surprise": {
+            title: "Birthday Surprise for Mom & Dad — Digital Love Letter",
+            subtitle: "Give your parents the gratitude they've always deserved.",
+            description: "Your parents gave you everything. Now give them a birthday surprise that captures decades of love, gratitude, and inside jokes. Create an interactive digital love letter featuring family photos, a heartfelt voice recording, and a walk down memory lane they'll never forget.",
+            benefits: [
+                "Upload childhood & family photos for heartbeat photo reveal.",
+                "Record a voice note saying what you've always wanted to say.",
+                "Add family trivia and inside jokes as interactive elements.",
+                "Perfect for parents who live far away."
+            ],
+            ctaText: "Surprise Mom or Dad Now",
+            heroIcon: <Heart className="w-16 h-16 text-red-500 mb-6" />,
+            seoSections: [
+                {
+                    heading: "Why Parents Deserve the Best Birthday Surprise",
+                    body: "Parents rarely ask for anything on their birthdays. A simple 'Happy Birthday, Mom' or 'Happy Birthday, Dad' text feels inadequate for the people who gave you life, sacrificed their sleep, and loved you unconditionally. An interactive birthday surprise lets you express the depth of your gratitude in a way that words alone cannot capture."
+                },
+                {
+                    heading: "The Family Memory Lane Experience",
+                    body: "Nothing makes parents happier than reliving family memories. BirthdayWisher.fun lets you create a journey through time — upload childhood photos that slowly reveal in a heartbeat animation, add family trivia ('In which year did we take our first family vacation?'), and include the quirky family traditions that only your family understands. It's a digital scrapbook that comes alive."
+                },
+                {
+                    heading: "Perfect for Adult Children Living Far Away",
+                    body: "If you've moved away for work or studies, a physical gift might feel impersonal. But a personalized interactive wish with your actual voice recording? That's pure love delivered digitally. As your mom or dad taps through each section, hearing your voice at the finale, it creates an emotional experience that no Amazon delivery could ever match."
+                }
+            ]
         }
     };
 

@@ -2,6 +2,7 @@
 
 import { useWishContext } from "@/lib/WishContext";
 import { Flame, Droplet } from "lucide-react";
+import { useStepTitle } from "@/lib/useStepTitle";
 
 const vibes = [
     { id: "tear-jerker", label: "Tear-Jerker", desc: "Pure emotional crying guaranteed.", icon: <Droplet className="w-8 h-8 text-blue-400" />, color: "border-blue-500", bg: "bg-blue-500/10" },
@@ -20,12 +21,13 @@ function HeartIcon() {
 
 export function Step3Vibe() {
     const { wishData, updateWishData } = useWishContext();
+    const title = useStepTitle("Step3Vibe");
     const isAnniversary = wishData.wishType === "anniversary";
 
     return (
         <div className="flex flex-col gap-8">
             <div className="text-center">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">The Vibe Engine 🔮</h2>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">{title}</h2>
                 <p className="text-foreground/60 text-lg">
                     What is the overarching emotion of this {isAnniversary ? "anniversary" : "birthday"} wish?
                 </p>

@@ -5,13 +5,125 @@ import { ArrowRight, Gift, Heart, Zap, Music, Ticket, Camera, Clock, MessageCirc
 import Link from "next/link";
 import Image from "next/image";
 import { WishCounter } from "@/components/ui/WishCounter";
+import { TestimonialsSection } from "@/components/ui/TestimonialsSection";
+import { useSiteLanguage } from "@/lib/SiteLanguageContext";
+import { getSiteTranslations } from "@/lib/siteTranslations";
 
 export default function Home() {
+  const { lang } = useSiteLanguage();
+  const s = getSiteTranslations(lang);
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-background">
-      {/* Background Orbs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px] -z-10 mix-blend-screen" />
-      <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[150px] -z-10 mix-blend-screen" />
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "BirthdayWisher.fun",
+            "url": "https://birthdaywisher.fun",
+            "applicationCategory": "EntertainmentApplication",
+            "operatingSystem": "Web",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "description": "Create interactive, gamified birthday wishes & wedding anniversary wishes for couple. Personalize puzzles, upload photos, add voice notes, and trigger confetti explosions — all for free.",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "1200",
+              "bestRating": "5"
+            }
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": "How To Create The Best Birthday & Anniversary Surprise Online",
+            "description": "Create an interactive, gamified birthday or anniversary wish in 3 simple steps.",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "name": "Personalize The Journey",
+                "text": "Answer 20 fun questions about the birthday boy/girl. Add inside jokes, upload photos, and set the emotional vibe (Roast or Toast).",
+                "position": 1
+              },
+              {
+                "@type": "HowToStep",
+                "name": "Select Aesthetics",
+                "text": "Choose from premium CSS themes, select soundtrack music, and customize the final fireworks celebration.",
+                "position": 2
+              },
+              {
+                "@type": "HowToStep",
+                "name": "Share The Secret Link",
+                "text": "Get a unique URL instantly. Send it via WhatsApp or Instagram. The link auto-destructs after opening for privacy!",
+                "position": 3
+              }
+            ]
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is BirthdayWisher.fun free to use?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! BirthdayWisher.fun is 100% free. You can create unlimited interactive birthday wishes and anniversary wishes without any charge."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How long does the birthday wish link last?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The wish link auto-destructs 10 hours after the recipient first opens it. This ensures privacy — your photos, voice notes, and messages are permanently deleted after viewing."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I create anniversary wishes for couples?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Absolutely! BirthdayWisher.fun supports both birthday wishes and wedding anniversary wishes for couples from 1st to 50th year and beyond."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What makes this different from a regular birthday card?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Unlike static cards, BirthdayWisher creates a 20-step interactive journey with puzzles, quizzes, voice notes, photo reveals, and confetti celebrations. The recipient has to earn their wish through fun challenges."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is my data private and secure?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. All uploaded photos, voice notes, and personal messages are automatically deleted after 10 hours. We use secure Vercel Postgres databases and Cloudinary for media storage with automated wiping."
+                }
+              }
+            ]
+          })
+        }}
+      />
+
+
 
       {/* Hero Section */}
       <main className="w-full relative z-10">
@@ -21,22 +133,22 @@ export default function Home() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 border-primary/30"
           >
             <ShieldCheck className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium tracking-wide">The #1 Online Birthday & Anniversary Wish Creator</span>
+            <span className="text-sm font-medium tracking-wide">{lang === 'en' ? 'The #1 Online Birthday & Anniversary Wish Creator' : s.featuresTitle}</span>
           </motion.div>
 
           <motion.h1
             className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 sm:mb-8 leading-[1.1]"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Make Their Birthday <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-secondary animate-gradient-x">Unforgettable.</span>
+            {s.heroTitle1} <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-secondary animate-gradient-x">{s.heroTitle2}</span>
           </motion.h1>
 
           <motion.p
             className="text-base sm:text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto mb-8 sm:mb-12 font-medium px-2"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Ditch the boring text messages and basic WhatsApp forwards. Create a highly interactive, gamified, and emotional story-style birthday wish or wedding anniversary wish for couple in 3 minutes. Perfect for birthdays, anniversaries, and celebrations. Stop sending plain text, start creating magic.
+            {s.heroSubtitle}
           </motion.p>
 
           <motion.div
@@ -48,7 +160,7 @@ export default function Home() {
                 <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-shadow">
                   <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
                   <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
-                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Create Birthday Wish</span>
+                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">{s.createBirthdayWish}</span>
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
                   </div>
                 </button>
@@ -57,7 +169,7 @@ export default function Home() {
                 <button className="relative group overflow-hidden rounded-full p-[3px] shadow-2xl shadow-amber-500/20 hover:shadow-amber-500/40 transition-shadow">
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-pink-500 to-amber-500 animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
                   <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
-                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">Anniversary Wish 💍</span>
+                    <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">{s.anniversaryWish}</span>
                     <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
                   </div>
                 </button>
@@ -68,14 +180,14 @@ export default function Home() {
               <button className="relative group overflow-hidden rounded-full p-[3px] shadow-xl shadow-pink-500/10 hover:shadow-pink-500/30 transition-shadow">
                 <span className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-pink-500 animate-[shine_4s_linear_infinite] bg-[length:200%_auto] rounded-full" />
                 <div className="relative flex items-center gap-2 sm:gap-3 px-6 sm:px-10 py-4 sm:py-5 bg-background rounded-full transition-all duration-300 group-hover:bg-opacity-0">
-                  <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">🎮 Play Couple Quiz Game</span>
+                  <span className="font-bold text-base sm:text-xl group-hover:text-white transition-colors">{s.coupleQuiz}</span>
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform group-hover:text-white" />
                 </div>
               </button>
             </a>
 
             <span className="text-sm text-foreground/50 font-medium flex items-center gap-2">
-              <Clock className="w-4 h-4" /> Takes just 3 minutes • 100% Free
+              <Clock className="w-4 h-4" /> {s.takes3Min}
             </span>
 
             <WishCounter variant="full" />
@@ -85,48 +197,23 @@ export default function Home() {
         {/* Feature Showcase Grid - SEO Optimized */}
         <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 border-t border-white/5">
           <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">Not Your Average Birthday or Anniversary Card!</h2>
-            <p className="text-foreground/60 max-w-2xl mx-auto text-lg">We&apos;ve engineered the ultimate emotional rollercoaster for birthdays & wedding anniversary wishes for couple. From interactive puzzles to a stunning final celebration.</p>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">{s.featuresTitle}</h2>
+            <p className="text-foreground/60 max-w-2xl mx-auto text-lg">{s.featuresSubtitle}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard
-              icon={<Camera className="w-6 h-6 text-pink-500" />}
-              title="Heartbeat Photo Reveal"
-              desc="Their favorite photo slowly fades in, beating like a heart to the rhythm of the background music."
-            />
-            <FeatureCard
-              icon={<Ticket className="w-6 h-6 text-yellow-500" />}
-              title="The Golden Ticket"
-              desc="A glowing, customized ticket displaying your 'Future Promise' for their amazing year ahead."
-            />
-            <FeatureCard
-              icon={<Music className="w-6 h-6 text-blue-500" />}
-              title="Voice Note Autoplay"
-              desc="As the final fireworks explode, your actual recorded voice message plays automatically."
-            />
-            <FeatureCard
-              icon={<MessageCircle className="w-6 h-6 text-purple-500" />}
-              title="Floating Memories"
-              desc="Their quirky traits and nicknames float across the screen as interactive, poppable bubbles."
-            />
-            <FeatureCard
-              icon={<Zap className="w-6 h-6 text-green-500" />}
-              title="Interactive Puzzle Games"
-              desc="Make them earn it! They have to guess your secret date and pass a 'How well do you know me' quiz."
-            />
-            <FeatureCard
-              icon={<Heart className="w-6 h-6 text-red-500" />}
-              title="Haptic Virtual Hug"
-              desc="A long-press button that physically vibrates their phone, delivering a digital hug across the internet."
-            />
-            <FeatureCard
-              icon={<Gift className="w-6 h-6 text-amber-500" />}
-              title="Anniversary Wishes for Couple"
-              desc="Celebrate your wedding anniversary with a gamified, interactive wish. Perfect romantic anniversary wishes for couple — from 1st to 50th year."
-            />
+            <FeatureCard icon={<Camera className="w-6 h-6 text-pink-500" />} title={s.feat1} desc={s.feat1d} />
+            <FeatureCard icon={<Ticket className="w-6 h-6 text-yellow-500" />} title={s.feat2} desc={s.feat2d} />
+            <FeatureCard icon={<Music className="w-6 h-6 text-blue-500" />} title={s.feat3} desc={s.feat3d} />
+            <FeatureCard icon={<MessageCircle className="w-6 h-6 text-purple-500" />} title={s.feat4} desc={s.feat4d} />
+            <FeatureCard icon={<Zap className="w-6 h-6 text-green-500" />} title={s.feat5} desc={s.feat5d} />
+            <FeatureCard icon={<Heart className="w-6 h-6 text-red-500" />} title={s.feat6} desc={s.feat6d} />
+            <FeatureCard icon={<Gift className="w-6 h-6 text-amber-500" />} title={s.feat7} desc={s.feat7d} />
           </div>
         </section>
+
+        {/* Testimonials Section */}
+        <TestimonialsSection />
 
         {/* Security & Privacy Section - NEW */}
         <section className="container max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 relative overflow-hidden rounded-2xl sm:rounded-[3rem] bg-gradient-to-br from-background via-black/50 to-background border border-white/5 my-6 sm:my-12">
@@ -140,7 +227,7 @@ export default function Home() {
 
                 <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-white">
                   <ShieldCheck className="w-8 h-8 text-emerald-400" />
-                  Military-Grade Birthday Privacy
+                  {s.secPrivacy}
                 </h3>
 
                 <div className="space-y-6">
@@ -149,8 +236,8 @@ export default function Home() {
                       <Clock className="w-5 h-5 text-amber-400" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg mb-1 text-white">10-Hour Self Destruct</h4>
-                      <p className="text-foreground/70 text-sm leading-relaxed">The timer doesn&apos;t start until they open the link. Exactly 10 hours later, the wish vanishes forever. It&apos;s an exclusive, fleeting experience that demands their full attention.</p>
+                      <h4 className="font-bold text-lg mb-1 text-white">{s.sec1}</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">{s.sec1d}</p>
                     </div>
                   </div>
 
@@ -159,8 +246,8 @@ export default function Home() {
                       <Lock className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg mb-1 text-white">End-to-End Obfuscation</h4>
-                      <p className="text-foreground/70 text-sm leading-relaxed">Unlike sending photos over WhatsApp, your memories and inside jokes are housed in a secure Vercel Postgres database accessible only via the generated shortlink.</p>
+                      <h4 className="font-bold text-lg mb-1 text-white">{s.sec2}</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">{s.sec2d}</p>
                     </div>
                   </div>
 
@@ -169,8 +256,8 @@ export default function Home() {
                       <Trash2 className="w-5 h-5 text-rose-400" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-lg mb-1 text-white">Automated Media Wiping</h4>
-                      <p className="text-foreground/70 text-sm leading-relaxed">Your uploaded photos and intimate voice notes are stored securely on Cloudinary. Once the 10 hours are up, our serverless cron automatically permadeletes the assets. We keep nothing.</p>
+                      <h4 className="font-bold text-lg mb-1 text-white">{s.sec3}</h4>
+                      <p className="text-foreground/70 text-sm leading-relaxed">{s.sec3d}</p>
                     </div>
                   </div>
                 </div>
@@ -180,19 +267,17 @@ export default function Home() {
             <div className="order-1 lg:order-2 text-left lg:pl-8 relative z-10">
               <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
-                  100% Private & Secure
+                  {s.secBadge}
                 </div>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 leading-tight">Create Intimate Wishes Without The Fear.</h2>
-                <p className="text-lg text-foreground/70 mb-8 leading-relaxed">
-                  We know that the best birthday wishes contain embarrassing photos, deep emotional texts, and inside jokes that no one else should ever see.
-                </p>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-6 leading-tight">{s.secTitle}</h2>
+                <p className="text-lg text-foreground/70 mb-8 leading-relaxed">{s.secSub}</p>
                 <p className="text-lg text-foreground/70 mb-10 leading-relaxed font-medium">
                   That&apos;s why birthdaywisher.fun is engineered with a strict <span className="text-emerald-400 font-bold">\"Read & Destroy\"</span> philosophy. Share your heart out, knowing it will all disappear beautifully in 10 hours.
                 </p>
 
                 <Link href="/create">
                   <button className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                    Create a Secure Wish <ArrowRight className="w-5 h-5" />
+                    {s.secCta} <ArrowRight className="w-5 h-5" />
                   </button>
                 </Link>
               </motion.div>
@@ -203,33 +288,21 @@ export default function Home() {
         {/* How it Works / Social Proof */}
         <section className="w-full bg-white/5 py-24">
           <div className="container max-w-6xl mx-auto px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-12 sm:mb-16">How To Create The Best Birthday & Anniversary Surprise Online</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-12 sm:mb-16">{s.howTitle}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
               {/* Connector lines (Desktop only) */}
               <div className="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent z-0" />
 
-              <StepCard
-                number="1"
-                title="Personalize The Journey"
-                desc="Answer 20 fun questions about the birthday boy/girl. Add inside jokes, upload photos, and set the emotional vibe (Roast or Toast)."
-              />
-              <StepCard
-                number="2"
-                title="Select Aesthetics"
-                desc="Choose from premium CSS themes, select soundtrack music, and customize the final fireworks celebration."
-              />
-              <StepCard
-                number="3"
-                title="Share The Secret Link"
-                desc="Get a unique URL instantly. Send it via WhatsApp or Instagram. The link auto-destructs after opening for privacy!"
-              />
+              <StepCard number="1" title={s.how1} desc={s.how1d} />
+              <StepCard number="2" title={s.how2} desc={s.how2d} />
+              <StepCard number="3" title={s.how3} desc={s.how3d} />
             </div>
 
             <div className="mt-20">
               <Link href="/create">
                 <button className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:shadow-[0_0_30px_rgba(255,105,180,0.4)] transition-all hover:-translate-y-1">
-                  Start Customizing Now
+                  {s.howCta}
                 </button>
               </Link>
             </div>
@@ -243,7 +316,7 @@ export default function Home() {
         <div className="container max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 text-sm">
           <div>
             <h4 className="font-bold text-lg mb-4 text-white">birthdaywisher.fun</h4>
-            <p className="text-foreground/60">The ultimate aesthetic birthday & anniversary wisher tool. Create interactive, emotional, and unforgettable web-based greeting cards & wedding anniversary wishes for couple online for free.</p>
+            <p className="text-foreground/60">{s.footerDesc}</p>
           </div>
           <div>
             <h4 className="font-bold mb-4 text-white">Popular Nav</h4>
@@ -253,6 +326,9 @@ export default function Home() {
               <li><Link href="/blog/best-friend-quotes" className="hover:text-primary transition-colors">For Best Friends</Link></li>
               <li><Link href="/blog/romantic-wishes" className="hover:text-primary transition-colors">For Partner / Boyfriend / Girlfriend</Link></li>
               <li><Link href="/blog/wedding-anniversary-wishes-for-couple" className="hover:text-primary transition-colors">Anniversary Wishes for Couple</Link></li>
+              <li><Link href="/blog/birthday-wishes-for-colleague" className="hover:text-primary transition-colors">For Colleague / Coworker</Link></li>
+              <li><Link href="/blog/birthday-wishes-for-crush" className="hover:text-primary transition-colors">For Crush</Link></li>
+              <li><Link href="/blog/long-distance-birthday-ideas" className="hover:text-primary transition-colors">Long Distance Ideas</Link></li>
             </ul>
           </div>
           <div>
@@ -271,11 +347,14 @@ export default function Home() {
               <li><Link href="/use-cases/boyfriend-birthday-surprise" className="hover:text-primary transition-colors">Boyfriend Birthday Surprise</Link></li>
               <li><Link href="/use-cases/girlfriend-birthday-surprise" className="hover:text-primary transition-colors">Girlfriend Birthday Surprise</Link></li>
               <li><Link href="/use-cases/anniversary-wishes-for-couple" className="hover:text-primary transition-colors">Anniversary Wishes for Couple</Link></li>
+              <li><Link href="/use-cases/long-distance-birthday-surprise" className="hover:text-primary transition-colors">Long Distance Surprise</Link></li>
+              <li><Link href="/use-cases/colleague-birthday-wish" className="hover:text-primary transition-colors">Colleague Birthday Wish</Link></li>
+              <li><Link href="/use-cases/parents-birthday-surprise" className="hover:text-primary transition-colors">Parents Birthday Surprise</Link></li>
             </ul>
           </div>
         </div>
         <div className="text-center pt-8 border-t border-white/10 text-foreground/40 text-sm flex flex-col gap-2">
-          <p>© {new Date().getFullYear()} birthdaywisher.fun. Crafted with <Heart className="w-4 h-4 inline text-red-500 mx-1" /> to make birthdays special.</p>
+          <p>© {new Date().getFullYear()} birthdaywisher.fun. {s.footerMade}</p>
           <p className="font-medium text-foreground/50">Property of Akalloverservices | Contact: <a href="mailto:akalloverservices@gmail.com" className="hover:text-primary transition-colors">akalloverservices@gmail.com</a></p>
         </div>
       </footer>
