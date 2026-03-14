@@ -211,15 +211,6 @@ export default function AnniversaryPage() {
                     </div>
                 </section>
             </main>
-
-            {/* Footer */}
-            <footer className="w-full border-t border-white/10 glass-panel mt-12 py-12 px-6">
-                <div className="container max-w-7xl mx-auto text-center">
-                    <p className="text-foreground/40 text-sm">
-                        © {new Date().getFullYear()} birthdaywisher.fun · <Link href="/" className="hover:text-primary transition-colors">Home</Link> · <Link href="/blog/wedding-anniversary-wishes-for-couple" className="hover:text-primary transition-colors">Anniversary Wishes Blog</Link> · <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link> · <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
-                    </p>
-                </div>
-            </footer>
         </div>
     );
 }

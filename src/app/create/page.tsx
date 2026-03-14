@@ -35,6 +35,9 @@ const birthdaySteps = [
     Step16FuturePromises, Step17InnovativeLocks, Step18Soundtrack, Step19Theme, Step20Finale,
 ];
 
+// Steps that are optional and can be skipped (0-indexed)
+const birthdayOptionalSteps = new Set([3, 7, 8, 9, 10, 11, 13, 16]); // Nicknames, Quirks, Roast, Quiz, Awards, VoiceNote, Puzzle, InnovativeLocks
+
 // Anniversary: curated 16-step sequence (removes Roast, Awards, Puzzle, InnovativeLocks)
 const anniversarySteps = [
     Step1Target, Step2Connection, Step3Vibe, Step4Nicknames, Step5Media,
@@ -42,6 +45,9 @@ const anniversarySteps = [
     Step13Gratitude, Step15CoreMessage, Step16FuturePromises, Step18Soundtrack,
     Step19Theme, Step20Finale,
 ];
+
+// Steps that are optional for anniversary flow (0-indexed)
+const anniversaryOptionalSteps = new Set([3, 7, 8, 9]); // Nicknames, Quirks, Quiz, VoiceNote
 
 // Detects ?type=anniversary and sets wishType in context
 function AnniversaryDetector() {
@@ -63,15 +69,17 @@ export default function CreateWizard() {
     const { currentStep, wishData } = useWishContext();
     const isAnniversary = wishData.wishType === "anniversary";
     const steps = isAnniversary ? anniversarySteps : birthdaySteps;
+    const optionalSteps = isAnniversary ? anniversaryOptionalSteps : birthdayOptionalSteps;
     const totalSteps = steps.length;
     const StepComponent = steps[currentStep - 1];
+    const isOptional = optionalSteps.has(currentStep - 1);
 
     return (
         <>
             <Suspense fallback={null}>
                 <AnniversaryDetector />
             </Suspense>
-            <WizardLayout totalSteps={totalSteps}>
+            <WizardLayout totalSteps={totalSteps} isOptionalStep={isOptional}>
                 {StepComponent ? <StepComponent /> : (
                     <div className="text-center py-20">
                         <h2 className="text-3xl font-bold mb-4">Step {currentStep} 🚧</h2>

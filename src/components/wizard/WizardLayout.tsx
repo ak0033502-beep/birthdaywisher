@@ -2,9 +2,9 @@
 
 import { useWishContext, clearWizardProgress } from "@/lib/WishContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Copy, CheckCircle2, Wand2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, CheckCircle2, Wand2, Share2, MessageCircle, Mail, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function WizardLayout({
     children,
@@ -12,12 +12,14 @@ export function WizardLayout({
     onPrev,
     disableNext = false,
     totalSteps = 20,
+    isOptionalStep = false,
 }: {
     children: React.ReactNode;
     onNext?: () => void;
     onPrev?: () => void;
     disableNext?: boolean;
     totalSteps?: number;
+    isOptionalStep?: boolean;
 }) {
     const { currentStep, nextStep, prevStep, wishData } = useWishContext();
     const isAnniversary = wishData.wishType === "anniversary";
@@ -28,6 +30,20 @@ export function WizardLayout({
     const [copied, setCopied] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedId, setGeneratedId] = useState<string | null>(null);
+    const [showSaved, setShowSaved] = useState(false);
+    const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Show "Progress saved" indicator when step changes
+    useEffect(() => {
+        if (currentStep > 1 && !isGenerated) {
+            setShowSaved(true);
+            if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+            saveTimeoutRef.current = setTimeout(() => setShowSaved(false), 2000);
+        }
+        return () => {
+            if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+        };
+    }, [currentStep, isGenerated]);
 
     const shareLink = typeof window !== "undefined" && generatedId
         ? `${window.location.origin}/wish/${generatedId}`
@@ -103,7 +119,21 @@ export function WizardLayout({
             <div className="fixed top-16 sm:top-20 left-0 right-0 z-40 px-4 sm:px-6 max-w-3xl mx-auto w-full">
                 <div className="flex justify-between text-xs font-semibold text-foreground/50 mb-2">
                     <span>Step {currentStep} of {totalSteps}</span>
-                    <span>{Math.round(progressPercent)}%</span>
+                    <span className="flex items-center gap-2">
+                        <AnimatePresence>
+                            {showSaved && (
+                                <motion.span
+                                    initial={{ opacity: 0, x: 10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 10 }}
+                                    className="text-emerald-400 flex items-center gap-1"
+                                >
+                                    <CheckCircle2 className="w-3 h-3" /> Saved
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                        {Math.round(progressPercent)}%
+                    </span>
                 </div>
                 <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                     <motion.div
@@ -129,6 +159,13 @@ export function WizardLayout({
                         transition={{ duration: 0.3 }}
                         className="w-full"
                     >
+                        {isOptionalStep && (
+                            <div className="flex justify-center mb-3">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-foreground/50">
+                                    ✨ Optional — feel free to skip
+                                </span>
+                            </div>
+                        )}
                         <div className={`p-4 sm:p-6 md:p-10 rounded-2xl w-full ${isAnniversary
                             ? "glass-panel border border-amber-500/10"
                             : "glass-panel"
@@ -203,12 +240,12 @@ export function WizardLayout({
                             </div>
 
                             <h2 className="text-2xl sm:text-3xl font-bold mb-4">Magic Created! ✨</h2>
-                            <p className="text-foreground/70 mb-8 leading-relaxed">
+                            <p className="text-foreground/70 mb-6 leading-relaxed">
                                 Your personalized, interactive {isAnniversary ? "anniversary" : "birthday"} wish is ready. Send this unique link to them.
                                 <br /><span className="text-xs text-secondary/80 font-bold mt-2 block">Note: This link will self-destruct 10 hours after they open it!</span>
                             </p>
 
-                            <div className="flex items-center gap-2 p-3 bg-black/50 border border-white/10 rounded-xl mb-8">
+                            <div className="flex items-center gap-2 p-3 bg-black/50 border border-white/10 rounded-xl mb-6">
                                 <div className="truncate text-sm flex-1 text-left font-mono text-white/90 selec-all px-2">
                                     {shareLink}
                                 </div>
@@ -219,6 +256,40 @@ export function WizardLayout({
                                     {copied ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                                     {copied ? "Copied!" : "Copy"}
                                 </button>
+                            </div>
+
+                            {/* Social Sharing Buttons */}
+                            <div className="mb-6">
+                                <p className="text-xs font-medium text-foreground/50 uppercase tracking-wider mb-3 flex items-center justify-center gap-2">
+                                    <Share2 className="w-3 h-3" /> Share via
+                                </p>
+                                <div className="flex items-center justify-center gap-3">
+                                    <a
+                                        href={`https://wa.me/?text=${encodeURIComponent(`🎉 I made something special for you! Open this link: ${shareLink}`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] hover:bg-[#25D366]/20 transition-all text-sm font-semibold hover:scale-105 active:scale-95"
+                                    >
+                                        <MessageCircle className="w-4 h-4" />
+                                        WhatsApp
+                                    </a>
+                                    <a
+                                        href={`mailto:?subject=${encodeURIComponent(`🎉 A Special ${isAnniversary ? "Anniversary" : "Birthday"} Wish For You!`)}&body=${encodeURIComponent(`I made something special for you! Open this link to see your surprise:\n\n${shareLink}\n\n(This link will self-destruct 10 hours after you open it!)`)}`}
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-all text-sm font-semibold hover:scale-105 active:scale-95"
+                                    >
+                                        <Mail className="w-4 h-4" />
+                                        Email
+                                    </a>
+                                    <a
+                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I just created an amazing interactive ${isAnniversary ? "anniversary" : "birthday"} wish! 🎉✨ Check out @BirthdayWisher`)}&url=${encodeURIComponent(shareLink)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-foreground/70 hover:bg-white/10 transition-all text-sm font-semibold hover:scale-105 active:scale-95"
+                                    >
+                                        <ExternalLink className="w-4 h-4" />
+                                        X / Twitter
+                                    </a>
+                                </div>
                             </div>
 
                             <button

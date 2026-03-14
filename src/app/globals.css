@@ -117,4 +117,12 @@ body {
     font-size: 16px !important;
     /* Prevent iOS zoom on focus */
   }
+
+  /* Minimum 44px touch targets for iOS accessibility */
+  button,
+  a[role="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+  }
 }

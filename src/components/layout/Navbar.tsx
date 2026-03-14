@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Gift } from "lucide-react";
+import { MobileMenu } from "./MobileMenu";
 
 export function Navbar() {
     return (
@@ -26,10 +27,11 @@ export function Navbar() {
                     <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
                     <Link href="/about" className="hover:text-primary transition-colors">About</Link>
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <Link href="/create" className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white text-black font-semibold text-xs sm:text-sm hover:scale-105 transition-transform">
                         Create Wish
                     </Link>
+                    <MobileMenu />
                 </div>
             </div>
         </motion.header>
