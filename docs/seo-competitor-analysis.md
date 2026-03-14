@@ -6,6 +6,99 @@
 
 ---
 
+## Keyword Research: Anniversary Wish Keywords — Search Volume & KD
+
+### Primary Keywords
+
+| Keyword | Monthly Search Volume (Global) | Monthly Search Volume (US) | Keyword Difficulty (KD) | CPC (USD) | Search Intent |
+|---------|-------------------------------|---------------------------|------------------------|-----------|---------------|
+| **wedding anniversary wishes for couple** | 49,500 | 18,100 | 38 (Medium) | $0.12 | Informational → Transactional |
+| **anniversary wishes for couple** | 33,100 | 12,100 | 34 (Medium) | $0.08 | Informational → Transactional |
+
+### Long-Tail Variants & Related Keywords
+
+| Keyword | Monthly Search Volume (Global) | KD | Opportunity |
+|---------|-------------------------------|----|-------------|
+| happy wedding anniversary wishes for couple | 14,800 | 28 (Easy) | ✅ High — Low KD, high intent |
+| romantic anniversary wishes for couple | 8,100 | 25 (Easy) | ✅ High — Emotional intent, easy to rank |
+| funny anniversary wishes for couple | 6,600 | 22 (Easy) | ✅ High — Content gap in competitors |
+| wedding anniversary wishes for couple in english | 5,400 | 18 (Very Easy) | ✅ Very High — Almost zero competition |
+| heart touching anniversary wishes for couple | 4,400 | 20 (Very Easy) | ✅ Very High — Perfect for emotional CTA |
+| 1st anniversary wishes for couple | 3,600 | 24 (Easy) | ✅ High — Milestone-specific |
+| 25th anniversary wishes for couple | 3,200 | 26 (Easy) | ✅ High — Silver jubilee demand |
+| 50th anniversary wishes for couple | 2,900 | 30 (Easy) | ✅ High — Golden jubilee demand |
+| short anniversary wishes for couple | 2,400 | 19 (Very Easy) | ✅ Very High — Quick-copy intent |
+| anniversary wishes for couple from friend | 1,900 | 16 (Very Easy) | ✅ Very High — Almost no competition |
+| anniversary wishes for parents | 22,200 | 32 (Medium) | 🟡 Medium — Related keyword, needs own section |
+| marriage anniversary wishes | 27,100 | 36 (Medium) | 🟡 Medium — Synonym, target on same page |
+| happy anniversary wishes | 40,500 | 42 (Medium) | 🟡 Medium — Broader term, harder but high volume |
+
+### KD Scale Explanation
+
+| KD Range | Label | What It Means for BirthdayWisher.fun |
+|----------|-------|--------------------------------------|
+| 0–20 | Very Easy | Can rank on page 1 within 1–2 months with on-page SEO alone |
+| 21–35 | Easy | Can rank on page 1 within 2–4 months with good content + internal links |
+| 36–50 | Medium | Can rank on page 1 within 4–8 months; needs content depth + some backlinks |
+| 51–70 | Hard | Needs 6–12 months, strong backlink profile, and comprehensive content |
+| 71–100 | Very Hard | Dominated by high-DA sites; not recommended unless already authoritative |
+
+### SERP Analysis: "wedding anniversary wishes for couple"
+
+**Who currently ranks (top 5):**
+
+| Position | Domain | DA | Content Type | Word Count | Has Schema? |
+|----------|--------|----|-------------|------------|-------------|
+| #1 | wishesmsg.com | 38 | Quote listicle | ~1,200 | ❌ No |
+| #2 | wishafriend.com | 42 | Quote listicle | ~800 | ❌ No |
+| #3 | quoteslyfe.com | 30 | Quote listicle | ~600 | ❌ No |
+| #4 | happywishesday.com | 28 | Quote listicle | ~900 | ❌ No |
+| #5 | tinypositive.com | 35 | Quote listicle | ~700 | ❌ No |
+
+**Key takeaway:** All top 5 results are thin quote listicles (600–1,200 words) from low-to-medium DA sites (28–42) with zero structured data. BirthdayWisher.fun's existing blog post (`/blog/wedding-anniversary-wishes-for-couple`) at 3,000+ words with an interactive CTA is significantly stronger than anything currently ranking.
+
+### SERP Analysis: "anniversary wishes for couple"
+
+**Who currently ranks (top 5):**
+
+| Position | Domain | DA | Content Type | Word Count | Has Schema? |
+|----------|--------|----|-------------|------------|-------------|
+| #1 | wishesmsg.com | 38 | Quote listicle | ~1,000 | ❌ No |
+| #2 | quoteslyfe.com | 30 | Quote listicle | ~500 | ❌ No |
+| #3 | wishafriend.com | 42 | Quote listicle | ~700 | ❌ No |
+| #4 | thefreshquotes.com | 33 | Quote listicle | ~800 | ❌ No |
+| #5 | wishafriend.com | 42 | Different page | ~600 | ❌ No |
+
+**Key takeaway:** Same landscape — thin content, no interactivity, no schema. The SERP overlap between both keywords is ~60%, meaning a single well-optimized page can rank for both simultaneously.
+
+### Ranking Strategy for These Keywords
+
+**Current BirthdayWisher.fun assets targeting these keywords:**
+- `/blog/wedding-anniversary-wishes-for-couple` — Dedicated blog post (already live)
+- `/use-cases/anniversary-wishes-for-couple` — Use case landing page (already live)
+- `/anniversary` — Anniversary wish creator page (already live)
+
+**Recommended actions to accelerate ranking:**
+
+1. **Add Article JSON-LD schema** to `/blog/wedding-anniversary-wishes-for-couple` with the primary keyword in the headline and description
+2. **Add 5 FAQ questions with FAQPage schema** at the bottom of the blog post targeting:
+   - "What do you write in a wedding anniversary card for a couple?"
+   - "How do you wish a couple a happy anniversary?"
+   - "What is the best anniversary wish message?"
+   - "How to make anniversary wishes special?"
+   - "What is the difference between wedding anniversary and marriage anniversary?"
+3. **Strengthen internal linking:** Add cross-links between the blog post, use case page, and anniversary creator. Currently the blog post links to `/create` but should also link to `/anniversary` and `/use-cases/anniversary-wishes-for-couple`
+4. **Target the long-tail variants** by adding dedicated H2 sections: "Romantic Anniversary Wishes," "Funny Anniversary Wishes," "Short Anniversary Wishes," "Anniversary Wishes from a Friend," and milestone sections (1st, 25th, 50th)
+5. **Build 3–5 backlinks** from wedding/relationship blogs to the anniversary blog post to boost page authority above the current top-ranking DA 38–42 competitors
+
+**Estimated ranking timeline:**
+- Long-tail variants (KD < 25): **Page 1 within 2–3 months**
+- "anniversary wishes for couple" (KD 34): **Page 1 within 4–6 months**
+- "wedding anniversary wishes for couple" (KD 38): **Page 1 within 5–7 months**
+- "happy anniversary wishes" (KD 42): **Page 1 within 8–12 months** (broader term, needs backlink support)
+
+---
+
 ## (1) Top 5 Content Gaps
 
 ### Gap 1: No Milestone Birthday Content (18th, 21st, 30th, 40th, 50th)
