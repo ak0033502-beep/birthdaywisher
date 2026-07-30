@@ -63,7 +63,7 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        // Match all routes except static files and _next
-        "/((?!_next/static|_next/image|favicon.ico).*)",
+        // Match all routes except static files, _next, and SEO files (sitemap/robots)
+        "/((?!_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt).*)",
     ],
 };

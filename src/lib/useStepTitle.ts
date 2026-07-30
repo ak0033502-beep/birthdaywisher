@@ -23,6 +23,7 @@ const stepKeyMap: Record<string, keyof SiteStrings> = {
     Step15CoreMessage: "step15Title",
     Step16FuturePromises: "step16Title",
     Step17InnovativeLocks: "step17Title",
+    Step18Soundtrack: "step18Title",
     Step19Theme: "step19Title",
     Step20Finale: "step20Title",
     StepGiftCard: "giftCardTitle",
