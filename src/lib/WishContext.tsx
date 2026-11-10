@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { V1_DEFAULTS } from "@/lib/wish/v1";
 
 export interface WishData {
     // Wish Type
@@ -76,43 +77,8 @@ export interface WishData {
     giftCardMessage?: string;
 }
 
-const defaultWishData: WishData = {
-    wishType: "birthday",
-    targetName: "",
-    targetAge: "",
-    targetGender: "",
-    anniversaryYear: "",
-    coupleName: "",
-    relationship: "",
-    vibe: "Pure Romance",
-    nickname: "",
-    mediaUrl: "",
-    mediaType: null,
-    mediaItems: [],
-    memoryTale: "",
-    secretDate: "",
-    quirks: [],
-    roastLevel: 0,
-    quizQ1: "",
-    quizA1: "",
-    quizQ2: "",
-    quizA2: "",
-    awardTitle: "",
-    audioUrl: "",
-    gratitudeText: "",
-    puzzleImageUrl: "",
-    coreMessage: "",
-    futurePromise: "",
-    timeCapsule: "",
-    soundtrack: "lofi",
-    theme: "elegant",
-    finaleEffect: "confetti",
-    presentationStyle: "cinematic",
-    unlockDate: "",
-    requireSmileToUnlock: false,
-    showAsScratchOff: true,
-    language: "en",
-};
+// Defaults live in a React-free module so the v1→v2 migration and tests share them
+const defaultWishData: WishData = { ...V1_DEFAULTS };
 
 const STORAGE_KEY = "birthdaywisher_wizard_progress";
 

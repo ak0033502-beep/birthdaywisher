@@ -8,8 +8,18 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { languages } from "@/lib/i18n";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
+import { usePathname } from "next/navigation";
+import { PartyNavbar } from "@/components/party/PartyNavbar";
+
+// Routes that still use the classic (dark) look: the wish viewer, creator dashboard,
+// classic wizard and dev pages. Every other page uses the "Joyful Party" navbar.
+const CLASSIC_PREFIXES = ["/wish/", "/w/", "/dashboard/", "/create/classic", "/dev/"];
+const isClassic = (p: string) => CLASSIC_PREFIXES.some((x) => p.startsWith(x));
+// Full-screen experiences with their own top bar
+const NO_NAVBAR_ROUTES = new Set(["/create"]);
 
 export function Navbar() {
+    const pathname = usePathname();
     const [langOpen, setLangOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { lang, setLang } = useSiteLanguage();
@@ -27,6 +37,9 @@ export function Navbar() {
         document.addEventListener("mousedown", handler);
         return () => document.removeEventListener("mousedown", handler);
     }, []);
+
+    if (NO_NAVBAR_ROUTES.has(pathname)) return null;
+    if (!isClassic(pathname)) return <PartyNavbar />;
 
     return (
         <motion.header

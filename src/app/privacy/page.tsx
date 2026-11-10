@@ -1,18 +1,25 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/privacy" },
     title: "Privacy Policy | BirthdayWisher.fun",
     description: "Our commitment to your privacy. Learn how BirthdayWisher.fun protects your data and handles your uploaded media with our self-destructing links.",
 };
 
 export default function PrivacyPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-black mb-8">Privacy Policy</h1>
-                <p className="text-foreground/60 mb-12">Last Updated: October 2024</p>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "Privacy Policy" }]}
+                eyebrow="🔒 Your memories stay private"
+                title={<>Privacy Policy</>}
+                sub={<>Last Updated: October 2024</>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p className="lead text-xl">
                         At BirthdayWisher.fun, your privacy is our absolute priority. We designed this platform specifically so that you can share intimate memories without worrying about them living on the internet forever.
                     </p>
@@ -48,7 +55,9 @@ export default function PrivacyPage() {
                     <h2 className="text-2xl font-bold mt-12 mb-4">5. Contact Us</h2>
                     <p>If you have any questions about this Privacy Policy or wish to request manual deletion of a link before the self-destruct timer, please contact our support team at privacy@birthdaywisher.fun.</p>
                 </div>
-            </main>
-        </div>
+                    </div>
+                </div>
+            </section>
+        </PartyPage>
     );
 }

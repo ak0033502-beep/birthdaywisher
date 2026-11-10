@@ -3,7 +3,7 @@ import { Locale } from "@/lib/i18n";
 export type SiteStrings = {
     createWish: string; anniversary: string; blog: string; about: string;
     heroTitle1: string; heroTitle2: string; heroSubtitle: string;
-    createBirthdayWish: string; anniversaryWish: string; coupleQuiz: string; takes3Min: string;
+    createBirthdayWish: string; anniversaryWish: string; takes3Min: string;
     featuresTitle: string; featuresSubtitle: string;
     next: string; back: string; generating: string;
     chooseLang: string; chooseLangSub: string;
@@ -27,10 +27,10 @@ export type SiteStrings = {
 
 const en: SiteStrings = {
     createWish: "Create Wish", anniversary: "Anniversary", blog: "Blog", about: "About",
-    heroTitle1: "Make Their Birthday", heroTitle2: "Unforgettable.",
+    heroTitle1: "Turn Your Birthday Wish", heroTitle2: "into a Game.",
     heroSubtitle: "Ditch the boring text messages. Create a highly interactive, gamified birthday wish or anniversary wish in 3 minutes.",
     createBirthdayWish: "Create Birthday Wish", anniversaryWish: "Anniversary Wish 💍",
-    coupleQuiz: "🎮 Play Couple Quiz Game", takes3Min: "Takes just 3 minutes • 100% Free",
+    takes3Min: "Takes just 3 minutes • 100% Free",
     featuresTitle: "Not Your Average Birthday or Anniversary Card!",
     featuresSubtitle: "We've engineered the ultimate emotional rollercoaster for birthdays & anniversaries.",
     next: "Next", back: "Back", generating: "Creating magic...",
@@ -74,7 +74,7 @@ const hi: SiteStrings = {
     heroTitle1: "उनका जन्मदिन बनाएं", heroTitle2: "यादगार।",
     heroSubtitle: "बोरिंग मैसेज भूल जाओ। 3 मिनट में एक इंटरैक्टिव, गेमिफाइड जन्मदिन या सालगिरह विश बनाएं।",
     createBirthdayWish: "जन्मदिन विश बनाएं", anniversaryWish: "सालगिरह विश 💍",
-    coupleQuiz: "🎮 कपल क्विज़ खेलो", takes3Min: "बस 3 मिनट • 100% मुफ़्त",
+    takes3Min: "बस 3 मिनट • 100% मुफ़्त",
     featuresTitle: "ये कोई आम बर्थडे कार्ड नहीं!", featuresSubtitle: "हमने बर्थडे और सालगिरह के लिए एक शानदार इमोशनल अनुभव बनाया है।",
     next: "अगला", back: "पीछे", generating: "जादू बन रहा है...",
     chooseLang: "भाषा चुनें 🌍", chooseLangSub: "अपनी विश के लिए भाषा चुनें",
@@ -125,7 +125,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "তাদের জন্মদিন করো", heroTitle2: "অবিস্মরণীয়।",
         heroSubtitle: "বোরিং মেসেজ ভুলে যাও। ৩ মিনিটে একটি ইন্টারেক্টিভ জন্মদিন উইশ তৈরি করো।",
         createBirthdayWish: "জন্মদিন উইশ তৈরি করো", anniversaryWish: "বার্ষিকী উইশ 💍",
-        coupleQuiz: "🎮 কাপল কুইজ খেলো", takes3Min: "মাত্র ৩ মিনিট • ১০০% ফ্রি",
+        takes3Min: "মাত্র ৩ মিনিট • ১০০% ফ্রি",
         featuresTitle: "এটা কোনো সাধারণ বার্থডে কার্ড না!", featuresSubtitle: "আমরা একটি দারুণ ইমোশনাল অভিজ্ঞতা তৈরি করেছি।",
         next: "পরবর্তী", back: "আগে", generating: "জাদু হচ্ছে...",
         chooseLang: "ভাষা বেছে নাও 🌍", chooseLangSub: "তোমার উইশের জন্য ভাষা বেছে নাও",
@@ -152,7 +152,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "వారి పుట్టినరోజు చేయండి", heroTitle2: "మరపురాని.",
         heroSubtitle: "బోరింగ్ మెసేజ్‌లు వదిలేయండి. 3 నిమిషాల్లో ఇంటరాక్టివ్ విష్ సృష్టించండి.",
         createBirthdayWish: "పుట్టినరోజు విష్ సృష్టించు", anniversaryWish: "వార్షికోత్సవ విష్ 💍",
-        coupleQuiz: "🎮 కపుల్ క్విజ్ ఆడండి", takes3Min: "3 నిమిషాలు • 100% ఉచితం",
+        takes3Min: "3 నిమిషాలు • 100% ఉచితం",
         featuresTitle: "ఇది సాధారణ బర్త్‌డే కార్డ్ కాదు!",
         next: "తదుపరి", back: "వెనుకకు", generating: "మ్యాజిక్ జరుగుతోంది...",
         chooseLang: "భాష ఎంచుకోండి 🌍", chooseLangSub: "మీ విష్ కోసం భాష ఎంచుకోండి",
@@ -173,7 +173,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "त्यांचा वाढदिवस करा", heroTitle2: "अविस्मरणीय.",
         heroSubtitle: "बोरिंग मेसेज विसरा. ३ मिनिटांत इंटरॅक्टिव्ह वाढदिवस विश बनवा.",
         createBirthdayWish: "वाढदिवस विश बनवा", anniversaryWish: "वाढदिवस विश 💍",
-        coupleQuiz: "🎮 कपल क्विझ खेळा", takes3Min: "फक्त ३ मिनिटे • १००% फ्री",
+        takes3Min: "फक्त ३ मिनिटे • १००% फ्री",
         featuresTitle: "हे कोणतं साधं बर्थडे कार्ड नाही!",
         next: "पुढे", back: "मागे", generating: "जादू होतंय...",
         chooseLang: "भाषा निवडा 🌍", chooseLangSub: "तुमच्या विशसाठी भाषा निवडा",
@@ -194,7 +194,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "அவர்களின் பிறந்தநாளை", heroTitle2: "மறக்கமுடியாததாக்குங்கள்.",
         heroSubtitle: "போரிங் மெசேஜ்களை மறந்துவிடுங்கள். 3 நிமிடத்தில் இன்டராக்டிவ் விஷ் உருவாக்குங்கள்.",
         createBirthdayWish: "பிறந்தநாள் விஷ் உருவாக்கு", anniversaryWish: "ஆண்டுவிழா விஷ் 💍",
-        coupleQuiz: "🎮 கப்பிள் குவிஸ் விளையாடு", takes3Min: "3 நிமிடம் • 100% இலவசம்",
+        takes3Min: "3 நிமிடம் • 100% இலவசம்",
         featuresTitle: "இது சாதாரண பிறந்தநாள் கார்ட் இல்லை!",
         next: "அடுத்து", back: "பின்", generating: "மாயாஜாலம் நடக்கிறது...",
         chooseLang: "மொழி தேர்ந்தெடுக்கவும் 🌍", chooseLangSub: "உங்கள் விஷிற்கான மொழியை தேர்வு செய்யவும்",
@@ -215,7 +215,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "તેમનો જન્મદિવસ બનાવો", heroTitle2: "યાદગાર.",
         heroSubtitle: "બોરિંગ મેસેજ ભૂલો. ૩ મિનિટમાં ઇન્ટરેક્ટિવ જન્મદિવસ વિશ બનાવો.",
         createBirthdayWish: "જન્મદિવસ વિશ બનાવો", anniversaryWish: "વર્ષગાંઠ વિશ 💍",
-        coupleQuiz: "🎮 કપલ ક્વિઝ રમો", takes3Min: "માત્ર ૩ મિનિટ • ૧૦૦% ફ્રી",
+        takes3Min: "માત્ર ૩ મિનિટ • ૧૦૦% ફ્રી",
         featuresTitle: "આ કોઈ સાદું બર્થડે કાર્ડ નથી!",
         next: "આગળ", back: "પાછળ", generating: "જાદુ થઈ રહ્યો છે...",
         chooseLang: "ભાષા પસંદ કરો 🌍", chooseLangSub: "તમારી વિશ માટે ભાષા પસંદ કરો",
@@ -320,7 +320,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "Haz su Cumpleaños", heroTitle2: "Inolvidable.",
         heroSubtitle: "Olvida los mensajes aburridos. Crea un deseo interactivo en 3 minutos.",
         createBirthdayWish: "Crear Deseo de Cumpleaños", anniversaryWish: "Deseo de Aniversario 💍",
-        coupleQuiz: "🎮 Juega Quiz de Parejas", takes3Min: "Solo 3 minutos • 100% Gratis",
+        takes3Min: "Solo 3 minutos • 100% Gratis",
         featuresTitle: "¡No es una Tarjeta Normal!",
         next: "Siguiente", back: "Atrás", generating: "Creando magia...",
         chooseLang: "Elegir Idioma 🌍", chooseLangSub: "Elige el idioma para tu deseo",
@@ -345,7 +345,7 @@ const siteTranslations: Record<Locale, SiteStrings> = {
         heroTitle1: "Rends leur Anniversaire", heroTitle2: "Inoubliable.",
         heroSubtitle: "Oublie les messages ennuyeux. Crée un vœu interactif en 3 minutes.",
         createBirthdayWish: "Créer un Vœu", anniversaryWish: "Vœu d'Anniversaire 💍",
-        coupleQuiz: "🎮 Jouer au Quiz Couple", takes3Min: "Seulement 3 minutes • 100% Gratuit",
+        takes3Min: "Seulement 3 minutes • 100% Gratuit",
         featuresTitle: "Ce n'est pas une Carte Ordinaire!",
         next: "Suivant", back: "Retour", generating: "Création de la magie...",
         chooseLang: "Choisir la Langue 🌍", chooseLangSub: "Choisis la langue pour ton vœu",

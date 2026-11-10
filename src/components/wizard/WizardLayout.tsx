@@ -296,15 +296,6 @@ export function WizardLayout({
                                     📊 View Analytics
                                 </button>
                             </div>
-
-                            <a
-                                href="https://guesskaro.games/couples"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="mt-3 text-xs text-foreground/30 hover:text-foreground/50 transition-colors"
-                            >
-                                🎮 Also try: Couple Quiz Game
-                            </a>
                         </motion.div>
                     </motion.div>
                 )}

@@ -1,17 +1,24 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/about" },
     title: "About Us | BirthdayWisher.fun — Birthday & Anniversary Wishes",
     description: "Learn about the mission behind BirthdayWisher. We believe birthdays and wedding anniversaries should be unforgettable, emotional, and interactive experiences. Create the perfect anniversary wishes for couple.",
 };
 
 export default function AboutPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-6xl font-black mb-8">About <span className="text-primary">BirthdayWisher.fun</span></h1>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "About" }]}
+                eyebrow="🎂 Our story"
+                title={<>About <span className="bw-hl">BirthdayWisher.fun</span></>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p className="text-xl text-foreground/80 leading-relaxed font-medium mb-8">
                         We are on a mission to kill the boring "HBD" text message.
                     </p>
@@ -39,7 +46,10 @@ export default function AboutPage() {
                         <li><strong>Unforgettable Design:</strong> We are obsessed with creating the "WOW" factor. Every animation, confetti burst, and haptic feedback is designed to delight.</li>
                     </ul>
                 </div>
-            </main>
-        </div>
+                    </div>
+                    <CtaCard title="Ready to make someone smile?" text="Build an interactive birthday surprise in 3 minutes. Free, private, no app." />
+                </div>
+            </section>
+        </PartyPage>
     );
 }

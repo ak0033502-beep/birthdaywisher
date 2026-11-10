@@ -1,18 +1,25 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/terms" },
     title: "Terms & Conditions | BirthdayWisher.fun",
     description: "Terms of service and usage conditions for the BirthdayWisher.fun platform.",
 };
 
 export default function TermsPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-black mb-8">Terms & Conditions</h1>
-                <p className="text-foreground/60 mb-12">Last Updated: October 2024</p>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "Terms & Conditions" }]}
+                eyebrow="📜 The friendly fine print"
+                title={<>Terms & Conditions</>}
+                sub={<>Last Updated: October 2024</>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p>Welcome to BirthdayWisher. By using our website and services, you agree to comply with and be bound by the following terms and conditions.</p>
 
                     <h2 className="text-2xl font-bold mt-12 mb-4">1. Acceptance of Terms</h2>
@@ -39,7 +46,9 @@ export default function TermsPage() {
                     <h2 className="text-2xl font-bold mt-12 mb-4">5. Changes to Terms</h2>
                     <p>We reserve the right to modify or replace these Terms at any time. We will provide notice of any significant changes by updating the date at the top of this page.</p>
                 </div>
-            </main>
-        </div>
+                    </div>
+                </div>
+            </section>
+        </PartyPage>
     );
 }

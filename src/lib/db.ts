@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { WishData } from '@/lib/WishContext';
+import { normalizeWish } from '@/lib/wish/migrate';
 import crypto from 'crypto';
 import { v2 as cloudinary } from "cloudinary";
 
@@ -108,8 +109,7 @@ export async function getWishBySlug(slug: string): Promise<{ id: string; data: W
             SELECT id, data FROM wishes WHERE custom_slug = ${slug}
         `;
         if (rows.length > 0) {
-            // Also trigger the same open + view_count logic
-            await getWish(rows[0].id);
+            // The /wish/[id] page this redirects to does the open + view_count logic (once).
             return { id: rows[0].id, data: rows[0].data as WishData };
         }
         return null;
@@ -228,7 +228,8 @@ export async function cleanupExpiredWishes() {
         let deletedCount = 0;
 
         for (const row of rows) {
-            const wishData = row.data as WishData;
+            // v2 wishes (Wizard 2.0) are converted so the same media fields can be cleaned up
+            const wishData = normalizeWish(row.data).v1;
 
             // Delete modern media gallery from Cloudinary
             if (wishData.mediaItems && wishData.mediaItems.length > 0) {
@@ -272,5 +273,91 @@ export async function cleanupExpiredWishes() {
     } catch (error) {
         console.error("Error cleaning up wishes:", error);
         throw new Error("Failed to clean up wishes");
+    }
+}
+
+/* =========================================================
+   Mini-game leaderboard (Phase 5)
+   Rows are deleted automatically with their wish (ON DELETE CASCADE).
+   ========================================================= */
+async function ensureGameScores() {
+    await sql`
+        CREATE TABLE IF NOT EXISTS game_scores (
+            id SERIAL PRIMARY KEY,
+            wish_id VARCHAR(10) REFERENCES wishes(id) ON DELETE CASCADE,
+            block_id VARCHAR(40) NOT NULL,
+            player VARCHAR(40) NOT NULL,
+            score INTEGER NOT NULL,
+            total INTEGER NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS game_scores_wish_block ON game_scores (wish_id, block_id);`;
+}
+
+const MAX_SCORES_PER_WISH = 200;
+
+/** Returns the trivia block's question count if this wish has a leaderboard quiz with that id, else null. */
+async function leaderboardQuestionCount(wishId: string, blockId: string): Promise<number | null> {
+    const { rows } = await sql`SELECT data FROM wishes WHERE id = ${wishId}`;
+    if (!rows.length) return null;
+    const data = rows[0].data as { schemaVersion?: number; blocks?: Array<{ id: string; type: string; config: { leaderboard?: boolean; questions?: Array<{ q: string; options: string[] }> } }> };
+    if (data?.schemaVersion !== 2 || !Array.isArray(data.blocks)) return null;
+    const block = data.blocks.find((b) => b.id === blockId && b.type === "trivia");
+    if (!block || !block.config?.leaderboard) return null;
+    const qs = (block.config.questions || []).filter((q) => q.q?.trim() && (q.options || []).filter((o) => o?.trim()).length >= 2);
+    return qs.length || null;
+}
+
+export async function saveGameScore(input: { wishId: string; blockId: string; player: string; score: number }): Promise<{ ok: boolean; error?: string }> {
+    await ensureDb();
+    await ensureGameScores();
+    const total = await leaderboardQuestionCount(input.wishId, input.blockId);
+    if (total === null) return { ok: false, error: "Leaderboard not found" };
+    const score = Math.round(Number(input.score));
+    if (!Number.isFinite(score) || score < 0 || score > total) return { ok: false, error: "Invalid score" };
+    // strip control characters / angle brackets, collapse spaces, max 30 chars
+    const player = String(input.player || "").replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 30) || "Anonymous";
+    const { rows } = await sql`SELECT COUNT(*)::int AS n FROM game_scores WHERE wish_id = ${input.wishId}`;
+    if ((rows[0]?.n ?? 0) >= MAX_SCORES_PER_WISH) return { ok: false, error: "Leaderboard is full" };
+    await sql`
+        INSERT INTO game_scores (wish_id, block_id, player, score, total)
+        VALUES (${input.wishId}, ${input.blockId}, ${player}, ${score}, ${total})
+    `;
+    return { ok: true };
+}
+
+export async function getLeaderboard(wishId: string, blockId: string): Promise<Array<{ player: string; score: number; total: number }>> {
+    await ensureDb();
+    await ensureGameScores();
+    const { rows } = await sql`
+        SELECT player, score, total FROM game_scores
+        WHERE wish_id = ${wishId} AND block_id = ${blockId}
+        ORDER BY score DESC, created_at ASC
+        LIMIT 10
+    `;
+    return rows.map((r) => ({ player: String(r.player), score: Number(r.score), total: Number(r.total) }));
+}
+
+
+/**
+ * Read-only peek used for link previews (WhatsApp/OG crawlers).
+ * Unlike getWish() this does NOT mark the wish as opened or bump view_count,
+ * so a chat app fetching the preview never starts the self-destruct timer.
+ */
+export async function peekWishPreview(id: string): Promise<{ name: string; kind: "birthday" | "anniversary" } | null> {
+    if (!/^[a-f0-9]{6,10}$/.test(id)) return null;
+    try {
+        await ensureDb();
+        const { rows } = await sql`SELECT data FROM wishes WHERE id = ${id}`;
+        if (rows.length === 0) return null;
+        const { v2 } = normalizeWish(rows[0].data);
+        const kind = v2.wishType === "anniversary" ? "anniversary" : "birthday";
+        const raw = (kind === "anniversary" ? v2.recipient.coupleName || v2.recipient.name : v2.recipient.name || v2.recipient.nickname) || "";
+        const name = raw.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 40);
+        return { name, kind };
+    } catch (error) {
+        console.error("Error peeking wish:", error);
+        return null;
     }
 }

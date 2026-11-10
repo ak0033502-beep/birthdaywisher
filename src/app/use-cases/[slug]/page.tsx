@@ -1,11 +1,14 @@
 import { Metadata } from "next";
+import { JsonLd, breadcrumbLd } from "@/components/seo/JsonLd";
+import { absUrl } from "@/lib/site";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, CheckCircle, Heart, Gift } from "lucide-react";
 import { notFound } from "next/navigation";
+import { PartyPage, Prose, CtaCard } from "@/components/party/PartyPage";
+import { Bunting } from "@/components/party/Decor";
 
 // Data specific for the high-converting "Use Case" landing pages in the footer
 const getUseCaseData = (slug: string) => {
-    const useCases: Record<string, { title: string, subtitle: string, description: string, benefits: string[], ctaText: string, heroIcon: React.ReactNode, seoSections: { heading: string, body: string }[] }> = {
+    const useCases: Record<string, { title: string, subtitle: string, description: string, benefits: string[], ctaText: string, heroEmoji: string, seoSections: { heading: string, body: string }[] }> = {
         "unique-birthday-gift-online": {
             title: "The Most Unique Birthday Gift Online",
             subtitle: "Why buy a boring physical gift when you can create an unforgettable digital experience?",
@@ -17,7 +20,7 @@ const getUseCaseData = (slug: string) => {
                 "Self-destructs after opening for ultimate privacy."
             ],
             ctaText: "Create the Ultimate Gift",
-            heroIcon: <Gift className="w-16 h-16 text-primary mb-6" />,
+            heroEmoji: "🎁",
             seoSections: [
                 {
                     heading: "Why Digital Gifts Are Taking Over",
@@ -44,7 +47,7 @@ const getUseCaseData = (slug: string) => {
                 "Looks incredible on mobile devices."
             ],
             ctaText: "Start Your Story Card",
-            heroIcon: <Sparkles className="w-16 h-16 text-secondary mb-6" />,
+            heroEmoji: "📱",
             seoSections: [
                 {
                     heading: "Beyond Traditional E-Cards",
@@ -71,7 +74,7 @@ const getUseCaseData = (slug: string) => {
                 "Include a secret time-capsule message."
             ],
             ctaText: "Surprise Your Boyfriend",
-            heroIcon: <Heart className="w-16 h-16 text-blue-500 mb-6" />,
+            heroEmoji: "💙",
             seoSections: [
                 {
                     heading: "How to Surprise Your Boyfriend Online",
@@ -98,7 +101,7 @@ const getUseCaseData = (slug: string) => {
                 "Self-destructs after opening for complete privacy."
             ],
             ctaText: "Create Anniversary Wish",
-            heroIcon: <Heart className="w-16 h-16 text-amber-500 mb-6" />,
+            heroEmoji: "💍",
             seoSections: [
                 {
                     heading: "Why Digital Anniversary Wishes Are the Future",
@@ -125,7 +128,7 @@ const getUseCaseData = (slug: string) => {
                 "Make her laugh with custom inside jokes."
             ],
             ctaText: "Create Her Perfect Surprise",
-            heroIcon: <Heart className="w-16 h-16 text-pink-500 mb-6" />,
+            heroEmoji: "💖",
             seoSections: [
                 {
                     heading: "Creating a Core Memory",
@@ -152,7 +155,7 @@ const getUseCaseData = (slug: string) => {
                 "Self-destructs after 10 hours for intimate, private experience."
             ],
             ctaText: "Bridge the Distance Now",
-            heroIcon: <Heart className="w-16 h-16 text-blue-500 mb-6" />,
+            heroEmoji: "✈️",
             seoSections: [
                 {
                     heading: "Why Long-Distance Birthday Surprises Matter Even More",
@@ -179,7 +182,7 @@ const getUseCaseData = (slug: string) => {
                 "Fun interactive elements that will entertain the whole team."
             ],
             ctaText: "Create Colleague's Birthday Wish",
-            heroIcon: <Sparkles className="w-16 h-16 text-amber-500 mb-6" />,
+            heroEmoji: "🎉",
             seoSections: [
                 {
                     heading: "Why Personalized Colleague Birthday Wishes Stand Out",
@@ -206,7 +209,7 @@ const getUseCaseData = (slug: string) => {
                 "Perfect for parents who live far away."
             ],
             ctaText: "Surprise Mom or Dad Now",
-            heroIcon: <Heart className="w-16 h-16 text-red-500 mb-6" />,
+            heroEmoji: "👨‍👩‍👧",
             seoSections: [
                 {
                     heading: "Why Parents Deserve the Best Birthday Surprise",
@@ -232,96 +235,129 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const data = getUseCaseData(resolvedParams.slug);
 
     if (!data) {
-        return { title: "Use Case Not Found | BirthdayWisher.fun" };
+        return { title: "Use Case Not Found | BirthdayWisher.fun", robots: { index: false } };
     }
 
     return {
         title: `${data.title} | BirthdayWisher.fun`,
+        alternates: { canonical: `/use-cases/${resolvedParams.slug}` },
         description: data.description,
         openGraph: {
             title: data.title,
             description: data.description,
+            url: `/use-cases/${resolvedParams.slug}`,
+            images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "BirthdayWisher.fun - Turn your birthday wish into a game" }],
         },
     };
 }
 
+const USE_CASE_LINKS: { slug: string; e: string; name: string }[] = [
+    { slug: "unique-birthday-gift-online", e: "🎁", name: "Unique Birthday Gift Online" },
+    { slug: "digital-story-greeting-card", e: "📱", name: "Digital Story Greeting Card" },
+    { slug: "boyfriend-birthday-surprise", e: "💙", name: "Boyfriend Birthday Surprise" },
+    { slug: "girlfriend-birthday-surprise", e: "💖", name: "Girlfriend Birthday Surprise" },
+    { slug: "anniversary-wishes-for-couple", e: "💍", name: "Anniversary Wishes for Couple" },
+    { slug: "long-distance-birthday-surprise", e: "✈️", name: "Long Distance Birthday Surprise" },
+    { slug: "colleague-birthday-wish", e: "🎉", name: "Colleague Birthday Wish" },
+    { slug: "parents-birthday-surprise", e: "👨‍👩‍👧", name: "Parents Birthday Surprise" },
+];
+
 export default async function UseCasePage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
-    const data = getUseCaseData(resolvedParams.slug);
+    const slug = resolvedParams.slug;
+    const data = getUseCaseData(slug);
 
     if (!data) {
         notFound();
     }
 
+    const isAnniversary = slug === "anniversary-wishes-for-couple";
+    const createHref = isAnniversary ? "/create?type=anniversary" : "/create";
+    const related = USE_CASE_LINKS.filter((u) => u.slug !== slug);
+
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24 overflow-hidden relative">
-            {/* Background Element */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] -z-10" />
+        <PartyPage>
+            <JsonLd data={[
+                { "@context": "https://schema.org", "@type": "WebPage", name: data.title, description: data.description, url: absUrl(`/use-cases/${slug}`) },
+                breadcrumbLd([{ name: "Home", path: "/" }, { name: data.title, path: `/use-cases/${slug}` }]),
+            ]} />
 
-            <main className="container max-w-5xl mx-auto px-6">
+            <header className="bw-hero bw-page-hero">
+                <Bunting />
+                <div className="bw-container bw-page-hero-in">
+                    <nav aria-label="Breadcrumb" className="bw-crumbs">
+                        <Link href="/">← Back to Home</Link>
+                    </nav>
+                    <div className="bw-split">
+                        <div>
+                            <div className="bw-uc-emoji" aria-hidden="true">{data.heroEmoji}</div>
+                            <h1>{data.title}</h1>
+                            <p className="bw-uc-subtitle">{data.subtitle}</p>
+                            <p className="bw-sub">{data.description}</p>
+                            <ul className="bw-checks">
+                                {data.benefits.map((benefit, i) => (
+                                    <li key={i}>{benefit}</li>
+                                ))}
+                            </ul>
+                            <Link href={createHref} className="bw-btn bw-btn-primary bw-uc-cta">{data.heroEmoji} {data.ctaText}</Link>
+                        </div>
 
-                <Link href="/" className="inline-flex items-center gap-2 text-foreground/50 hover:text-primary transition-colors mb-12 font-medium">
-                    <ArrowLeft className="w-4 h-4" /> Back to Home
-                </Link>
+                        <div className="bw-uc-visual" aria-hidden="true">
+                            <div className="bw-card bw-uc-card">
+                                <div className="bw-uc-gift">{isAnniversary ? "💝" : "🎁"}</div>
+                                <h3>See the surprise</h3>
+                                <p>Takes exactly 3 minutes to build a customized wish they will never forget.</p>
+                                <ol className="bw-uc-steps">
+                                    <li><span style={{ ["--c" as string]: "var(--p-pink)" }}>1</span> Add photos, jokes &amp; a voice note</li>
+                                    <li><span style={{ ["--c" as string]: "var(--p-grape)" }}>2</span> Pick the vibe &amp; the music</li>
+                                    <li><span style={{ ["--c" as string]: "var(--p-mint)" }}>3</span> Send the secret link 🎈</li>
+                                </ol>
+                                <div className="bw-uc-bar"><i /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    {/* Left Content */}
-                    <div>
-                        {data.heroIcon}
-                        <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight tracking-tight">{data.title}</h1>
-                        <p className="text-xl text-primary font-bold mb-6">{data.subtitle}</p>
-                        <p className="text-lg text-foreground/80 leading-relaxed mb-10">
-                            {data.description}
-                        </p>
-
-                        <div className="space-y-4 mb-12 border-l-2 border-white/10 pl-6">
-                            {data.benefits.map((benefit, i) => (
-                                <div key={i} className="flex items-start gap-3">
-                                    <CheckCircle className="w-6 h-6 text-green-500 shrink-0" />
-                                    <span className="text-foreground/80 font-medium">{benefit}</span>
+            {/* Long Form SEO Content Section */}
+            <section className="bw-section" style={{ paddingTop: 30 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 860, margin: "0 auto" }}>
+                        <Prose>
+                            {data.seoSections?.map((section, idx) => (
+                                <div key={idx}>
+                                    <h2>{section.heading}</h2>
+                                    <p>{section.body}</p>
                                 </div>
                             ))}
-                        </div>
+                        </Prose>
+                    </div>
+                </div>
+            </section>
 
-                        <Link href="/create">
-                            <button className="px-10 py-5 bg-primary text-white font-black rounded-full hover:shadow-[0_0_30px_rgba(255,105,180,0.5)] transition-all hover:-translate-y-1 text-lg w-full sm:w-auto text-center">
-                                {data.ctaText}
-                            </button>
+            {/* Related use cases */}
+            <section className="bw-section bw-alt">
+                <div className="bw-container">
+                    <div className="bw-section-title"><h2>More ways to surprise someone 🎈</h2></div>
+                    <div className="bw-guide-grid">
+                        {related.map((u) => (
+                            <Link key={u.slug} href={`/use-cases/${u.slug}`} className="bw-card bw-guide">
+                                <span className="e" aria-hidden="true">{u.e}</span>{u.name}
+                            </Link>
+                        ))}
+                        <Link href="/birthday-wishes-game" className="bw-card bw-guide">
+                            <span className="e" aria-hidden="true">🎮</span>Birthday Wishes Games
                         </Link>
                     </div>
-
-                    {/* Right Visual (Interactive Prompt) */}
-                    <div className="hidden lg:flex justify-center relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[3rem] blur-2xl transform rotate-6" />
-                        <div className="relative glass-panel rounded-[3rem] p-12 border border-white/10 shadow-2xl flex flex-col items-center text-center w-full max-w-sm">
-                            <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-8 relative overflow-hidden group">
-                                <Sparkles className="w-10 h-10 text-primary animate-pulse relative z-10" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4">See The Magic</h3>
-                            <p className="text-foreground/60 mb-8">Takes exactly 3 minutes to build a customized wish they will never forget.</p>
-                            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                                <div className="h-full bg-primary w-2/3 rounded-full animate-pulse" />
-                            </div>
-                        </div>
-                    </div>
+                    <CtaCard
+                        title={isAnniversary ? "Make their anniversary unforgettable" : "Ready to make their day unforgettable?"}
+                        text="Free, private and ready in about 3 minutes — no app, no sign-up."
+                        href={createHref}
+                        cta={`${data.heroEmoji} ${data.ctaText}`}
+                        emoji={isAnniversary ? "🥂" : "🎂"}
+                    />
                 </div>
-
-                {/* Long Form SEO Content Section */}
-                <div className="mt-32 pt-20 border-t border-white/10">
-                    <div className="max-w-3xl mx-auto space-y-16">
-                        {data.seoSections?.map((section, idx) => (
-                            <div key={idx} className="prose prose-invert prose-lg max-w-none">
-                                <h2 className="text-3xl font-bold mb-6 text-white">{section.heading}</h2>
-                                <p className="text-foreground/70 leading-relaxed font-medium">
-                                    {section.body}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-            </main>
-        </div>
+            </section>
+        </PartyPage>
     );
 }

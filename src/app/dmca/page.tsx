@@ -1,18 +1,25 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/dmca" },
     title: "DMCA Policy | BirthdayWisher.fun",
     description: "DMCA takedown policy for BirthdayWisher.fun. Learn how to report copyright infringement on our platform.",
 };
 
 export default function DMCAPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-black mb-8">DMCA Policy</h1>
-                <p className="text-foreground/60 mb-12">Last Updated: July 2026</p>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "DMCA Policy" }]}
+                eyebrow="📄 Copyright"
+                title={<>DMCA Policy</>}
+                sub={<>Last Updated: July 2026</>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p className="text-xl text-foreground/80 leading-relaxed font-medium mb-8">
                         BirthdayWisher.fun respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act (DMCA), we will respond expeditiously to claims of copyright infringement committed using our service.
                     </p>
@@ -72,7 +79,9 @@ export default function DMCAPage() {
                         </p>
                     </div>
                 </div>
-            </main>
-        </div>
+                    </div>
+                </div>
+            </section>
+        </PartyPage>
     );
 }

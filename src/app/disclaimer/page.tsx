@@ -1,20 +1,27 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/disclaimer" },
     title: "Disclaimer | BirthdayWisher.fun",
     description: "Disclaimer for BirthdayWisher.fun — information about the use of our free birthday wish creator service, third-party links, and liability limitations.",
 };
 
 export default function DisclaimerPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-black mb-8">Disclaimer</h1>
-                <p className="text-foreground/60 mb-12">Last Updated: July 2026</p>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "Disclaimer" }]}
+                eyebrow="💡 Good to know"
+                title={<>Disclaimer</>}
+                sub={<>Last Updated: July 2026</>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p className="text-xl text-foreground/80 leading-relaxed font-medium mb-8">
-                        The information provided by BirthdayWisher.fun (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) on <a href="https://birthdaywisher.fun" className="text-primary hover:underline">birthdaywisher.fun</a> (the &quot;Site&quot;) is for general informational and entertainment purposes only.
+                        The information provided by BirthdayWisher.fun (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) on <a href="https://www.birthdaywisher.fun" className="text-primary hover:underline">birthdaywisher.fun</a> (the &quot;Site&quot;) is for general informational and entertainment purposes only.
                     </p>
 
                     <h2 className="text-2xl font-bold mt-12 mb-4">1. General Information</h2>
@@ -64,7 +71,9 @@ export default function DisclaimerPage() {
                         </p>
                     </div>
                 </div>
-            </main>
-        </div>
+                    </div>
+                </div>
+            </section>
+        </PartyPage>
     );
 }

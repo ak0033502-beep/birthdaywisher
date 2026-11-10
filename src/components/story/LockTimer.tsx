@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Timer } from "lucide-react";
 
@@ -20,24 +20,26 @@ export function LockTimer({
 }) {
     const [secondsLeft, setSecondsLeft] = useState(durationSeconds);
 
+    // Keep the latest callback without restarting the countdown when the parent re-renders
+    const onAutoUnlockRef = useRef(onAutoUnlock);
+    useEffect(() => { onAutoUnlockRef.current = onAutoUnlock; }, [onAutoUnlock]);
+
+    // Deadline-based countdown: stays accurate even if the page is busy or timers are throttled.
+    // (The old version restarted a 1 s interval on every tick/re-render, so it could fall far behind.)
     useEffect(() => {
-        if (secondsLeft <= 0) {
-            onAutoUnlock();
-            return;
-        }
-
+        const deadline = Date.now() + durationSeconds * 1000;
+        let fired = false;
         const interval = setInterval(() => {
-            setSecondsLeft((prev) => {
-                if (prev <= 1) {
-                    clearInterval(interval);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
+            const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+            setSecondsLeft(left);
+            if (left <= 0 && !fired) {
+                fired = true;
+                clearInterval(interval);
+                onAutoUnlockRef.current();
+            }
+        }, 250);
         return () => clearInterval(interval);
-    }, [secondsLeft, onAutoUnlock]);
+    }, [durationSeconds]);
 
     const progress = secondsLeft / durationSeconds;
     const circumference = 2 * Math.PI * 18; // radius = 18

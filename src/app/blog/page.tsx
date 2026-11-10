@@ -1,14 +1,26 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, User } from "lucide-react";
 import { Metadata } from "next";
+import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/blog" },
     title: "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration | BirthdayWisher.fun Blog",
     description: "Discover the best birthday wishes, wedding anniversary wishes for couple, rare quotes, funny roasts, and unique gift ideas. Heart-touching ideas for best friends, partners, couples, family, and coworkers.",
     keywords: "Birthday wishes, birthday quotes, happy birthday messages, birthday ideas, best friend birthday, romantic birthday wishes, funny birthday wishes, birthday wishes for brother, birthday wishes for sister, birthday wishes for husband, birthday wishes for wife, birthday wishes for mom, birthday wishes for dad, wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, marriage anniversary wishes",
 };
 
-// Mock data for initial SEO until a CMS is ready
+const CAT_STYLE: Record<string, { e: string; c: string }> = {
+    "For Friends": { e: "🎈", c: "var(--p-pink)" },
+    "For Partners": { e: "💖", c: "var(--p-grape)" },
+    "Guides": { e: "🎮", c: "var(--p-mint)" },
+    "For Family": { e: "🏡", c: "var(--p-orange)" },
+    "For Everyone": { e: "🎉", c: "var(--p-pink)" },
+    "For Couples": { e: "💍", c: "var(--p-grape)" },
+    "For Coworkers": { e: "💼", c: "var(--p-mint)" },
+    "For Crush": { e: "💌", c: "var(--p-pink)" },
+    "Long Distance": { e: "✈️", c: "var(--p-orange)" },
+};
+
 const blogPosts = [
     {
         slug: "top-50-heart-touching-birthday-wishes-for-best-friend",
@@ -17,6 +29,22 @@ const blogPosts = [
         date: "Oct 24, 2024",
         author: "BirthdayWisher.fun Team",
         category: "For Friends"
+    },
+    {
+        slug: "best-friend-quotes",
+        title: "100+ Best Friend Birthday Quotes & Wishes That Hit Different",
+        excerpt: "Find the most heart-touching, funny, and unique birthday wishes for your best friend. Copy-paste ready emotional quotes, roast messages, and surprise ideas.",
+        date: "Oct 25, 2024",
+        author: "BirthdayWisher.fun Editorial",
+        category: "For Friends"
+    },
+    {
+        slug: "romantic-wishes",
+        title: "Romantic Birthday Wishes & Surprises for Boyfriend, Girlfriend & Partner",
+        excerpt: "Find the most romantic birthday wishes, love quotes, surprise ideas, and creative digital gifts for your boyfriend, girlfriend, husband, or wife.",
+        date: "Oct 22, 2024",
+        author: "BirthdayWisher.fun Editorial",
+        category: "For Partners"
     },
     {
         slug: "romantic-birthday-surprise-ideas-for-boyfriend",
@@ -118,7 +146,7 @@ const blogPosts = [
 
 export default function BlogIndex() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
+        <PartyPage>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -127,39 +155,57 @@ export default function BlogIndex() {
                         "@type": "CollectionPage",
                         "name": "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration",
                         "description": "Discover the best birthday wishes, wedding anniversary wishes for couple, rare quotes, funny roasts, and unique gift ideas.",
-                        "url": "https://birthdaywisher.fun/blog",
+                        "url": "https://www.birthdaywisher.fun/blog",
                         "isPartOf": {
                             "@type": "WebSite",
                             "name": "BirthdayWisher.fun",
-                            "url": "https://birthdaywisher.fun"
+                            "url": "https://www.birthdaywisher.fun"
                         }
                     })
                 }}
             />
-            <div className="container max-w-5xl mx-auto px-6">
-                <div className="text-center mb-16">
-                    <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">Idea <span className="text-gradient">Vault.</span></h1>
-                    <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-                        Your ultimate resource for finding the perfect birthday wishes, rare quotes, and unique surprise ideas for every relationship — best friends, partners, siblings, parents, and coworkers.
-                    </p>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {blogPosts.map((post) => (
-                        <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
-                            <article className="glass-panel p-6 rounded-3xl h-full flex flex-col hover:-translate-y-2 transition-transform duration-300">
-                                <div className="text-xs font-bold text-primary mb-4 uppercase tracking-wider">{post.category}</div>
-                                <h2 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors line-clamp-2">{post.title}</h2>
-                                <p className="text-foreground/70 mb-6 flex-grow line-clamp-3">{post.excerpt}</p>
-                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5 text-sm text-foreground/50">
-                                    <div className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {post.date}</div>
-                                    <div className="flex items-center gap-1 font-semibold text-primary group-hover:translate-x-1 transition-transform">Read <ArrowRight className="w-4 h-4" /></div>
-                                </div>
-                            </article>
-                        </Link>
-                    ))}
+            <PageHero
+                center
+                crumbs={[{ name: "Home", href: "/" }, { name: "Blog" }]}
+                eyebrow="📝 Birthday wish ideas & guides"
+                title={<>Idea <span className="bw-hl">Vault.</span></>}
+                sub="Your ultimate resource for finding the perfect birthday wishes, rare quotes, and unique surprise ideas for every relationship — best friends, partners, siblings, parents, and coworkers."
+            />
+
+            <section className="bw-section" style={{ paddingTop: 24 }}>
+                <div className="bw-container">
+                    <div className="bw-post-grid">
+                        {blogPosts.map((post) => {
+                            const st = CAT_STYLE[post.category] ?? { e: "🎂", c: "var(--p-pink)" };
+                            return (
+                                <Link
+                                    key={post.slug}
+                                    href={`/blog/${post.slug}`}
+                                    className="bw-card bw-post-card"
+                                    style={{ ["--c" as string]: st.c }}
+                                >
+                                    <span className="cat">{st.e} {post.category}</span>
+                                    <h2>{post.title}</h2>
+                                    <p>{post.excerpt}</p>
+                                    <div className="meta">
+                                        <span>📅 {post.date}</span>
+                                        <span>✍️ {post.author}</span>
+                                    </div>
+                                    <span className="go">Read article →</span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+
+                    <CtaCard
+                        title="Found the perfect words? Make them playable!"
+                        text="Turn any quote or message into an interactive birthday surprise with photos, voice notes, mini-games and confetti."
+                        cta="🎁 Create a birthday surprise"
+                        emoji="🎂"
+                    />
                 </div>
-            </div>
-        </div>
+            </section>
+        </PartyPage>
     );
 }

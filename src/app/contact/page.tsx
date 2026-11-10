@@ -1,18 +1,25 @@
 import { Metadata } from "next";
+import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
+    alternates: { canonical: "/contact" },
     title: "Contact Us | BirthdayWisher.fun",
     description: "Get in touch with the BirthdayWisher.fun team. We'd love to hear your feedback, suggestions, or answer any questions about our free birthday wish creator.",
 };
 
 export default function ContactPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
-            <main className="container max-w-4xl mx-auto px-6">
-                <h1 className="text-4xl md:text-5xl font-black mb-8">Contact Us</h1>
-                <p className="text-foreground/60 mb-12">We&apos;d love to hear from you!</p>
-
-                <div className="prose prose-invert prose-lg max-w-none">
+        <PartyPage>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "Contact" }]}
+                eyebrow="💌 Say hello"
+                title={<>Contact Us</>}
+                sub={<>We&apos;d love to hear from you!</>}
+            />
+            <section className="bw-section" style={{ paddingTop: 10 }}>
+                <div className="bw-container">
+                    <div className="bw-card bw-paper" style={{ maxWidth: 940, margin: "0 auto" }}>
+                <div className="bw-prose bw-legacy is-wide">
                     <p className="text-xl text-foreground/80 leading-relaxed font-medium mb-8">
                         Have a question, suggestion, or feedback about BirthdayWisher.fun? We&apos;re here to help and always happy to hear from our users.
                     </p>
@@ -45,7 +52,7 @@ export default function ContactPage() {
 
                     <h2 className="text-2xl font-bold mt-12 mb-4">📍 Business Information</h2>
                     <div className="text-foreground/70 leading-relaxed">
-                        <p><strong>Website:</strong> <a href="https://birthdaywisher.fun" className="text-primary hover:underline">birthdaywisher.fun</a></p>
+                        <p><strong>Website:</strong> <a href="https://www.birthdaywisher.fun" className="text-primary hover:underline">birthdaywisher.fun</a></p>
                         <p><strong>Email:</strong> <a href="mailto:akalloverservices@gmail.com" className="text-primary hover:underline">akalloverservices@gmail.com</a></p>
                         <p><strong>Country:</strong> India</p>
                     </div>
@@ -56,7 +63,10 @@ export default function ContactPage() {
                         </p>
                     </div>
                 </div>
-            </main>
-        </div>
+                    </div>
+                    <CtaCard title="Ready to make someone smile?" text="Build an interactive birthday surprise in 3 minutes. Free, private, no app." />
+                </div>
+            </section>
+        </PartyPage>
     );
 }

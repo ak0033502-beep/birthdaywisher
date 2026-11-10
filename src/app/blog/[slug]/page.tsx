@@ -1,7 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, User, Calendar, Clock, Heart, ArrowRight, Zap } from "lucide-react";
+import { Heart, Zap } from "lucide-react";
+import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPage";
 import { notFound } from "next/navigation";
+import { SITE_URL, toIsoDate } from "@/lib/site";
 
 // Placeholder data - In production this would come from a CMS or MDX
 const getPostData = (slug: string) => {
@@ -519,7 +521,7 @@ const getPostData = (slug: string) => {
                     <h2 className="text-3xl font-bold mt-12 mb-6 text-pink-500">Sweet & Subtle Birthday Wishes for Your Crush</h2>
                     <p className="mb-4 text-foreground/70">These say &quot;I care about you&quot; without screaming &quot;I&apos;M OBSESSED&quot;:</p>
                     <ul className="space-y-4 mb-8 text-foreground/80 list-disc pl-6 leading-relaxed">
-                        <li>&quot;Happy Birthday! I just wanted you to know — the world got a little better the day you were born. Have an amazing day. ✨&quot;</li>
+                        <li>&quot;Happy Birthday! I just wanted you to know — the world got a little better the day you were born. Have an amazing day. 🎉&quot;</li>
                         <li>&quot;Hey, Happy Birthday! You deserve all the good things today and every day. Just saying.&quot;</li>
                         <li>&quot;Happy Birthday to someone who makes every room a little brighter just by being in it. Hope your day is as special as you are.&quot;</li>
                         <li>&quot;Wishing the happiest birthday to someone I always look forward to talking to. Here&apos;s to your incredible year ahead. 🎂&quot;</li>
@@ -610,11 +612,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const post = getPostData(resolvedParams.slug);
 
     if (!post) {
-        return { title: "Post Not Found | BirthdayWisher.fun" };
+        return { title: "Post Not Found | BirthdayWisher.fun", robots: { index: false } };
     }
 
     return {
         title: `${post.title} | BirthdayWisher.fun Blog`,
+        alternates: { canonical: `/blog/${resolvedParams.slug}` },
         description: post.description,
         keywords: post.keywords,
         openGraph: {
@@ -622,14 +625,29 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             description: post.description,
             type: "article",
             authors: [post.author],
+            url: `/blog/${resolvedParams.slug}`,
+            images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "BirthdayWisher.fun - Turn your birthday wish into a game" }],
         },
         twitter: {
             card: "summary_large_image",
             title: post.title,
             description: post.description,
+            images: ["/twitter-image.png"],
         }
     };
 }
+
+const CATEGORY_EMOJI: Record<string, string> = {
+    "For Friends": "🎈",
+    "For Partners": "💖",
+    "Guides": "🎮",
+    "For Family": "🏡",
+    "For Everyone": "🎉",
+    "For Couples": "💍",
+    "For Coworkers": "💼",
+    "For Crush": "💌",
+    "Long Distance": "✈️",
+};
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
@@ -640,7 +658,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     }
 
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24">
+        <PartyPage>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -653,15 +671,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                             "@type": "Organization",
                             "name": post.author
                         },
-                        "datePublished": post.date,
+                        "datePublished": toIsoDate(post.date),
+                        "dateModified": toIsoDate(post.date),
                         "publisher": {
                             "@type": "Organization",
                             "name": "BirthdayWisher.fun",
-                            "url": "https://birthdaywisher.fun"
+                            "url": SITE_URL
                         },
                         "mainEntityOfPage": {
                             "@type": "WebPage",
-                            "@id": `https://birthdaywisher.fun/blog/${resolvedParams.slug}`
+                            "@id": `${SITE_URL}/blog/${resolvedParams.slug}`
                         }
                     })
                 }}
@@ -677,70 +696,79 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                                 "@type": "ListItem",
                                 "position": 1,
                                 "name": "Home",
-                                "item": "https://birthdaywisher.fun"
+                                "item": SITE_URL
                             },
                             {
                                 "@type": "ListItem",
                                 "position": 2,
                                 "name": "Blog",
-                                "item": "https://birthdaywisher.fun/blog"
+                                "item": `${SITE_URL}/blog`
                             },
                             {
                                 "@type": "ListItem",
                                 "position": 3,
                                 "name": post.title,
-                                "item": `https://birthdaywisher.fun/blog/${resolvedParams.slug}`
+                                "item": `${SITE_URL}/blog/${resolvedParams.slug}`
                             }
                         ]
                     })
                 }}
             />
-            <main className="container max-w-4xl mx-auto px-6">
 
-                <Link href="/blog" className="inline-flex items-center gap-2 text-foreground/50 hover:text-primary transition-colors mb-8 font-medium">
-                    <ArrowLeft className="w-4 h-4" /> Back to all articles
-                </Link>
-
-                {/* Article Header */}
-                <header className="mb-16">
-                    <div className="text-sm font-bold text-primary mb-6 uppercase tracking-widest">{post.category}</div>
-                    <h1 className="text-4xl md:text-6xl font-black mb-8 leading-tight tracking-tight">{post.title}</h1>
-
-                    <div className="flex flex-wrap items-center gap-6 text-sm text-foreground/60 font-medium">
-                        <div className="flex items-center gap-2"><User className="w-4 h-4" /> {post.author}</div>
-                        <div className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {post.date}</div>
-                        <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> {post.readTime}</div>
-                    </div>
-                </header>
-
-                {/* Article Content */}
-                <article className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-p:leading-relaxed prose-a:text-primary hover:prose-a:text-secondary">
-                    {post.content}
-                </article>
-
-                {/* More Articles Section */}
-                <div className="mt-24 pt-12 border-t border-white/10">
-                    <h2 className="text-2xl font-bold mb-8">More Birthday Ideas</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Link href="/blog/best-friend-quotes" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Zap className="w-5 h-5 text-primary shrink-0" />
-                            <div>
-                                <div className="font-bold group-hover:text-primary transition-colors">100+ Best Friend Quotes</div>
-                                <div className="text-sm text-foreground/50">Emotional, funny & roast wishes</div>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
-                        </Link>
-                        <Link href="/blog/romantic-wishes" className="glass-panel p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-colors group flex items-center gap-3">
-                            <Heart className="w-5 h-5 text-pink-500 shrink-0" />
-                            <div>
-                                <div className="font-bold group-hover:text-primary transition-colors">Romantic Wishes & Surprises</div>
-                                <div className="text-sm text-foreground/50">For boyfriend, girlfriend & partner</div>
-                            </div>
-                            <ArrowRight className="w-4 h-4 text-foreground/30 ml-auto" />
-                        </Link>
-                    </div>
+            <PageHero
+                crumbs={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: post.title }]}
+                eyebrow={<>{CATEGORY_EMOJI[post.category] ?? "🎉"} {post.category}</>}
+                title={post.title}
+                sub={post.description}
+            >
+                <div className="bw-page-meta">
+                    <span className="bw-chip">✍️ {post.author}</span>
+                    <span className="bw-chip">📅 {post.date}</span>
+                    <span className="bw-chip">⏱️ {post.readTime}</span>
                 </div>
-            </main>
-        </div>
+            </PageHero>
+
+            <section className="bw-section" style={{ paddingTop: 20 }}>
+                <div className="bw-container">
+                    {/* Article Content */}
+                    <div className="bw-card bw-paper">
+                        <Prose legacy>{post.content}</Prose>
+                    </div>
+
+                    {/* More Articles Section */}
+                    <h2 className="bw-section-title" style={{ marginTop: 56, fontSize: "clamp(26px, 4vw, 36px)" }}>More Birthday Ideas</h2>
+                    <div className="bw-guide-grid">
+                        <Link href="/blog/best-friend-quotes" className="bw-card bw-guide">
+                            <span className="e" aria-hidden="true">🎈</span>
+                            <span>
+                                100+ Best Friend Quotes
+                                <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>Emotional, funny &amp; roast wishes</small>
+                            </span>
+                        </Link>
+                        <Link href="/blog/romantic-wishes" className="bw-card bw-guide">
+                            <span className="e" aria-hidden="true">💖</span>
+                            <span>
+                                Romantic Wishes &amp; Surprises
+                                <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>For boyfriend, girlfriend &amp; partner</small>
+                            </span>
+                        </Link>
+                        <Link href="/blog" className="bw-card bw-guide">
+                            <span className="e" aria-hidden="true">📝</span>
+                            <span>
+                                Back to all articles
+                                <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>Every wish guide in one place</small>
+                            </span>
+                        </Link>
+                    </div>
+
+                    <CtaCard
+                        title="Turn your wish into a birthday game"
+                        text="Pick your favourite message and hide it at the end of an interactive surprise with quizzes, photos and confetti."
+                        cta="🎁 Create a birthday surprise"
+                        emoji="🎂"
+                    />
+                </div>
+            </section>
+        </PartyPage>
     );
 }

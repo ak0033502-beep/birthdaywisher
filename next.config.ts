@@ -17,6 +17,18 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  // SEO: one canonical host. Permanent (308) redirect from the bare domain to www.
+  // (Also set this as a permanent redirect in Vercel → Project → Domains.)
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "birthdaywisher.fun" }],
+        destination: "https://www.birthdaywisher.fun/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
