@@ -6,6 +6,7 @@ import { languages } from "@/lib/i18n";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
 import { PartyThemeToggle } from "./PartyThemeToggle";
+import { BrandMark } from "./BrandLogo";
 
 /** Navbar for redesigned ("Joyful Party") pages. Carries its own `.party` scope for design tokens. */
 export function PartyNavbar() {
@@ -24,7 +25,7 @@ export function PartyNavbar() {
     return (
         <header className="party bw-nav">
             <div className="bw-nav-in">
-                <Link href="/" className="bw-logo" aria-label="BirthdayWisher.fun home">🎂 BirthdayWisher<b>.fun</b></Link>
+                <Link href="/" className="bw-logo" aria-label="BirthdayWisher.fun home"><BrandMark size={30} /><span>BirthdayWisher<b>.fun</b></span></Link>
                 <nav className="bw-nav-links" aria-label="Main">
                     <Link href="/birthday-wishes-game">Games</Link>
                     <Link href="/anniversary">{s.anniversary}</Link>

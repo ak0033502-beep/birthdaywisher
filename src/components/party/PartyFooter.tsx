@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
 import { getHomeStrings } from "@/components/home/homeStrings";
+import { BrandMark } from "./BrandLogo";
 
 /** Site footer in the "Joyful Party" design. Must be rendered inside a `.party` scope. */
 export function PartyFooter() {
@@ -15,7 +16,7 @@ export function PartyFooter() {
             <div className="bw-container">
                 <div className="bw-footer-grid">
                     <div>
-                        <div className="bw-logo" style={{ marginBottom: 12 }}>🎂 BirthdayWisher<b>.fun</b></div>
+                        <div className="bw-logo" style={{ marginBottom: 12 }}><BrandMark size={30} /><span>BirthdayWisher<b>.fun</b></span></div>
                         <p>{s.footerDesc}</p>
                     </div>
                     <div>
