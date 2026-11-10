@@ -5,7 +5,7 @@ import { V2WishShell } from "@/components/viewer/V2WishShell";
 
 /**
  * Hidden preview: open any existing wish in the NEW v2 block viewer.
- * The production link /wish/[id] is unchanged and still uses the v1 viewers.
+ * (The production link /wish/[id] keeps v1 wishes in their original v1 viewers; v2 wishes use this engine.)
  * Old (v1) data is converted on the fly by migrateV1toV2. Nothing is written back.
  */
 export const metadata: Metadata = {

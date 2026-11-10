@@ -1,12 +1,15 @@
 "use client";
 
 import "@/components/viewer/viewer.css";
+import "@/components/viewer/styles.css";
 import { useEffect, useRef } from "react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { BlockType, WishDataV2 } from "@/lib/wish/schema";
 import { BlockSlide, type SlideCtx } from "@/blocks/slides";
 import { getSkin, skinVars } from "@/components/viewer/skins";
 import { BlockViewer } from "@/components/viewer/BlockViewer";
+import { normalizeStyle, styleSkin } from "@/components/viewer/styles";
+import { SlideFrame, StyleDecor, StyleHeader } from "@/components/viewer/StyleChrome";
 
 /** Live preview: renders the REAL viewer slide for the block being edited, inside a phone frame. */
 export function PreviewPhone({ wish, focus, tilt = true }: { wish: WishDataV2; focus: BlockType | null; tilt?: boolean }) {
@@ -16,7 +19,9 @@ export function PreviewPhone({ wish, focus, tilt = true }: { wish: WishDataV2; f
     const ctx: SlideCtx = { wish, i, unlocked: true, unlock: () => {}, celebrate: () => {} };
 
     // little jiggle whenever the previewed content changes
-    const sig = JSON.stringify(block?.config ?? null) + wish.look.theme + wish.recipient.name;
+    const sig = JSON.stringify(block?.config ?? null) + wish.look.theme + wish.look.presentationStyle + wish.recipient.name;
+    const styleId = normalizeStyle(wish.look.presentationStyle);
+    const idx = Math.max(0, block ? wish.blocks.indexOf(block) : 0);
     useEffect(() => {
         const el = ref.current; if (!el) return;
         el.classList.remove("jiggle"); void el.offsetWidth; el.classList.add("jiggle");
@@ -45,11 +50,15 @@ export function PreviewPhone({ wish, focus, tilt = true }: { wish: WishDataV2; f
     return (
         <div className="wz2-phone" ref={ref} aria-label="Live preview">
             <div className="wz2-screen">
-                <div className="bv bv-embed" style={skinVars(getSkin(wish.look.theme)) as React.CSSProperties}>
+                <div className="bv bv-embed" data-style={styleId} style={skinVars(styleSkin(styleId, getSkin(wish.look.theme))) as React.CSSProperties}>
+                    <StyleDecor style={styleId} />
+                    <StyleHeader style={styleId} wish={wish} idx={idx} total={wish.blocks.length} type={block?.type} i={i} />
                     <div className="bv-stage">
                         {block && (
-                            <section className="bv-slide" key={block.id}>
-                                <BlockSlide block={block} ctx={ctx} />
+                            <section className="bv-slide" key={block.id + styleId}>
+                                <SlideFrame style={styleId} idx={idx} type={block.type} embed>
+                                    <BlockSlide block={block} ctx={ctx} />
+                                </SlideFrame>
                             </section>
                         )}
                     </div>

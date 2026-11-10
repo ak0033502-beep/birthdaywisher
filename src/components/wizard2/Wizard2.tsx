@@ -18,6 +18,7 @@ import { CandlesEditor, COMING_SOON, GAME_LIBRARY, PlacementChips, PrankEditor, 
 import { BLOCK_COPY, EDITORS, type EditorEnv } from "./editors";
 import { Cuppy, PowerMeter, RELATIONS, VIBES, popSound, useWizardSettings } from "./ui";
 import { FullPreview, PreviewPhone } from "./PreviewPhone";
+import { STYLE_IDS, STYLE_INFO } from "@/components/viewer/styles";
 
 const DRAFT_KEY = "bw-wizard2-draft";
 
@@ -37,14 +38,8 @@ const ANNIVERSARY_SKINS = [
     { id: "cherry-blossom", t: "Cherry Blossom", e: "🌸", bg: "linear-gradient(160deg,#fff1f2,#fce7f3)" },
     { id: "royal-navy", t: "Royal Navy", e: "⚓", bg: "linear-gradient(160deg,#1e3a8a,#020617)" },
 ];
-const STYLES = [
-    { id: "cinematic", e: "🎬", t: "Cinematic", d: "New engine · uses your colour skin" },
-    { id: "terminal", e: "💻", t: "Hacker Terminal", d: "Classic style" },
-    { id: "storybook", e: "📖", t: "Storybook", d: "Classic style" },
-    { id: "messenger", e: "💬", t: "Secret Chat", d: "Classic style" },
-    { id: "galaxy", e: "🪐", t: "Space Odyssey", d: "Classic style" },
-    { id: "gallery", e: "🖼️", t: "Art Museum", d: "Classic style" },
-];
+const COLOUR_NOTE = { skin: "Uses your colour skin", accent: "Uses your skin's accent colours", own: "Has its own colours" } as const;
+const STYLES = STYLE_IDS.map((id) => ({ id, e: STYLE_INFO[id].e, t: STYLE_INFO[id].t, d: `${STYLE_INFO[id].d} · ${COLOUR_NOTE[STYLE_INFO[id].colours]}` }));
 const FINALES = [{ id: "confetti", t: "🎊 Confetti" }, { id: "hearts", t: "💗 Hugs & hearts" }, { id: "lanterns", t: "🏮 Lanterns" }];
 
 const fill = (s: string, name: string) => s.replace(/\{name\}/g, name || "them");

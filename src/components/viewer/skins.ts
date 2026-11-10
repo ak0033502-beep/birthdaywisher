@@ -41,9 +41,9 @@ export function getSkin(theme: string | undefined): Skin {
 }
 
 /** CSS variables consumed by viewer.css */
-export function skinVars(s: Skin): Record<string, string> {
+export function skinVars(s: Skin & { display?: string }): Record<string, string> {
     return {
         "--v-bg": s.bg, "--v-text": s.text, "--v-muted": s.muted, "--v-accent": s.accent, "--v-accent2": s.accent2,
-        "--v-card": s.card, "--v-card-border": s.cardBorder, "--v-font": s.font, "--v-display": display,
+        "--v-card": s.card, "--v-card-border": s.cardBorder, "--v-font": s.font, "--v-display": s.display || display,
     };
 }

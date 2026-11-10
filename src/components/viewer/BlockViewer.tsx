@@ -1,22 +1,27 @@
 "use client";
 
 import "./viewer.css";
+import "./styles.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { WishDataV2 } from "@/lib/wish/schema";
 import { getBlock } from "@/blocks/registry";
 import { BlockSlide, type SlideCtx } from "@/blocks/slides";
 import { getSkin, skinVars } from "./skins";
+import { normalizeStyle, styleSkin } from "./styles";
+import { SlideFrame, StyleCover, StyleDecor, StyleHeader } from "./StyleChrome";
 
 /**
- * v2 viewer engine (Phase 3): renders ANY wish as an ordered list of blocks.
- * - one engine for all blocks; colours/typography come from skins
- * - gate blocks (secret date, puzzle, quiz) must be solved or auto-skip after 60 s
+ * v2 viewer engine: renders ANY wish as an ordered list of blocks.
+ * - one engine for all blocks; colours come from the skin, frame/typography/transitions from the
+ *   presentation style (cinematic, terminal, storybook, chat, galaxy, gallery) — every style shows every block
+ * - gate blocks (secret date, puzzle, quiz, games) must be solved or auto-skip after 60 s
  * - visible Back/Next buttons + keyboard + swipe (no invisible tap zones)
  */
 export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: string }) {
     const i = getTranslations((wish.look.language as Locale) || "en");
-    const skin = getSkin(wish.look.theme);
+    const styleId = normalizeStyle(wish.look.presentationStyle);
+    const skin = styleSkin(styleId, getSkin(wish.look.theme));
 
     // Only blocks that actually have content are shown
     const slides = useMemo(
@@ -77,13 +82,7 @@ export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: strin
     const style = skinVars(skin) as React.CSSProperties;
 
     if (!opened) {
-        return (
-            <button type="button" className="bv-envelope" style={style} onClick={() => { setOpened(true); celebrate(120); }} aria-label={i.tapToOpen}>
-                <span className="bv-muted" style={{ fontWeight: 800 }}>{i.fromLabel}: {wish.recipient.name}</span>
-                <span className="bv-env" aria-hidden="true">💌</span>
-                <span className="bv-tap">{i.tapToOpen}</span>
-            </button>
-        );
+        return <StyleCover style={styleId} wish={wish} i={i} vars={style} onOpen={() => { setOpened(true); celebrate(120); }} />;
     }
 
     const ctx: SlideCtx = {
@@ -93,25 +92,32 @@ export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: strin
         celebrate,
     };
 
+    const isLast = idx === slides.length - 1;
+
     return (
-        <div className="bv" style={style} data-skin={wish.look.theme}>
+        <div className="bv" style={style} data-skin={wish.look.theme} data-style={styleId}>
+            <StyleDecor style={styleId} />
             <div className="bv-progress" aria-hidden="true">
                 {slides.map((s, n) => <span key={s.id} className={`${n < idx ? "is-done" : ""} ${n === idx ? "is-now" : ""} ${n === idx && locked ? "is-locked" : ""}`}><i /></span>)}
             </div>
-            <div className="bv-to"><span>{i.fromLabel}: {wish.recipient.name}</span><span>{idx + 1}/{slides.length}</span></div>
+            <StyleHeader style={styleId} wish={wish} idx={idx} total={slides.length} type={current?.type} i={i} />
 
             <div className="bv-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
                 {current && (
                     <section key={current.id} className={`bv-slide enter-${dir} ${nudge ? "bv-shake" : ""}`} data-section={current.type} aria-roledescription="slide" aria-label={`${idx + 1} / ${slides.length}`}>
-                        <BlockSlide block={current} ctx={ctx} />
+                        <SlideFrame style={styleId} idx={idx} type={current.type}>
+                            <BlockSlide block={current} ctx={ctx} />
+                        </SlideFrame>
                     </section>
                 )}
             </div>
 
             <nav className="bv-nav" aria-label="Story navigation">
                 <button type="button" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous">‹</button>
-                {locked && <span className="bv-lock-badge">🔒 Solve to continue</span>}
-                <button type="button" onClick={() => go(1)} disabled={idx === slides.length - 1} className={locked ? "is-locked" : ""} aria-label="Next">›</button>
+                {locked
+                    ? <span className="bv-lock-badge">🔒 Solve to continue</span>
+                    : styleId === "messenger" && !isLast && <span className="bvs-chat-hint">Tap ➤ for the next message</span>}
+                <button type="button" onClick={() => go(1)} disabled={isLast} className={locked ? "is-locked" : ""} aria-label="Next">{styleId === "messenger" ? "➤" : "›"}</button>
             </nav>
         </div>
     );

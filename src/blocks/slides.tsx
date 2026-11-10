@@ -197,12 +197,21 @@ function GiftCard({ config }: SlideProps<"giftCard">) {
     );
 }
 
-function Finale({ ctx }: SlideProps<"finale">) {
+function Finale({ config, ctx }: SlideProps<"finale">) {
     const { wish, i } = ctx;
-    useEffect(() => { ctx.celebrate(220); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const effect = config?.effect || "confetti";
+    useEffect(() => { ctx.celebrate(effect === "confetti" ? 220 : 90); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     const name = wish.wishType === "anniversary" ? wish.recipient.coupleName || wish.recipient.name : wish.recipient.name;
+    const rise = effect === "hearts" ? ["💗", "💖", "🤗", "💕"] : effect === "lanterns" ? ["🏮", "🏮", "🪔"] : null;
     return (
         <>
+            {rise && (
+                <div className="bv-rise" aria-hidden="true">
+                    {Array.from({ length: 16 }, (_, n) => (
+                        <span key={n} style={{ left: `${(n * 61) % 100}%`, animationDelay: `${(n % 8) * 0.55}s`, animationDuration: `${6 + (n % 5)}s`, fontSize: 22 + ((n * 7) % 22) }}>{rise[n % rise.length]}</span>
+                    ))}
+                </div>
+            )}
             <p className="bv-muted" style={{ fontSize: 18 }}>{wish.wishType === "anniversary" ? i.happyAnniversary : i.happyBirthdayFinale}</p>
             <h1 className="bv-finale-name bv-grad">{name}</h1>
             <p className="bv-muted" style={{ fontSize: 18 }}>{i.withAllMyLove} 💖</p>

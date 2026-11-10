@@ -7,7 +7,7 @@ import type { BlockInstance } from "@/lib/wish/schema";
 
 /**
  * Local design review of the v2 viewer with sample data. Development only:
- * returns 404 in production builds. Use ?demo=anniversary|games and ?theme=pastel|elegant|paper|...
+ * returns 404 in production builds. Use ?demo=anniversary|games, ?theme=pastel|elegant|paper|... and ?style=terminal|storybook|messenger|galaxy|gallery
  */
 export const metadata: Metadata = { title: "Viewer v2 demo", robots: { index: false, follow: false } };
 
@@ -20,11 +20,12 @@ const DEMO_GAMES = [
     { id: "candles-1", type: "candles", config: { candles: 5, message: "Make a wish!", placement: "finale" } },
 ] as unknown as BlockInstance[];
 
-export default async function ViewerV2Demo({ searchParams }: { searchParams: Promise<{ demo?: string; theme?: string }> }) {
+export default async function ViewerV2Demo({ searchParams }: { searchParams: Promise<{ demo?: string; theme?: string; style?: string }> }) {
     if (process.env.NODE_ENV === "production") notFound();
-    const { demo, theme } = await searchParams;
+    const { demo, theme, style } = await searchParams;
     const base = demo === "anniversary" ? DEMO_ANNIVERSARY : DEMO_BIRTHDAY;
     const wish = migrateV1toV2(theme ? { ...base, theme } : base);
+    if (style) wish.look.presentationStyle = style;
     if (demo === "games") {
         const [prank, trivia, candles] = DEMO_GAMES;
         const b = wish.blocks;

@@ -4,7 +4,7 @@ import { V2WishShell } from "@/components/viewer/V2WishShell";
 import type { Metadata } from "next";
 import { getWish, peekWishPreview } from "@/lib/db";
 import { headers } from "next/headers";
-import { isV2, v2ToV1 } from "@/lib/wish/migrate";
+import { isV2 } from "@/lib/wish/migrate";
 
 // Private, personal wish page: keep it out of search results
 const ROBOTS: Metadata["robots"] = { index: false, follow: false, googleBot: { index: false, follow: false } };
@@ -52,16 +52,13 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
         );
     }
 
-    // Wishes made with Wizard 2.0 (v2 blocks)
+    // Wishes made with Wizard 2.0 (v2 blocks): every presentation style (cinematic, terminal,
+    // storybook, chat, galaxy, gallery) renders in the v2 engine, so no block is ever dropped.
     if (isV2(raw)) {
-        const style = raw.look.presentationStyle || "cinematic";
         return (
             <>
                 <AnalyticsTracker />
-                {style === "cinematic"
-                    ? <V2WishShell wish={raw} wishId={resolvedParams.id} />
-                    // the special classic styles (terminal, storybook, chat, galaxy, gallery) still render via their v1 viewers
-                    : <WishTimeCapsuleWrapper wishData={v2ToV1(raw)} />}
+                <V2WishShell wish={raw} wishId={resolvedParams.id} />
             </>
         );
     }
