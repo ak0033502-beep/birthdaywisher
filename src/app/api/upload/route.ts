@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,23 +7,32 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Only photos, videos and voice notes, and nothing huge (protects the Cloudinary account from abuse)
+const MAX_BYTES = 60 * 1024 * 1024;
+const ALLOWED = /^(image|video|audio)\//;
+
 export async function POST(req: Request) {
     try {
         const formData = await req.formData();
-        const file = formData.get("file") as File;
+        const file = formData.get("file");
 
-        if (!file) {
+        if (!file || typeof file === "string") {
             return NextResponse.json({ error: "No file provided" }, { status: 400 });
         }
+        if (file.type && !ALLOWED.test(file.type)) {
+            return NextResponse.json({ error: "Only photos, videos and voice notes can be uploaded" }, { status: 415 });
+        }
+        if (file.size > MAX_BYTES) {
+            return NextResponse.json({ error: "File is too large (max 60 MB)" }, { status: 413 });
+        }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        const buffer = Buffer.from(await file.arrayBuffer());
 
-        const uploadResult = await new Promise((resolve, reject) => {
+        const uploadResult = await new Promise<UploadApiResponse>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 { resource_type: "auto", folder: "birthday_wishes" },
                 (error, result) => {
-                    if (error) reject(error);
+                    if (error || !result) reject(error || new Error("Empty upload result"));
                     else resolve(result);
                 }
             );
@@ -31,11 +40,11 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({
-            url: (uploadResult as any).secure_url,
-            public_id: (uploadResult as any).public_id
+            url: uploadResult.secure_url,
+            public_id: uploadResult.public_id,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error("Error uploading to Cloudinary:", error);
-        return NextResponse.json({ error: error?.message || String(error) || "Failed to upload file" }, { status: 500 });
+        return NextResponse.json({ error: "Upload failed. Please try again." }, { status: 500 });
     }
 }

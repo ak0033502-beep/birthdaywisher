@@ -1,8 +1,10 @@
+import "@/lib/netFix";
 import { sql } from '@vercel/postgres';
 import { WishData } from '@/lib/WishContext';
 import { normalizeWish } from '@/lib/wish/migrate';
 import crypto from 'crypto';
 import { v2 as cloudinary } from "cloudinary";
+import { ledgerWishCreated, ledgerWishDeleted, ledgerWishViewed } from "@/lib/analytics";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,9 +12,22 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Initialize the database table if it doesn't exist
-export async function ensureDb() {
-    try {
+// Initialize the database table if it doesn't exist.
+// Runs the schema statements ONCE per server instance (they used to run on every request:
+// 6 extra database round-trips on every wish open / create / slug check).
+const gDb = globalThis as unknown as { __bwDbReady?: Promise<void> | null };
+export function ensureDb(): Promise<void> {
+    if (!gDb.__bwDbReady) {
+        gDb.__bwDbReady = setupDb().catch((error) => {
+            gDb.__bwDbReady = null; // retry on the next request
+            console.error("Error setting up Postgres DB:", error);
+        });
+    }
+    return gDb.__bwDbReady;
+}
+
+async function setupDb() {
+    {
         await sql`
             CREATE TABLE IF NOT EXISTS wishes (
                 id VARCHAR(10) PRIMARY KEY,
@@ -42,16 +57,14 @@ export async function ensureDb() {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             );
         `;
-    } catch (error) {
-        console.error("Error setting up Postgres DB:", error);
     }
 }
 
 export async function saveWish(data: WishData & { customSlug?: string }): Promise<{ id: string; creatorToken: string }> {
     await ensureDb();
 
-    // Generate a short 6-character random ID
-    const id = crypto.randomBytes(3).toString('hex');
+    // Generate a short 6-character random ID (retry on the rare collision instead of failing)
+    let id = crypto.randomBytes(3).toString('hex');
     const creatorToken = crypto.randomBytes(32).toString('hex');
     const customSlug = data.customSlug?.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') || null;
 
@@ -59,14 +72,68 @@ export async function saveWish(data: WishData & { customSlug?: string }): Promis
     const { customSlug: _removed, ...wishData } = data;
 
     try {
-        await sql`
-            INSERT INTO wishes (id, data, custom_slug, creator_token)
-            VALUES (${id}, ${JSON.stringify(wishData)}::jsonb, ${customSlug}, ${creatorToken})
-        `;
+        for (let attempt = 0; ; attempt++) {
+            try {
+                await sql`
+                    INSERT INTO wishes (id, data, custom_slug, creator_token)
+                    VALUES (${id}, ${JSON.stringify(wishData)}::jsonb, ${customSlug}, ${creatorToken})
+                `;
+                break;
+            } catch (e) {
+                const msg = String((e as { message?: string })?.message || e);
+                if (attempt < 4 && /duplicate key/i.test(msg) && /pkey/i.test(msg)) { id = crypto.randomBytes(3).toString('hex'); continue; }
+                if (/duplicate key/i.test(msg) && /custom_slug/i.test(msg)) throw new SlugTakenError();
+                throw e;
+            }
+        }
+        // anonymous metadata for the admin dashboard (survives the self-destruct)
+        await ledgerWishCreated(id, wishData, !!customSlug);
         return { id, creatorToken };
     } catch (error) {
+        if (error instanceof SlugTakenError) throw error;
         console.error("Error saving wish:", error);
         throw new Error("Failed to save wish");
+    }
+}
+
+/** The chosen custom link was taken between the availability check and saving. */
+export class SlugTakenError extends Error {
+    constructor() { super("This custom link is already taken"); this.name = "SlugTakenError"; }
+}
+
+export function getScheduledUnlockTime(raw: unknown): number | null {
+    if (!raw || typeof raw !== "object") return null;
+    const obj = raw as { unlockDate?: unknown; unlock?: { date?: unknown } };
+    const iso = typeof obj.unlock?.date === "string" && obj.unlock.date.trim()
+        ? obj.unlock.date.trim()
+        : typeof obj.unlockDate === "string" && obj.unlockDate.trim()
+            ? obj.unlockDate.trim()
+            : "";
+    if (!iso) return null;
+    const ms = Date.parse(iso);
+    return Number.isFinite(ms) ? ms : null;
+}
+
+/**
+ * Admin read-only fetch: returns the wish without touching opened_at, view_count, or wish_ledger.
+ */
+export async function getWishReadOnly(id: string): Promise<{ data: WishData; openedAt: string | null; viewCount: number } | null> {
+    await ensureDb();
+    try {
+        const { rows } = await sql`
+            SELECT data, opened_at, view_count FROM wishes WHERE id = ${id}
+        `;
+        if (rows.length > 0) {
+            return {
+                data: rows[0].data as WishData,
+                openedAt: rows[0].opened_at ? String(rows[0].opened_at) : null,
+                viewCount: Number(rows[0].view_count || 0),
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error("Error reading wish (admin read-only):", error);
+        return null;
     }
 }
 
@@ -74,27 +141,28 @@ export async function getWish(id: string): Promise<WishData | null> {
     await ensureDb();
 
     try {
-        // Mark as opened if it hasn't been already. This starts the 10-hour timer.
-        await sql`
-            UPDATE wishes 
-            SET opened_at = CURRENT_TIMESTAMP, view_count = view_count + 1
-            WHERE id = ${id} AND opened_at IS NULL
-        `;
-
-        // Increment view_count for already-opened wishes
-        await sql`
-            UPDATE wishes SET view_count = view_count + 1
-            WHERE id = ${id} AND opened_at IS NOT NULL
-        `;
-
         const { rows } = await sql`
-            SELECT data FROM wishes WHERE id = ${id}
+            SELECT data, opened_at FROM wishes WHERE id = ${id}
         `;
+        if (rows.length === 0) return null;
 
-        if (rows.length > 0) {
-            return rows[0].data as WishData;
+        const wishData = rows[0].data as WishData;
+        const unlockMs = getScheduledUnlockTime(wishData);
+        const stillLocked = unlockMs !== null && unlockMs > Date.now();
+
+        // Only start the 10-hour self-destruct timer & count views once the countdown lock (if any) has passed
+        if (!stillLocked) {
+            const firstOpen = !rows[0].opened_at;
+            await sql`
+                UPDATE wishes
+                SET opened_at = COALESCE(opened_at, CURRENT_TIMESTAMP),
+                    view_count = COALESCE(view_count, 0) + 1
+                WHERE id = ${id}
+            `;
+            await ledgerWishViewed(id, firstOpen);
         }
-        return null;
+
+        return wishData;
     } catch (error) {
         console.error("Error getting wish:", error);
         return null;
@@ -215,6 +283,50 @@ function getCloudinaryPublicId(url: string) {
     }
 }
 
+/** Delete a wish's photos/videos/voice note from Cloudinary (errors are logged, not thrown). */
+async function deleteWishMedia(raw: unknown) {
+    // v2 wishes (Wizard 2.0) are converted so the same media fields can be cleaned up
+    const wishData = normalizeWish(raw).v1;
+
+    // Delete modern media gallery from Cloudinary
+    if (wishData.mediaItems && wishData.mediaItems.length > 0) {
+        for (const item of wishData.mediaItems) {
+            const publicId = getCloudinaryPublicId(item.url);
+            if (publicId) {
+                await cloudinary.uploader.destroy(publicId, {
+                    resource_type: item.type === 'video' ? 'video' : 'image'
+                }).catch(console.error);
+            }
+        }
+    }
+
+    // Delete legacy media from Cloudinary if exists
+    if (wishData.mediaUrl) {
+        const publicId = getCloudinaryPublicId(wishData.mediaUrl);
+        if (publicId) {
+            await cloudinary.uploader.destroy(publicId, {
+                resource_type: wishData.mediaType === 'video' ? 'video' : 'image'
+            }).catch(console.error);
+        }
+    }
+    // Delete audio from Cloudinary
+    if (wishData.audioUrl) {
+        const publicId = getCloudinaryPublicId(wishData.audioUrl);
+        if (publicId) {
+            await cloudinary.uploader.destroy(publicId, {
+                resource_type: 'video' // Cloudinary treats audio as video resource type
+            }).catch(console.error);
+        }
+    }
+    // Delete a separately uploaded puzzle photo (it was never cleaned up before)
+    const puzzleUrl = (wishData as { puzzleImageUrl?: string }).puzzleImageUrl;
+    const alreadyGone = new Set([...(wishData.mediaItems || []).map((m) => m.url), wishData.mediaUrl].filter(Boolean));
+    if (puzzleUrl && !alreadyGone.has(puzzleUrl)) {
+        const publicId = getCloudinaryPublicId(puzzleUrl);
+        if (publicId) await cloudinary.uploader.destroy(publicId, { resource_type: "image" }).catch(console.error);
+    }
+}
+
 export async function cleanupExpiredWishes() {
     await ensureDb();
     try {
@@ -228,44 +340,18 @@ export async function cleanupExpiredWishes() {
         let deletedCount = 0;
 
         for (const row of rows) {
-            // v2 wishes (Wizard 2.0) are converted so the same media fields can be cleaned up
-            const wishData = normalizeWish(row.data).v1;
-
-            // Delete modern media gallery from Cloudinary
-            if (wishData.mediaItems && wishData.mediaItems.length > 0) {
-                for (const item of wishData.mediaItems) {
-                    const publicId = getCloudinaryPublicId(item.url);
-                    if (publicId) {
-                        await cloudinary.uploader.destroy(publicId, {
-                            resource_type: item.type === 'video' ? 'video' : 'image'
-                        }).catch(console.error);
-                    }
-                }
+            const unlockMs = getScheduledUnlockTime(row.data);
+            // Never delete a scheduled time-capsule wish before (unlock time + 10 hours)
+            if (unlockMs !== null && Date.now() < unlockMs + 10 * 3600 * 1000) {
+                continue;
             }
-
-            // Delete legacy media from Cloudinary if exists
-            if (wishData.mediaUrl) {
-                const publicId = getCloudinaryPublicId(wishData.mediaUrl);
-                if (publicId) {
-                    await cloudinary.uploader.destroy(publicId, {
-                        resource_type: wishData.mediaType === 'video' ? 'video' : 'image'
-                    }).catch(console.error);
-                }
-            }
-            // Delete audio from Cloudinary
-            if (wishData.audioUrl) {
-                const publicId = getCloudinaryPublicId(wishData.audioUrl);
-                if (publicId) {
-                    await cloudinary.uploader.destroy(publicId, {
-                        resource_type: 'video' // Cloudinary treats audio as video resource type
-                    }).catch(console.error);
-                }
-            }
+            await deleteWishMedia(row.data);
 
             // Delete row from postgres
             await sql`
                 DELETE FROM wishes WHERE id = ${row.id}
             `;
+            await ledgerWishDeleted(row.id);
             deletedCount++;
         }
 
@@ -274,6 +360,19 @@ export async function cleanupExpiredWishes() {
         console.error("Error cleaning up wishes:", error);
         throw new Error("Failed to clean up wishes");
     }
+}
+
+/** Admin: delete one wish right now (privacy / DMCA request), by id or custom slug. */
+export async function deleteWishNow(idOrSlug: string): Promise<{ ok: boolean; id?: string }> {
+    await ensureDb();
+    const key = idOrSlug.trim().toLowerCase().replace(/^.*\/(wish|w)\//, "").replace(/[^a-z0-9-]/g, "").slice(0, 50);
+    if (!key) return { ok: false };
+    const { rows } = await sql`SELECT id, data FROM wishes WHERE id = ${key} OR custom_slug = ${key} LIMIT 1`;
+    if (!rows.length) return { ok: false };
+    await deleteWishMedia(rows[0].data);
+    await sql`DELETE FROM wishes WHERE id = ${rows[0].id}`;
+    await ledgerWishDeleted(rows[0].id);
+    return { ok: true, id: rows[0].id };
 }
 
 /* =========================================================

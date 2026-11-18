@@ -179,7 +179,7 @@ export const BLOCKS = {
     }),
     finale: def({
         type: "finale", label: "Finale", icon: "🎆", category: "finale", gate: false, supports: both,
-        defaultConfig: () => ({ effect: "confetti" }),
+        defaultConfig: () => ({ effect: "fireworks" }),
         isFilled: () => true,
         fromV1: (v1) => ({ effect: has(v1.finaleEffect) ? str(v1.finaleEffect) : "confetti" }),
         toV1: (c) => ({ finaleEffect: c.effect }),

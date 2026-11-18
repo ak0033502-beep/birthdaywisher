@@ -1,0 +1,80 @@
+/* Review prompt (creator popup + recipient end-of-wish card). Own colours so it looks right on any page. */
+.rv-overlay {
+    position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px;
+    background: rgba(10, 6, 24, .58); animation: rv-fade .25s ease both;
+}
+.rv-card {
+    position: relative; width: min(100%, 400px); padding: 24px 20px 16px; border-radius: 26px; text-align: center;
+    color: #fff; font-family: var(--font-nunito), var(--font-geist-sans), system-ui, sans-serif;
+    background: linear-gradient(160deg, rgba(48, 24, 78, .96), rgba(22, 12, 42, .96));
+    border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+}
+.rv-modal { animation: rv-pop .42s cubic-bezier(.34, 1.56, .64, 1) both; }
+.rv-inline { width: min(100%, 360px); margin-top: 6px; padding: 18px 16px 12px; background: rgba(30, 18, 48, .82);
+    animation: rv-rise .6s ease 2.2s both; }
+
+.rv-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+    background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .8); font-size: 14px; }
+.rv-x:hover { background: rgba(255, 255, 255, .2); }
+
+.rv-kicker { margin: 0 0 4px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #ffb3c7; }
+.rv-title { margin: 0 0 14px; font-size: 21px; line-height: 1.25; font-weight: 900; }
+.rv-inline .rv-title { font-size: 17px; margin-bottom: 10px; }
+
+.rv-faces { display: flex; justify-content: center; gap: 6px; }
+.rv-face {
+    width: 54px; height: 54px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; font-size: 30px; line-height: 1;
+    background: rgba(255, 255, 255, .08); transition: transform .18s, background .2s, opacity .2s, border-color .2s;
+    display: grid; place-items: center;
+}
+.rv-inline .rv-face { width: 48px; height: 48px; font-size: 26px; }
+.rv-face:hover { transform: translateY(-3px) scale(1.08); background: rgba(255, 255, 255, .16); }
+.rv-face.is-on { transform: scale(1.18); border-color: #ff5c8a; background: rgba(255, 92, 138, .22); animation: rv-bounce .5s ease; }
+.rv-face.is-dim { opacity: .45; }
+.rv-face:focus-visible, .rv-btn:focus-visible, .rv-chip:focus-visible, .rv-later:focus-visible { outline: 3px solid #ffd166; outline-offset: 2px; }
+.rv-pick { min-height: 20px; margin: 8px 0 4px; font-size: 14px; font-weight: 800; color: #ffd166; }
+
+.rv-more { display: grid; gap: 8px; margin-top: 6px; animation: rv-fade .3s ease both; }
+.rv-field {
+    width: 100%; padding: 11px 13px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, .16); resize: none;
+    background: rgba(255, 255, 255, .07); color: #fff; font-weight: 600; font-size: 16px; font-family: inherit;
+}
+.rv-field::placeholder { color: rgba(255, 255, 255, .45); }
+.rv-field:focus { outline: none; border-color: #ff8fb8; background: rgba(255, 255, 255, .1); }
+
+.rv-rels { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; align-items: center; font-size: 12px; color: rgba(255, 255, 255, .65); }
+.rv-rels > span { width: 100%; font-weight: 700; }
+.rv-chip { padding: 6px 11px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .18); background: transparent;
+    color: rgba(255, 255, 255, .8); font-weight: 700; font-size: 12px; font-family: inherit; cursor: pointer; }
+.rv-chip.is-on { background: #ff5c8a; border-color: #ff5c8a; color: #fff; }
+
+.rv-btn {
+    min-height: 48px; padding: 12px 20px; border: 0; border-radius: 999px; cursor: pointer; color: #fff; font-weight: 900; font-size: 16px; font-family: inherit;
+    background: linear-gradient(90deg, #ff5c8a, #a855f7); box-shadow: 0 10px 24px rgba(255, 92, 138, .35); transition: transform .15s;
+}
+.rv-btn:active { transform: scale(.97); }
+.rv-btn:disabled { opacity: .6; cursor: default; }
+.rv-later { margin-top: 8px; padding: 6px 10px; border: 0; background: none; cursor: pointer; font-weight: 700; font-size: 13px; font-family: inherit;
+    color: rgba(255, 255, 255, .55); text-decoration: underline; text-underline-offset: 3px; }
+.rv-err { margin: 0; font-size: 13px; color: #ff9b9b; }
+
+.rv-thanks { padding: 8px 0 6px; animation: rv-fade .3s ease both; }
+.rv-thanks-e { font-size: 52px; animation: rv-bounce .6s ease; }
+.rv-thanks h3 { margin: 6px 0 4px; font-size: 22px; font-weight: 900; }
+.rv-thanks p { margin: 0 0 14px; color: rgba(255, 255, 255, .75); font-size: 15px; }
+
+@media (max-width: 520px) {
+    .rv-overlay { align-items: flex-end; padding: 0; }
+    .rv-modal { width: 100%; border-radius: 26px 26px 0 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); animation-name: rv-sheet; }
+}
+
+@keyframes rv-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rv-pop { from { opacity: 0; transform: scale(.86) translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes rv-sheet { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes rv-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes rv-bounce { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1.18); } }
+.rv-thanks-e { display: inline-block; }
+
+@media (prefers-reduced-motion: reduce) {
+    .rv-overlay, .rv-card, .rv-face, .rv-more, .rv-thanks, .rv-thanks-e { animation: none !important; transition: none !important; }
+}

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SiteLanguageProvider } from "@/lib/SiteLanguageContext";
 import { SITE_NAME, SITE_URL, absUrl } from "@/lib/site";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
+import { SiteTracker } from "@/components/seo/SiteTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,13 +69,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Day Party / Night Party: set before first paint to avoid a theme flash */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <script
+          suppressHydrationWarning
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6302942607473891"
           crossOrigin="anonymous"
         />
         <script
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -102,6 +105,7 @@ export default function RootLayout({
             <Navbar />
             {children}
             <GoogleAnalytics />
+            <SiteTracker />
           </SiteLanguageProvider>
         </ThemeProvider>
       </body>

@@ -14,6 +14,7 @@ import { GiftCube } from "@/components/party/Decor";
 import { burst } from "@/components/party/interactions";
 import { newDraft, defaultOrder } from "@/components/wizard2/draft";
 import { CandlesEditor, PrankEditor, TriviaEditor } from "@/components/wizard2/gameEditors";
+import { track } from "@/lib/track";
 
 const DEMO: { [K in GameType]: BlockConfigMap[K] } = {
     candles: { candles: 5, message: "Make a wish! 🎂", placement: "finale" },
@@ -34,6 +35,7 @@ function demoWish(name: string, blocks: BlockInstance[]): WishDataV2 {
 function GameDemo({ game }: { game: GameType }) {
     const [round, setRound] = useState(0);
     const [solved, setSolved] = useState(false);
+    const [played, setPlayed] = useState(false);
     const block = { id: `${game}-1`, type: game, config: DEMO[game] } as BlockInstance;
     const wish = demoWish("Rahul", [block]);
     const ctx: SlideCtx = {
@@ -42,7 +44,7 @@ function GameDemo({ game }: { game: GameType }) {
         celebrate: (n = 80) => burst(window.innerWidth / 2, window.innerHeight / 2, Math.min(n, 120)),
     };
     return (
-        <div style={{ display: "grid", justifyItems: "center", gap: 10 }}>
+        <div style={{ display: "grid", justifyItems: "center", gap: 10 }} onPointerDown={() => { if (!played) { setPlayed(true); track("game_demo_play", { game }); } }}>
             <div className="wz2-phone" style={{ transform: "none" }}>
                 <div className="wz2-screen">
                     <div className="bv bv-embed" style={skinVars(getSkin("neon")) as React.CSSProperties}>
@@ -87,11 +89,13 @@ export function GameMaker({ game, slug }: { game: GameType; slug: string }) {
             if (!res.ok || !data.id) throw new Error(data.error || "Could not create the link");
             try { if (data.creatorToken) localStorage.setItem(`creator_token_${data.id}`, data.creatorToken); } catch { /* ignore */ }
             setLink(`${window.location.origin}/wish/${data.id}`);
+            track("game_maker_create", { game, message: !!message.trim() });
         } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
     };
 
     // "Add photos, voice note and more": seed a Wizard 2.0 draft with this game and open it
     const openInWizard = () => {
+        track("cta_click", { label: "game-to-wizard", game });
         const d = newDraft("birthday");
         const draft = {
             ...d, mode: "custom" as const, wantGames: true, order: defaultOrder(),

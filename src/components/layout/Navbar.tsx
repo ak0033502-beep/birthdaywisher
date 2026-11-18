@@ -17,6 +17,7 @@ const CLASSIC_PREFIXES = ["/wish/", "/w/", "/dashboard/", "/create/classic", "/d
 const isClassic = (p: string) => CLASSIC_PREFIXES.some((x) => p.startsWith(x));
 // Full-screen experiences with their own top bar
 const NO_NAVBAR_ROUTES = new Set(["/create"]);
+const NO_NAVBAR_PREFIXES = ["/admin", "/wish/", "/w/", "/dev/finale"];
 
 export function Navbar() {
     const pathname = usePathname();
@@ -38,7 +39,7 @@ export function Navbar() {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    if (NO_NAVBAR_ROUTES.has(pathname)) return null;
+    if (NO_NAVBAR_ROUTES.has(pathname) || NO_NAVBAR_PREFIXES.some((x) => pathname.startsWith(x))) return null;
     if (!isClassic(pathname)) return <PartyNavbar />;
 
     return (

@@ -1,0 +1,23 @@
+Grand Finale sound effects (public/sfx/finale)
+================================================
+All source recordings are CC0 1.0 (public domain) from Freesound, found via Openverse.
+Trimmed, mixed to mono, level-matched and encoded to 64 kbps MP3 for the web.
+No attribution is required; listed here for transparency.
+
+boom1.mp3     <- "Firework Explosion 1"            https://freesound.org/s/212678/
+boom2.mp3     <- "Firework Explosion 2"            https://freesound.org/s/212682/
+boom3.mp3     <- "Firework Explosion 3"            https://freesound.org/s/212683/
+boom4.mp3     <- "Fireworks explosion 1"           https://freesound.org/s/722383/
+crackle1.mp3  <- "Firework crackle"                https://freesound.org/s/722297/
+crackle2.mp3  <- "Firework Cluster"                https://freesound.org/s/140717/
+whistle1.mp3  <- "whistlingrocket_3.wav"           https://freesound.org/s/140725/
+whistle2.mp3  <- "Whistling Firework"              https://freesound.org/s/555998/
+whistle3.mp3  <- "whistleAndReport.aif"            https://freesound.org/s/121558/
+launch.mp3    <- "Bottle Rocket Launch #2.wav"     https://freesound.org/s/695731/
+fountain.mp3  <- "sparklers"                       https://freesound.org/s/533984/
+pop1.mp3      <- "Champagne Cork"                  https://freesound.org/s/392624/
+pop2.mp3      <- "Balloon Pop / Christmas cracker / Confetti Cannon"  https://freesound.org/s/458398/
+pop3.mp3      <- "Popping the cork off a champagne bottle"            https://freesound.org/s/708201/
+horn.mp3      <- "Party horn.wav"                  https://freesound.org/s/170583/
+cheer.mp3     <- "cheering and clapping crowd 1"   https://freesound.org/s/221568/
+yay.mp3       <- "Cheer 2.wav"                     https://freesound.org/s/333404/

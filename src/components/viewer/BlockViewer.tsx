@@ -2,6 +2,8 @@
 
 import "./viewer.css";
 import "./styles.css";
+import "./intro.css";
+import "./moods.css";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { WishDataV2 } from "@/lib/wish/schema";
@@ -10,18 +12,23 @@ import { BlockSlide, type SlideCtx } from "@/blocks/slides";
 import { getSkin, skinVars } from "./skins";
 import { normalizeStyle, styleSkin } from "./styles";
 import { SlideFrame, StyleCover, StyleDecor, StyleHeader } from "./StyleChrome";
+import { StyleIntro } from "./StyleIntro";
+import { track } from "@/lib/track";
+import { isMutedPref, setMutedPref } from "@/lib/celebration/sfx";
+import { playUi, prefetchUi } from "@/lib/celebration/uiSound";
+import { prefetchStyleBgm, startBgm, type BgmController } from "@/lib/celebration/bgm";
 
 /**
- * v2 viewer engine: renders ANY wish as an ordered list of blocks.
- * - one engine for all blocks; colours come from the skin, frame/typography/transitions from the
- *   presentation style (cinematic, terminal, storybook, chat, galaxy, gallery) — every style shows every block
- * - gate blocks (secret date, puzzle, quiz, games) must be solved or auto-skip after 60 s
- * - visible Back/Next buttons + keyboard + swipe (no invisible tap zones)
+ * v2 viewer engine: renders ANY wish as an ordered emotional journey.
+ * - Hold-to-open cover ritual -> style-specific opening intro -> living slides -> Grand Finale
+ * - Ambient mood music bed (auto-ducks on voice/video, pauses on Finale) + per-style slide SFX
+ * - Preloads photos while on cover so slides never flash blank images
+ * - Story edge-tap + swipe + keyboard + visible bottom nav buttons
  */
-export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: string }) {
+export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishDataV2; wishId?: string; adminBypass?: boolean }) {
     const i = getTranslations((wish.look.language as Locale) || "en");
     const styleId = normalizeStyle(wish.look.presentationStyle);
-    const skin = styleSkin(styleId, getSkin(wish.look.theme));
+    const skin = styleSkin(styleId, getSkin(wish.look.theme), wish.look.theme);
 
     // Only blocks that actually have content are shown
     const slides = useMemo(
@@ -30,32 +37,92 @@ export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: strin
     );
 
     const [opened, setOpened] = useState(false);
+    const [intro, setIntro] = useState(false);
     const [idx, setIdx] = useState(0);
     const [dir, setDir] = useState<"next" | "prev">("next");
     const [solved, setSolved] = useState<Set<string>>(() => new Set());
     const [nudge, setNudge] = useState(false);
+    const [muted, setMuted] = useState(() => isMutedPref());
+    const bgmRef = useRef<BgmController | null>(null);
 
     const current = slides[idx];
     const isGate = current ? getBlock(current.type).gate : false;
-    const locked = isGate && !solved.has(current.id);
+    const locked = !adminBypass && isGate && !solved.has(current.id);
+
+    // Preload this style's signature music + wish photos + slide SFX while still on the cover
+    useEffect(() => {
+        void prefetchStyleBgm(styleId);
+        prefetchUi(["page", "msg", "swoosh", "ping"]);
+        for (const b of wish.blocks) {
+            if (b.type === "photos") {
+                for (const m of b.config.items || []) {
+                    if (m.type === "photo" && m.url) { const img = new Image(); img.src = m.url; }
+                }
+            } else if (b.type === "puzzle" && b.config.imageUrl) {
+                const img = new Image(); img.src = b.config.imageUrl;
+            }
+        }
+    }, [styleId, wish.blocks]);
+
+    // Cleanup BGM on unmount
+    useEffect(() => () => { bgmRef.current?.stop(); bgmRef.current = null; }, []);
+
+    // Adjust style soundtrack across slides: soften warmly on heartfelt text slides, fade out on Grand Finale
+    useEffect(() => {
+        const bgm = bgmRef.current;
+        if (!bgm || !current) return;
+        bgm.setStyle(styleId);
+        if (current.type === "finale") bgm.setIntensity(0);
+        else if (current.type === "message" || current.type === "memory" || current.type === "gratitude" || current.type === "promise") bgm.setIntensity(0.76);
+        else bgm.setIntensity(0.95);
+    }, [current, styleId]);
+
+    // Anonymous recipient analytics (only for real links, never in previews)
+    const slideStart = useRef(Date.now());
+    const prevSlide = useRef<{ type: string; idx: number } | null>(null);
+    useEffect(() => {
+        if (!opened || intro || !wishId || !current) return;
+        const prev = prevSlide.current;
+        if (prev) track("wish_slide", { block: prev.type, idx: prev.idx, ms: Date.now() - slideStart.current, total: slides.length }, wishId);
+        prevSlide.current = { type: current.type, idx };
+        slideStart.current = Date.now();
+        if (current.type === "finale") track("wish_finale", { style: styleId, total: slides.length }, wishId);
+    }, [opened, intro, idx, current, wishId, slides.length, styleId]);
 
     const celebrate = useCallback(async (n = 80) => {
         const confetti = (await import("canvas-confetti")).default;
         confetti({ particleCount: n, spread: 80, origin: { y: 0.6 }, disableForReducedMotion: true, zIndex: 200 });
     }, []);
 
+    const playSlideSound = useCallback(() => {
+        if (styleId === "storybook") playUi("page", { gain: 0.75 });
+        else if (styleId === "messenger") playUi("msg", { gain: 0.5 });
+        else if (styleId === "terminal") playUi("ping", { gain: 0.3, rate: 1.35 });
+        else playUi("swoosh", { gain: 0.45 });
+    }, [styleId]);
+
     const go = useCallback((delta: 1 | -1) => {
         if (delta === 1 && locked) { setNudge(true); setTimeout(() => setNudge(false), 500); return; }
         setIdx((v) => {
             const nv = Math.max(0, Math.min(slides.length - 1, v + delta));
-            if (nv !== v) setDir(delta === 1 ? "next" : "prev");
+            if (nv !== v) {
+                setDir(delta === 1 ? "next" : "prev");
+                playSlideSound();
+            }
             return nv;
         });
-    }, [locked, slides.length]);
+    }, [locked, playSlideSound, slides.length]);
+
+    const toggleMute = () => {
+        const next = !muted;
+        setMuted(next);
+        setMutedPref(next);
+        bgmRef.current?.setMuted(next);
+    };
 
     // Keyboard (ignored while typing in an input)
     useEffect(() => {
-        if (!opened) return;
+        if (!opened || intro) return;
         const onKey = (e: KeyboardEvent) => {
             if ((e.target as HTMLElement)?.tagName === "INPUT") return;
             if (e.key === "ArrowRight") go(1);
@@ -63,62 +130,117 @@ export function BlockViewer({ wish, wishId }: { wish: WishDataV2; wishId?: strin
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
-    }, [opened, go]);
+    }, [opened, intro, go]);
 
-    // Horizontal swipe (vertical scrolling inside a slide still works)
-    const touch = useRef<{ x: number; y: number } | null>(null);
+    // Horizontal swipe + story left/right edge tap on empty stage area
+    const touch = useRef<{ x: number; y: number; interactive: boolean } | null>(null);
     const onPointerDown = (e: React.PointerEvent) => {
-        const tag = (e.target as HTMLElement).tagName;
+        const el = e.target as HTMLElement;
+        const tag = el.tagName;
         if (["INPUT", "BUTTON", "A", "AUDIO", "VIDEO", "CANVAS"].includes(tag)) return;
-        touch.current = { x: e.clientX, y: e.clientY };
+        const interactive = !!el.closest(".bv-card, .bv-photo, .bv-puzzle, .gf, .bvs-react-bar");
+        touch.current = { x: e.clientX, y: e.clientY, interactive };
     };
     const onPointerUp = (e: React.PointerEvent) => {
         const t = touch.current; touch.current = null;
         if (!t) return;
         const dx = e.clientX - t.x, dy = e.clientY - t.y;
-        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+            go(dx < 0 ? 1 : -1);
+            return;
+        }
+        // Quick tap on left/right outer 24% of empty stage advances like Instagram Stories
+        if (!t.interactive && Math.abs(dx) < 12 && Math.abs(dy) < 12 && current?.type !== "finale") {
+            const w = window.innerWidth || 1;
+            if (e.clientX < w * 0.24 && idx > 0) go(-1);
+            else if (e.clientX > w * 0.76 && idx < slides.length - 1) go(1);
+        }
     };
 
     const style = skinVars(skin) as React.CSSProperties;
 
     if (!opened) {
-        return <StyleCover style={styleId} wish={wish} i={i} vars={style} onOpen={() => { setOpened(true); celebrate(120); }} />;
+        return (
+            <StyleCover
+                style={styleId}
+                wish={wish}
+                i={i}
+                vars={style}
+                onOpen={() => {
+                    setOpened(true);
+                    setIntro(true);
+                    if (!bgmRef.current) bgmRef.current = startBgm(styleId);
+                    if (wishId) track("wish_open", { style: styleId, theme: wish.look.theme, slides: slides.length, type: wish.wishType }, wishId);
+                }}
+            />
+        );
     }
 
     const ctx: SlideCtx = {
         wish, i, wishId,
         unlocked: !locked,
-        unlock: () => current && setSolved((s) => new Set(s).add(current.id)),
+        unlock: () => {
+            if (!current || solved.has(current.id)) return;
+            if (wishId) track("wish_gate", { block: current.type, how: Date.now() - slideStart.current > 57000 ? "auto" : "solved" }, wishId);
+            setSolved((s) => new Set(s).add(current.id));
+        },
         celebrate,
     };
 
     const isLast = idx === slides.length - 1;
 
     return (
-        <div className="bv" style={style} data-skin={wish.look.theme} data-style={styleId}>
-            <StyleDecor style={styleId} />
-            <div className="bv-progress" aria-hidden="true">
-                {slides.map((s, n) => <span key={s.id} className={`${n < idx ? "is-done" : ""} ${n === idx ? "is-now" : ""} ${n === idx && locked ? "is-locked" : ""}`}><i /></span>)}
-            </div>
-            <StyleHeader style={styleId} wish={wish} idx={idx} total={slides.length} type={current?.type} i={i} />
+        <>
+            {intro && (
+                <StyleIntro
+                    style={styleId}
+                    wish={wish}
+                    vars={style}
+                    onDone={() => {
+                        setIntro(false);
+                        celebrate(120);
+                    }}
+                />
+            )}
+            <div className="bv" style={style} data-skin={wish.look.theme} data-style={styleId}>
+                <StyleDecor style={styleId} theme={wish.look.theme} />
+                <div className="bv-progress" aria-hidden="true">
+                    {slides.map((s, n) => <span key={s.id} className={`${n < idx ? "is-done" : ""} ${n === idx ? "is-now" : ""} ${n === idx && locked ? "is-locked" : ""}`}><i /></span>)}
+                </div>
+                <StyleHeader style={styleId} wish={wish} idx={idx} total={slides.length} type={current?.type} i={i} />
 
-            <div className="bv-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-                {current && (
-                    <section key={current.id} className={`bv-slide enter-${dir} ${nudge ? "bv-shake" : ""}`} data-section={current.type} aria-roledescription="slide" aria-label={`${idx + 1} / ${slides.length}`}>
-                        <SlideFrame style={styleId} idx={idx} type={current.type}>
-                            <BlockSlide block={current} ctx={ctx} />
-                        </SlideFrame>
-                    </section>
+                {current?.type !== "finale" && (
+                    <button type="button" className="bv-sound-btn" onClick={toggleMute} aria-label={muted ? "Turn sound on" : "Mute sound"} title={muted ? "Unmute" : "Mute"}>
+                        {muted ? "🔇" : "🔊"}
+                    </button>
                 )}
-            </div>
 
-            <nav className="bv-nav" aria-label="Story navigation">
-                <button type="button" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous">‹</button>
-                {locked
-                    ? <span className="bv-lock-badge">🔒 Solve to continue</span>
-                    : styleId === "messenger" && !isLast && <span className="bvs-chat-hint">Tap ➤ for the next message</span>}
-                <button type="button" onClick={() => go(1)} disabled={isLast} className={locked ? "is-locked" : ""} aria-label="Next">{styleId === "messenger" ? "➤" : "›"}</button>
-            </nav>
-        </div>
+                <div className="bv-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
+                    {current && (
+                        <section
+                            key={`${current.id}-${intro ? "pre" : "live"}`}
+                            className={`bv-slide enter-${dir} ${nudge ? "bv-shake" : ""}`}
+                            data-section={current.type}
+                            aria-roledescription="slide"
+                            aria-label={`${idx + 1} / ${slides.length}`}
+                        >
+                            <SlideFrame style={styleId} idx={idx} type={current.type}>
+                                <BlockSlide block={current} ctx={ctx} />
+                            </SlideFrame>
+                        </section>
+                    )}
+                </div>
+
+                <nav className="bv-nav" aria-label="Story navigation">
+                    <button type="button" onClick={() => go(-1)} disabled={idx === 0} aria-label="Previous">‹</button>
+                    {locked
+                        ? <span className="bv-lock-badge">🔒 Solve to continue</span>
+                        : styleId === "messenger" && !isLast
+                            ? <span className="bvs-chat-hint">Tap ➤ for the next message</span>
+                            : idx === 0 && !isLast && <span className="bv-tap-hint">Swipe or tap edges ›</span>}
+                    <button type="button" onClick={() => go(1)} disabled={isLast} className={locked ? "is-locked" : ""} aria-label="Next">{styleId === "messenger" ? "➤" : "›"}</button>
+                </nav>
+            </div>
+        </>
     );
 }

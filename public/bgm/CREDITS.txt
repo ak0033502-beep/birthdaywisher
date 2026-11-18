@@ -1,0 +1,12 @@
+Presentation-style background music (public/bgm)
+================================================
+All source recordings are CC0 1.0 (public domain) from Freesound, discovered via Openverse.
+Drum-free, warm major-key / ambient loops seamlessly crossfaded (acrossfade) and loudness-matched (-20 LUFS), 80 kbps stereo MP3.
+No attribution is required; listed here for transparency.
+
+cinematic.mp3  <- "Upbeat Piano Loop [87bpm] [c# major]"   https://freesound.org/s/583698/
+terminal.mp3   <- "VHS warm pad"                           https://freesound.org/s/468033/
+storybook.mp3  <- "Music Box (G, 4/4, 60 BPM)"             https://freesound.org/s/613178/
+messenger.mp3  <- "acoustic guitar melody #2 d-dur"        https://freesound.org/s/462723/
+galaxy.mp3     <- "Space ambient music fragment.Wav"       https://freesound.org/s/491288/
+gallery.mp3    <- "harp-loop.wav"                          https://freesound.org/s/159422/

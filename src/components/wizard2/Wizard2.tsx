@@ -17,30 +17,32 @@ import {
 import { CandlesEditor, COMING_SOON, GAME_LIBRARY, PlacementChips, PrankEditor, TriviaEditor } from "./gameEditors";
 import { BLOCK_COPY, EDITORS, type EditorEnv } from "./editors";
 import { Cuppy, PowerMeter, RELATIONS, VIBES, popSound, useWizardSettings } from "./ui";
-import { FullPreview, PreviewPhone } from "./PreviewPhone";
-import { STYLE_IDS, STYLE_INFO } from "@/components/viewer/styles";
+import { FullPreview, PreviewPhone, type PreviewScene } from "./PreviewPhone";
+import { track } from "@/lib/track";
+import { STYLE_IDS, STYLE_INFO, normalizeStyle, type StyleId } from "@/components/viewer/styles";
+import { prefetchStyleBgm, startBgm, type BgmController } from "@/lib/celebration/bgm";
+import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
 
 const DRAFT_KEY = "bw-wizard2-draft";
 
 const BIRTHDAY_SKINS = [
-    { id: "party", t: "Party Pop", e: "🎉", bg: "linear-gradient(160deg,#FFE3EC,#FFF1C9)" },
-    { id: "neon", t: "Neon Night", e: "🌌", bg: "linear-gradient(160deg,#312e81,#09090b)" },
-    { id: "elegant", t: "Golden Elegant", e: "🥂", bg: "linear-gradient(160deg,#292524,#000)" },
-    { id: "pastel", t: "Pastel Dream", e: "🌸", bg: "linear-gradient(160deg,#ffe4e6,#ede9fe)" },
-    { id: "monochrome", t: "Monochrome", e: "🖤", bg: "linear-gradient(160deg,#27272a,#09090b)" },
-    { id: "paper", t: "Old Paper", e: "📜", bg: "#d4c5b0" },
+    { id: "party", t: "Party Pop", sub: "Balloons & bright joy", e: "🎉", bg: "linear-gradient(160deg,#FFE3EC,#FFF1C9)" },
+    { id: "neon", t: "Neon Night", sub: "Electric cyber glow", e: "🌌", bg: "linear-gradient(160deg,#312e81,#09090b)" },
+    { id: "elegant", t: "Golden Elegant", sub: "Gold dust & velvet", e: "🥂", bg: "linear-gradient(160deg,#292524,#000)" },
+    { id: "pastel", t: "Pastel Dream", sub: "Soft drifting petals", e: "🌸", bg: "linear-gradient(160deg,#ffe4e6,#ede9fe)" },
+    { id: "monochrome", t: "Monochrome", sub: "Film-noir spotlight", e: "🖤", bg: "linear-gradient(160deg,#27272a,#09090b)" },
+    { id: "paper", t: "Old Paper", sub: "Warm vintage ink", e: "📜", bg: "#d4c5b0" },
 ];
 const ANNIVERSARY_SKINS = [
-    { id: "rosegold-elegance", t: "Rose Gold", e: "🌹", bg: "linear-gradient(160deg,#3b1d2a,#120a10)" },
-    { id: "golden-anniversary", t: "Golden", e: "🥇", bg: "linear-gradient(160deg,#3f2d0c,#0c0a05)" },
-    { id: "moonlit-romance", t: "Moonlit", e: "🌙", bg: "linear-gradient(160deg,#1e1b4b,#020617)" },
-    { id: "vintage-love", t: "Vintage Love", e: "💌", bg: "#e9dcc9" },
-    { id: "cherry-blossom", t: "Cherry Blossom", e: "🌸", bg: "linear-gradient(160deg,#fff1f2,#fce7f3)" },
-    { id: "royal-navy", t: "Royal Navy", e: "⚓", bg: "linear-gradient(160deg,#1e3a8a,#020617)" },
+    { id: "rosegold-elegance", t: "Rose Gold", sub: "Warm blush & gold", e: "🌹", bg: "linear-gradient(160deg,#3b1d2a,#120a10)" },
+    { id: "golden-anniversary", t: "Golden", sub: "Champagne shimmer", e: "🥇", bg: "linear-gradient(160deg,#3f2d0c,#0c0a05)" },
+    { id: "moonlit-romance", t: "Moonlit", sub: "Midnight indigo", e: "🌙", bg: "linear-gradient(160deg,#1e1b4b,#020617)" },
+    { id: "vintage-love", t: "Vintage Love", sub: "Love-letter sepia", e: "💌", bg: "#e9dcc9" },
+    { id: "cherry-blossom", t: "Cherry Blossom", sub: "Floating pink petals", e: "🌸", bg: "linear-gradient(160deg,#fff1f2,#fce7f3)" },
+    { id: "royal-navy", t: "Royal Navy", sub: "Deep velvet & gold", e: "⚓", bg: "linear-gradient(160deg,#1e3a8a,#020617)" },
 ];
-const COLOUR_NOTE = { skin: "Uses your colour skin", accent: "Uses your skin's accent colours", own: "Has its own colours" } as const;
-const STYLES = STYLE_IDS.map((id) => ({ id, e: STYLE_INFO[id].e, t: STYLE_INFO[id].t, d: `${STYLE_INFO[id].d} · ${COLOUR_NOTE[STYLE_INFO[id].colours]}` }));
-const FINALES = [{ id: "confetti", t: "🎊 Confetti" }, { id: "hearts", t: "💗 Hugs & hearts" }, { id: "lanterns", t: "🏮 Lanterns" }];
+const STYLES = STYLE_IDS.map((id) => ({ id, e: STYLE_INFO[id].e, t: STYLE_INFO[id].t, d: STYLE_INFO[id].d, music: STYLE_INFO[id].music, tag: STYLE_INFO[id].tag, bestSkin: STYLE_INFO[id].bestSkin }));
+const FINALES = [{ id: "fireworks", t: "🎆 Grand fireworks" }, { id: "hearts", t: "💗 Hearts & fireworks" }, { id: "lanterns", t: "🏮 Lanterns & fireworks" }];
 
 const fill = (s: string, name: string) => s.replace(/\{name\}/g, name || "them");
 
@@ -69,10 +71,19 @@ export function Wizard2() {
     const [happy, setHappy] = useState(0);
     const [sheet, setSheet] = useState(false);
     const [full, setFull] = useState(false);
+    const [lookScene, setLookScene] = useState<PreviewScene>("slide");
+    const [hearingMusic, setHearingMusic] = useState(false);
+    const wizBgmRef = useRef<BgmController | null>(null);
     const [nudge, setNudge] = useState("");
     const [result, setResult] = useState<{ id: string; slug?: string } | null>(null);
     const [busy, setBusy] = useState(false);
     const [saveError, setSaveError] = useState("");
+
+    /* ---------- analytics: wizard funnel (anonymous) ---------- */
+    const openedAt = useRef(Date.now());
+    const openTracked = useRef("");
+    useEffect(() => { if (openTracked.current === typeParam) return; openTracked.current = typeParam; track("wizard_open", { type: typeParam }); }, [typeParam]);
+    const lastStep = useRef("");
 
     /* ---------- load / autosave ---------- */
     useEffect(() => {
@@ -94,6 +105,11 @@ export function Wizard2() {
     const idx = Math.max(0, steps.findIndex((s) => s.id === d.step));
     const step = steps[idx];
     const wish = useMemo(() => buildWish(d), [d]);
+    useEffect(() => {
+        if (!loaded || !step || step.id === lastStep.current) return;
+        lastStep.current = step.id;
+        track("wizard_step", { step: step.id, idx, total: steps.length, mode: d.mode ?? undefined, type: d.wishType });
+    }, [loaded, step, idx, steps.length, d.mode, d.wishType]);
     const power = wishPower(d);
     const name = d.recipient.name.trim();
     const Name = name || (d.wishType === "anniversary" ? "the couple" : "them");
@@ -108,11 +124,21 @@ export function Wizard2() {
         popSound(settings.sound, 700);
     }, [settings.celebrate, settings.sound]);
 
+    const stopWizMusic = useCallback(() => {
+        if (wizBgmRef.current) {
+            wizBgmRef.current.stop();
+            wizBgmRef.current = null;
+            setHearingMusic(false);
+        }
+    }, []);
+    useEffect(() => () => { wizBgmRef.current?.stop(); wizBgmRef.current = null; }, []);
+
     const goTo = useCallback((id: string, direction: "next" | "prev" = "next") => {
+        if (id !== "look") stopWizMusic();
         setDir(direction); setCuppyHidden(false); setNudge("");
         setD((x) => ({ ...x, step: id }));
         window.scrollTo({ top: 0 });
-    }, []);
+    }, [stopWizMusic]);
 
     const next = useCallback(() => {
         if (!stepValid(d, step)) {
@@ -136,12 +162,21 @@ export function Wizard2() {
             const body = { ...wish, ...(d.customSlug ? { customSlug: d.customSlug } : {}) };
             const res = await fetch("/api/wish", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
             const data = await res.json();
-            if (!res.ok || !data.id) throw new Error(data.error || "Could not create the link");
+            if (!res.ok || !data.id) {
+                track("api_error", { route: "/api/wish", status: res.status });
+                throw new Error(data.error || "Could not create the link");
+            }
+            track("wizard_create_ok", {
+                mode: d.mode ?? undefined, type: d.wishType, style: wish.look.presentationStyle, theme: wish.look.theme, lang: wish.look.language,
+                blocks: wish.blocks.length, games: wish.blocks.filter((b) => isGame(b.type)).length, slug: !!d.customSlug,
+                secs: Math.round((Date.now() - openedAt.current) / 1000),
+            });
             try { if (data.creatorToken) localStorage.setItem(`creator_token_${data.id}`, data.creatorToken); } catch { /* ignore */ }
             try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
             setResult({ id: data.id, slug: d.customSlug || undefined });
             goTo("finish");
         } catch (e) {
+            track("wizard_create_fail", { reason: ((e as Error).message || "unknown").slice(0, 120) });
             setSaveError((e as Error).message || "Something went wrong. Your draft is saved; please try again.");
         } finally { setBusy(false); }
     };
@@ -152,6 +187,8 @@ export function Wizard2() {
 
     /* ---------- chapters bar ---------- */
     const usedChapters = [...new Set(steps.filter((s) => s.chapter >= 0).map((s) => s.chapter))];
+    // Chapter label matching the numbered stepper (Quick mode skips chapters, so numbers must follow the visible order)
+    const chapNo = (c: number) => { const k = usedChapters.indexOf(c); return `Chapter ${(k < 0 ? c : k) + 1}`; };
 
     if (!loaded) return <div className="party wz2" />;
 
@@ -208,8 +245,14 @@ export function Wizard2() {
                 {step.id !== "finish" && step.id !== "start" && (
                     <aside className="wz2-side">
                         <span className="lbl">📱 LIVE PREVIEW</span>
-                        <PreviewPhone wish={wish} focus={step.block ?? (step.id === "games" ? chosenGames(d)[0] ?? null : step.id === "look" ? "intro" : null)} />
-                        <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm" onClick={() => setFull(true)}>▶ Play full wish</button>
+                        <PreviewPhone
+                            wish={wish}
+                            focus={step.block ?? (step.id === "games" ? chosenGames(d)[0] ?? null : step.id === "look" ? "intro" : null)}
+                            showScenes={step.id === "look"}
+                            sceneOverride={step.id === "look" ? lookScene : undefined}
+                            onSceneChange={setLookScene}
+                        />
+                        <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm" onClick={() => { stopWizMusic(); setFull(true); }}>▶ Play full wish</button>
                     </aside>
                 )}
             </div>
@@ -221,7 +264,7 @@ export function Wizard2() {
                         <button type="button" className="bw-btn bw-btn-ghost" onClick={back} disabled={idx === 0}>◀ Back</button>
                         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                             {!step.required && step.id !== "review" && step.id !== "template" && step.id !== "name" && <button type="button" className="wz2-skip" onClick={() => { const n = steps[idx + 1]; if (n) goTo(n.id); }}>Skip</button>}
-                            <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm wz2-prev-fab" onClick={() => setSheet(true)}>👁 Preview</button>
+                            <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm wz2-prev-fab" onClick={() => setSheet(true)} aria-label="Preview">👁<span className="wz2-hide-xs"> Preview</span></button>
                         </div>
                         {step.id === "review"
                             ? <button type="button" className="bw-btn bw-btn-primary" onClick={create} disabled={busy}>{busy ? "Creating…" : "🎁 Create my surprise"}</button>
@@ -234,7 +277,14 @@ export function Wizard2() {
                 <div className="wz2-sheet" onClick={(e) => { if (e.target === e.currentTarget) setSheet(false); }}>
                     <div className="wz2-sheet-in">
                         <b>📱 Live preview</b>
-                        <PreviewPhone wish={wish} focus={step.block ?? null} tilt={false} />
+                        <PreviewPhone
+                            wish={wish}
+                            focus={step.block ?? (step.id === "look" ? "intro" : null)}
+                            tilt={false}
+                            showScenes={step.id === "look"}
+                            sceneOverride={step.id === "look" ? lookScene : undefined}
+                            onSceneChange={setLookScene}
+                        />
                         <div style={{ display: "flex", gap: 8 }}>
                             <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm" onClick={() => { setSheet(false); setFull(true); }}>▶ Play full wish</button>
                             <button type="button" className="bw-btn bw-btn-primary bw-btn-sm" onClick={() => setSheet(false)}>Close</button>
@@ -255,6 +305,7 @@ export function Wizard2() {
                 flip(e); celebrate(e.currentTarget, 40);
                 const base = newDraft(typeParam);
                 const nd: Draft = m === "quick" ? { ...base, mode: m } : { ...base, mode: m };
+        track("wizard_mode", { mode: m, type: base.wishType });
                 setD({ ...nd, step: m === "template" ? "template" : "name" });
                 setDir("next");
             };
@@ -303,7 +354,7 @@ export function Wizard2() {
             const ann = d.wishType === "anniversary";
             return (
                 <>
-                    <div className="wz2-meta">Chapter 1 · About them</div>
+                    <div className="wz2-meta">{chapNo(0)} · About them</div>
                     <h1 className="wz2-title">{ann ? "Who's the lovely couple? 💍" : "Who's the birthday star? 🎂"}</h1>
                     <p className="wz2-sub">Their name appears all through the surprise.</p>
                     <input className="wz2-field" autoFocus value={d.recipient.name} maxLength={50} placeholder={ann ? "e.g. Riya & Aman" : "e.g. Rahul"} aria-label="Name"
@@ -333,7 +384,7 @@ export function Wizard2() {
         if (step.id === "relation") {
             return (
                 <>
-                    <div className="wz2-meta">Chapter 1 · About them</div>
+                    <div className="wz2-meta">{chapNo(0)} · About them</div>
                     <h1 className="wz2-title">Who {d.wishType === "anniversary" ? "are they" : "is " + Name} to you?</h1>
                     <p className="wz2-sub">This changes the suggestions you&apos;ll see.</p>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 4 }}>
@@ -351,7 +402,7 @@ export function Wizard2() {
         if (step.id === "vibe") {
             return (
                 <>
-                    <div className="wz2-meta">Chapter 1 · About them</div>
+                    <div className="wz2-meta">{chapNo(0)} · About them</div>
                     <h1 className="wz2-title">Pick the vibe</h1>
                     <p className="wz2-sub">We&apos;ll suggest a matching look and lines.</p>
                     <div className="wz2-grid">
@@ -375,7 +426,7 @@ export function Wizard2() {
             const n = list.filter((t) => isOn(d, t)).length;
             return (
                 <>
-                    <div className="wz2-meta">Chapter 2 · Pick ingredients</div>
+                    <div className="wz2-meta">{chapNo(1)} · Pick ingredients</div>
                     <h1 className="wz2-title">What goes in {Name}&apos;s surprise? 🎁</h1>
                     <p className="wz2-sub">Only the steps for what you pick will appear.</p>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
@@ -408,7 +459,7 @@ export function Wizard2() {
             };
             return (
                 <>
-                    <div className="wz2-meta">Chapter 4 · Fun &amp; Games</div>
+                    <div className="wz2-meta">{chapNo(3)} · Fun &amp; Games</div>
                     <h1 className="wz2-title">Add games to {Name}&apos;s surprise 🎮</h1>
                     <p className="wz2-sub">Up to {MAX_GAMES} · {chosen.length}/{MAX_GAMES} added · every game has a no-mic tap option and auto-skips after 60 s.</p>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
@@ -447,7 +498,7 @@ export function Wizard2() {
             const Editor = EDITORS[t] as unknown as (p: { value: unknown; onChange: (v: unknown) => void; env: EditorEnv }) => React.ReactNode;
             return (
                 <>
-                    <div className="wz2-meta">Chapter {step.chapter + 1} · {CHAPTERS[step.chapter]}</div>
+                    <div className="wz2-meta">{chapNo(step.chapter)} · {CHAPTERS[step.chapter]}</div>
                     <h1 className="wz2-title">{fill(copy.title, Name)}</h1>
                     <p className="wz2-sub">{fill(copy.sub, Name)}</p>
                     <Editor value={getConfig(d, t)} onChange={(v) => setConfig(t, v as never)} env={env} />
@@ -457,42 +508,114 @@ export function Wizard2() {
 
         if (step.id === "look") {
             const skins = d.wishType === "anniversary" ? ANNIVERSARY_SKINS : BIRTHDAY_SKINS;
+            const curStyle = normalizeStyle(d.look.presentationStyle);
+            const bestSkin = d.wishType === "anniversary"
+                ? (curStyle === "gallery" ? "golden-anniversary" : curStyle === "storybook" ? "vintage-love" : "rosegold-elegance")
+                : STYLE_INFO[curStyle].bestSkin;
+            const pickStyleId = (id: StyleId) => {
+                patch({ look: { ...d.look, presentationStyle: id } });
+                if (lookScene === "finale") setLookScene("slide");
+                void prefetchStyleBgm(id);
+                wizBgmRef.current?.setStyle(id);
+            };
+            const toggleMusic = () => {
+                if (wizBgmRef.current) {
+                    wizBgmRef.current.stop();
+                    wizBgmRef.current = null;
+                    setHearingMusic(false);
+                } else {
+                    wizBgmRef.current = startBgm(curStyle, true);
+                    setHearingMusic(true);
+                }
+            };
+            const surpriseMe = (el: HTMLElement) => {
+                const others = STYLES.filter((s) => s.id !== curStyle);
+                const pickStyle = others[Math.floor(Math.random() * others.length)] || STYLES[0];
+                const pickSkin = skins[Math.floor(Math.random() * skins.length)];
+                patch({ look: { ...d.look, presentationStyle: pickStyle.id, theme: pickSkin.id } });
+                setLookScene("slide");
+                void prefetchStyleBgm(pickStyle.id);
+                wizBgmRef.current?.setStyle(pickStyle.id);
+                celebrate(el, 45);
+            };
             return (
                 <>
-                    <div className="wz2-meta">Chapter 6 · Look &amp; unlock</div>
-                    <h1 className="wz2-title">Choose the look 🎨</h1>
-                    <p className="wz2-sub">Watch the preview change.</p>
-                    <span className="wz2-label">Colour skin</span>
-                    <div className="wz2-themes">
-                        {skins.map((s) => (
-                            <button key={s.id} type="button" className={`wz2-theme ${d.look.theme === s.id ? "is-on" : ""}`} onClick={() => patch({ look: { ...d.look, theme: s.id } })}>
-                                <div className="sw" style={{ background: s.bg }} aria-hidden="true">{s.e}</div><div className="nm">{s.t}</div>
+                    <div className="wz2-meta">{chapNo(5)} · Look &amp; finale</div>
+                    <div className="wz2-look-head">
+                        <div>
+                            <h1 className="wz2-title" style={{ marginBottom: 4 }}>Choose the world 🎨</h1>
+                            <p className="wz2-sub" style={{ marginBottom: 0 }}>Each style comes with its own soundtrack, intro, frame &amp; fireworks.</p>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            <button type="button" className={`bw-btn ${hearingMusic ? "bw-btn-primary" : "bw-btn-ghost"} bw-btn-sm`} onClick={toggleMusic}>
+                                {hearingMusic ? "🔊 Stop music" : "🎵 Hear style music"}
                             </button>
-                        ))}
+                            <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm" onClick={(e) => surpriseMe(e.currentTarget)}>🎲 Surprise me</button>
+                        </div>
                     </div>
-                    <span className="wz2-label">Presentation style</span>
+
+                    <span className="wz2-label">1. Presentation style (each has its own music)</span>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
                         {STYLES.map((s) => (
-                            <button key={s.id} type="button" className={`bw-card wz2-choice ${d.look.presentationStyle === s.id ? "is-on" : ""}`} onClick={() => patch({ look: { ...d.look, presentationStyle: s.id } })}>
-                                <span className="e" aria-hidden="true">{s.e}</span><h4>{s.t}</h4><p>{s.d}</p>
+                            <button
+                                key={s.id}
+                                type="button"
+                                className={`bw-card wz2-choice wz2-style-card ${curStyle === s.id ? "is-on" : ""}`}
+                                onClick={() => pickStyleId(s.id)}
+                            >
+                                <span className="wz2-style-tag">{s.tag}</span>
+                                <span className="e" aria-hidden="true">{s.e}</span>
+                                <h4>{s.t}</h4>
+                                <p>{s.d}</p>
+                                <span className="wz2-style-music">{s.music}</span>
                             </button>
                         ))}
                     </div>
-                    <span className="wz2-label">Finale</span>
+
+                    <span className="wz2-label">2. Colour mood</span>
+                    <div className="wz2-themes">
+                        {skins.map((s) => (
+                            <button
+                                key={s.id}
+                                type="button"
+                                className={`wz2-theme ${d.look.theme === s.id ? "is-on" : ""}`}
+                                onClick={() => { patch({ look: { ...d.look, theme: s.id } }); if (lookScene === "finale") setLookScene("slide"); }}
+                            >
+                                {bestSkin === s.id && <span className="wz2-best">❤️ Best match</span>}
+                                <div className="sw" style={{ background: s.bg }} aria-hidden="true">{s.e}</div>
+                                <div className="nm">
+                                    <div>{s.t}</div>
+                                    <small className="wz2-theme-sub">{s.sub}</small>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <span className="wz2-label">3. Grand Finale celebration</span>
                     <div className="wz2-chips">
                         {FINALES.map((f) => {
-                            const cur = getConfig(d, "finale").effect;
-                            return <button key={f.id} type="button" className={`wz2-chip ${cur === f.id ? "is-on" : ""}`} onClick={(e) => { setConfig("finale", { effect: f.id }); celebrate(e.currentTarget, 30); }}>{f.t}</button>;
+                            const raw = getConfig(d, "finale").effect;
+                            const cur = raw === "hearts" || raw === "lanterns" ? raw : "fireworks";
+                            return (
+                                <button
+                                    key={f.id}
+                                    type="button"
+                                    className={`wz2-chip ${cur === f.id ? "is-on" : ""}`}
+                                    onClick={(e) => { setConfig("finale", { effect: f.id }); setLookScene("finale"); celebrate(e.currentTarget, 30); }}
+                                >
+                                    {f.t}
+                                </button>
+                            );
                         })}
                     </div>
-                    <span className="wz2-label">Language of the wish</span>
+
+                    <span className="wz2-label">4. Language &amp; opening time</span>
                     <select className="wz2-field" style={{ fontSize: 16 }} value={d.look.language} onChange={(e) => patch({ look: { ...d.look, language: e.target.value } })} aria-label="Language of the wish">
                         {languages.map((l) => <option key={l.code} value={l.code}>{l.nativeName} ({l.name})</option>)}
                     </select>
-                    <span className="wz2-label">When can they open it?</span>
-                    <div className="wz2-chips">
-                        <button type="button" className={`wz2-chip ${d.unlock.mode === "now" ? "is-on" : ""}`} onClick={() => patch({ unlock: { ...d.unlock, mode: "now" } })}>🔓 Right away</button>
-                        <button type="button" className={`wz2-chip ${d.unlock.mode === "date" ? "is-on" : ""}`} onClick={() => patch({ unlock: { ...d.unlock, mode: "date" } })}>🕛 At midnight on…</button>
+                    <div className="wz2-chips" style={{ marginTop: 12 }}>
+                        <button type="button" className={`wz2-chip ${d.unlock.mode === "now" ? "is-on" : ""}`} onClick={() => patch({ unlock: { ...d.unlock, mode: "now" } })}>🔓 Open right away</button>
+                        <button type="button" className={`wz2-chip ${d.unlock.mode === "date" ? "is-on" : ""}`} onClick={() => patch({ unlock: { ...d.unlock, mode: "date" } })}>🕛 Lock until midnight on…</button>
                         {d.unlock.mode === "date" && <input className="wz2-chip" type="date" value={d.unlock.date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => patch({ unlock: { ...d.unlock, date: e.target.value } })} aria-label="Unlock date" />}
                     </div>
                 </>
@@ -511,7 +634,7 @@ export function Wizard2() {
             };
             return (
                 <>
-                    <div className="wz2-meta">Chapter 6 · Story order</div>
+                    <div className="wz2-meta">{chapNo(5)} · Story order</div>
                     <h1 className="wz2-title">In what order should {Name} see it?</h1>
                     <p className="wz2-sub">The cover always comes first and the finale last.</p>
                     <div className="wz2-list">
@@ -532,13 +655,13 @@ export function Wizard2() {
             );
         }
 
-        if (step.id === "link") return <LinkStep d={d} patch={patch} Name={Name} />;
+        if (step.id === "link") return <LinkStep d={d} patch={patch} Name={Name} chap={chapNo(6)} />;
 
         if (step.id === "review") {
             const rows = wish.blocks.filter((b) => b.type !== "intro" && b.type !== "finale");
             return (
                 <>
-                    <div className="wz2-meta">Chapter 7 · Deliver</div>
+                    <div className="wz2-meta">{chapNo(6)} · Deliver</div>
                     <h1 className="wz2-title">Ready to surprise {Name}? 🎁</h1>
                     <p className="wz2-sub">Tap &quot;Edit&quot; to change anything, or play the full wish first.</p>
                     <div className="wz2-list">
@@ -569,26 +692,34 @@ export function Wizard2() {
 }
 
 /* ================= Link step ================= */
-function LinkStep({ d, patch, Name }: { d: Draft; patch: (p: Partial<Draft>) => void; Name: string }) {
-    const [status, setStatus] = useState<"" | "checking" | "ok" | "taken" | "invalid">("");
+function LinkStep({ d, patch, Name, chap }: { d: Draft; patch: (p: Partial<Draft>) => void; Name: string; chap: string }) {
+    const [checked, setChecked] = useState<{ slug: string; state: "ok" | "taken" | "invalid" | "" }>({ slug: "", state: "" });
+    const slug = d.customSlug;
     useEffect(() => {
-        const slug = d.customSlug;
-        if (!slug) { setStatus(""); return; }
-        if (slug.length < 3) { setStatus("invalid"); return; }
-        setStatus("checking");
+        if (!slug || slug.length < 3) return;
+        let cancelled = false;
         const t = setTimeout(async () => {
             try {
                 const r = await fetch(`/api/check-slug?slug=${encodeURIComponent(slug)}`);
                 const j = await r.json();
-                setStatus(j.available ? "ok" : j.error ? "invalid" : "taken");
-            } catch { setStatus(""); }
+                if (!cancelled) setChecked({ slug, state: j.available ? "ok" : j.error ? "invalid" : "taken" });
+            } catch {
+                if (!cancelled) setChecked({ slug, state: "" });
+            }
         }, 450);
-        return () => clearTimeout(t);
-    }, [d.customSlug]);
+        return () => { cancelled = true; clearTimeout(t); };
+    }, [slug]);
+    const status: "" | "checking" | "ok" | "taken" | "invalid" = !slug
+        ? ""
+        : slug.length < 3
+            ? "invalid"
+            : checked.slug === slug
+                ? checked.state
+                : "checking";
     const msg = { "": "", checking: "Checking…", ok: "✅ Available!", taken: "❌ Already taken. Try another.", invalid: "3–40 letters, numbers or dashes" }[status];
     return (
         <>
-            <div className="wz2-meta">Chapter 7 · Deliver</div>
+            <div className="wz2-meta">{chap} · Deliver</div>
             <h1 className="wz2-title">Make the link yours 🔗 (optional)</h1>
             <p className="wz2-sub">A custom link is easier to remember. Leave empty for a random one.</p>
             <div className="wz2-linkbox" style={{ margin: 0, maxWidth: "none" }}>
@@ -607,7 +738,16 @@ function LinkStep({ d, patch, Name }: { d: Draft; patch: (p: Partial<Draft>) => 
 function Finish({ result, d, Name, onAgain, celebrate }: { result: { id: string; slug?: string }; d: Draft; Name: string; onAgain: () => void; celebrate: (el?: Element | null, n?: number) => void }) {
     const [open, setOpen] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [askReview, setAskReview] = useState(false);
+    const reviewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const giftRef = useRef<HTMLDivElement>(null);
+    // Ask for a quick review once the link is in hand (sooner right after they copy / share it)
+    const queueReview = useCallback((ms: number) => {
+        if (!shouldAskReview("creator")) return;
+        if (reviewTimer.current) clearTimeout(reviewTimer.current);
+        reviewTimer.current = setTimeout(() => setAskReview(true), ms);
+    }, []);
+    useEffect(() => () => { if (reviewTimer.current) clearTimeout(reviewTimer.current); }, []);
     const origin = typeof window !== "undefined" ? window.location.origin : "https://www.birthdaywisher.fun";
     const link = result.slug ? `${origin}/w/${result.slug}` : `${origin}/wish/${result.id}`;
     const shareText = `${d.previewText || `🎁 ${Name}, you've got a surprise! Tap to open`}\n${link}`;
@@ -618,23 +758,24 @@ function Finish({ result, d, Name, onAgain, celebrate }: { result: { id: string;
             <h1 className="wz2-title">Your surprise is ready! 🎉</h1>
             <p className="wz2-sub">{open ? "Here's your magic link 👇" : "Tap the gift to get your link"}</p>
             <div ref={giftRef} style={{ display: "flex", justifyContent: "center", margin: "150px 0 40px" }}>
-                <GiftCube big open={open} pop="🔗" label="Open the gift" onClick={() => { if (!open) { setOpen(true); celebrate(giftRef.current, 200); } }} />
+                <GiftCube big open={open} pop="🔗" label="Open the gift" onClick={() => { if (!open) { setOpen(true); celebrate(giftRef.current, 200); queueReview(8000); } }} />
             </div>
             {open && (
                 <>
                     <div className="wz2-linkbox">
                         <code>{link.replace(/^https?:\/\//, "")}</code>
-                        <button type="button" className="bw-btn bw-btn-primary bw-btn-sm" onClick={async () => { try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* clipboard blocked */ } }}>{copied ? "Copied ✓" : "Copy"}</button>
+                        <button type="button" className="bw-btn bw-btn-primary bw-btn-sm" onClick={async () => { track("share_copy"); queueReview(2200); try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* clipboard blocked */ } }}>{copied ? "Copied ✓" : "Copy"}</button>
                     </div>
                     <div className="wz2-share">
-                        <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer">💬 Send on WhatsApp</a>
-                        <a className="bw-btn bw-btn-ghost bw-btn-sm" href={link} target="_blank" rel="noopener noreferrer">👀 Preview it first</a>
+                        <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" onClick={() => { track("share_whatsapp"); queueReview(1500); }}>💬 Send on WhatsApp</a>
+                        <a className="bw-btn bw-btn-ghost bw-btn-sm" href={link} target="_blank" rel="noopener noreferrer" onClick={() => track("share_preview")}>👀 Preview it first</a>
                         <Link className="bw-btn bw-btn-ghost bw-btn-sm" href={`/dashboard/${result.id}`}>📊 Views dashboard</Link>
                     </div>
                     <div className="wz2-badges">{badges.map((b) => <span key={b} className="wz2-badge">{b}</span>)}</div>
                     <div style={{ marginTop: 24 }}><button type="button" className="wz2-chip" onClick={onAgain}>＋ Make another surprise</button></div>
                 </>
             )}
+            {askReview && <ReviewPrompt who="creator" wishId={result.id} mode="modal" onClose={() => setAskReview(false)} />}
         </div>
     );
 }

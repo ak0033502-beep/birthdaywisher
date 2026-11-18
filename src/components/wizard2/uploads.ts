@@ -4,6 +4,8 @@
  * Signed Cloudinary uploads for Wizard 2.0 (same flow as the classic wizard's Step5Media:
  * GET /api/cloudinary-sign → POST to Cloudinary with XHR for real progress).
  */
+import { track } from "@/lib/track";
+
 export interface UploadProgress { percent: number; loaded: number; total: number }
 export interface UploadedFile { url: string; type: "photo" | "video" | "audio" | "file" }
 
@@ -26,7 +28,7 @@ function kindOf(file: File | Blob): UploadedFile["type"] {
 export const LIMITS = { maxBytes: 25 * 1024 * 1024, maxPhotos: 5, maxVideos: 3 };
 
 /** Upload files one by one with combined progress. Returns uploaded URLs in order. */
-export async function uploadFiles(
+async function uploadFilesRaw(
     files: Array<File | Blob>,
     onProgress?: (p: UploadProgress) => void,
     opts: { resource?: "auto" | "video" | "image"; signal?: AbortSignal } = {},
@@ -66,4 +68,15 @@ export async function uploadFiles(
     }
     onProgress?.({ percent: 100, loaded: total, total });
     return out;
+}
+
+/** Upload with anonymous failure tracking (shown in the admin dashboard). */
+export async function uploadFiles(...args: Parameters<typeof uploadFilesRaw>): Promise<UploadedFile[]> {
+    try {
+        return await uploadFilesRaw(...args);
+    } catch (e) {
+        const msg = (e as Error)?.message || "unknown";
+        if (msg !== "Upload cancelled") track("upload_fail", { reason: msg.slice(0, 100), files: args[0].length, mb: Math.round(args[0].reduce((n, f) => n + f.size, 0) / 1048576) });
+        throw e;
+    }
 }

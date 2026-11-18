@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { BlockConfigMap } from "@/lib/wish/schema";
 import { LockTimer } from "@/components/story/LockTimer";
+import { track } from "@/lib/track";
 import type { SlideCtx } from "./slides";
 
 type P<K extends "candles" | "prank" | "trivia"> = { config: BlockConfigMap[K]; ctx: SlideCtx; blockId: string };
@@ -24,13 +25,15 @@ export function CandlesSlide({ config, ctx }: P<"candles">) {
     useEffect(() => {
         if (!done && left === 0) {
             setDone(true);
+            if (ctx.wishId) track("game_candles", { method: autoRef.current ? "auto" : mic === "on" ? "mic" : "tap", mic }, ctx.wishId);
             stopRef.current();
             ctx.celebrate(180);
             ctx.unlock();
         }
-    }, [left, done, ctx]);
+    }, [left, done, ctx, mic]);
     useEffect(() => () => stopRef.current(), []);
 
+    const autoRef = useRef(false);
     const blowOne = () => setLit((l) => { const i = l.lastIndexOf(true); if (i < 0) return l; const n = [...l]; n[i] = false; return n; });
 
     const startMic = async () => {
@@ -98,7 +101,7 @@ export function CandlesSlide({ config, ctx }: P<"candles">) {
                         : <button type="button" className="bv-btn" onClick={startMic} disabled={mic === "asking"}>🎤 Blow with your mic</button>}
                     <button type="button" className="bv-make" style={{ margin: 0 }} onClick={blowOne}>{mic === "denied" ? "Mic blocked: tap here (or the candles) to blow 👆" : "No mic? Tap here or tap the candles 👆"}</button>
                     <p className="bv-muted" style={{ fontSize: 13 }}>{left} of {total} still lit</p>
-                    <LockTimer durationSeconds={60} label="Auto-blow in" onAutoUnlock={() => setLit(Array(total).fill(false))} />
+                    <LockTimer durationSeconds={60} label="Auto-blow in" onAutoUnlock={() => { autoRef.current = true; setLit(Array(total).fill(false)); }} />
                 </div>
             )}
         </>
@@ -115,12 +118,13 @@ const PREDICTIONS = [
 ];
 const LOADING = ["Wrapping your gift…", "Still wrapping…", "It's a big gift, okay?", "Adding extra bubble wrap…", "Almost there… 99%"];
 
-export function PrankSlide({ config, ctx }: P<"prank">) {
+export function PrankSlide({ config, ctx, blockId }: P<"prank">) {
     const name = ctx.wish.recipient.nickname || ctx.wish.recipient.name || "you";
     const [phase, setPhase] = useState<"prank" | "reveal">("prank");
     const [pct, setPct] = useState(0);
     const [line, setLine] = useState(0);
-    const prediction = useRef(PREDICTIONS[Math.floor(Math.random() * PREDICTIONS.length)]);
+    const pickIdx = [...(blockId || name)].reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % PREDICTIONS.length;
+    const prediction = PREDICTIONS[pickIdx];
 
     useEffect(() => {
         if (phase !== "prank") return;
@@ -145,7 +149,7 @@ export function PrankSlide({ config, ctx }: P<"prank">) {
             <>
                 <div className="bv-emoji" aria-hidden="true">😂</div>
                 <h1>Gotcha, <span className="bv-grad">{name}!</span></h1>
-                {config.kind === "prediction" && <div className="bv-card"><p className="bv-quote">🔮 {prediction.current}</p></div>}
+                {config.kind === "prediction" && <div className="bv-card"><p className="bv-quote">🔮 {prediction}</p></div>}
                 <p className="bv-muted" style={{ fontSize: 18 }}>Relax, your real surprise is right here. Tap › to continue 🎁</p>
             </>
         );

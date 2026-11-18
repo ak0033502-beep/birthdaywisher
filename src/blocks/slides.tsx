@@ -2,8 +2,8 @@
 
 /**
  * Slides for the v2 block viewer: one component per block type.
- * Content mirrors today's v1 StoryViewer (same texts via i18n, same gates,
- * same 60-second auto-skip), rendered by one engine with skins.
+ * Upgraded with letter-by-letter name reveal, rhythmic typewriter / terminal-decrypt messages,
+ * Storybook drop-caps, Ken Burns + Polaroid tape photos, live voice equalizer, and gate hints.
  */
 import dynamic from "next/dynamic";
 import { useEffect, useState, type ReactNode } from "react";
@@ -12,6 +12,7 @@ import type { BlockConfigMap, BlockInstance, BlockType, WishDataV2 } from "@/lib
 import { LockTimer } from "@/components/story/LockTimer";
 import { SlidingPuzzle } from "@/components/story/SlidingPuzzle";
 import { CandlesSlide, PrankSlide, TriviaSlide } from "./games";
+import { GrandFinale } from "@/components/celebration/GrandFinale";
 
 // Heavy/optional interactions load only when a wish actually uses them (SmileLock pulls in face detection)
 const ScratchCard = dynamic(() => import("@/components/story/ScratchCard").then((m) => m.ScratchCard), { ssr: false });
@@ -28,6 +29,8 @@ export interface SlideCtx {
     celebrate: (n?: number) => void;
     /** Real wish id (needed for the live leaderboard); undefined in previews/demos */
     wishId?: string;
+    /** True inside the Wizard preview phone (shows full text immediately). */
+    embed?: boolean;
 }
 
 type SlideProps<K extends BlockType> = { config: BlockConfigMap[K]; ctx: SlideCtx; blockId: string };
@@ -39,6 +42,15 @@ const norm = (s: string) => s.toLowerCase().trim();
 
 /* ---------- Content slides ---------- */
 
+/** The name, letter by letter, bouncing in (grapheme-safe for Hindi etc.). */
+function Letters({ text, start = 0.2 }: { text: string; start?: number }) {
+    type Seg = { segment(s: string): Iterable<{ segment: string }> };
+    const Segmenter = (Intl as unknown as { Segmenter?: new (l?: string, o?: { granularity: string }) => Seg }).Segmenter;
+    const parts = Segmenter ? Array.from(new Segmenter(undefined, { granularity: "grapheme" }).segment(text), (s) => s.segment) : null;
+    if (!parts || parts.length > 40) return <>{text}</>;
+    return <>{parts.map((ch, k) => (ch === " " ? " " : <span key={k} className="bv-letter" style={{ animationDelay: `${start + k * 0.07}s` }}>{ch}</span>))}</>;
+}
+
 function Intro({ ctx }: SlideProps<"intro">) {
     const { wish, i } = ctx;
     const r = wish.recipient;
@@ -46,9 +58,9 @@ function Intro({ ctx }: SlideProps<"intro">) {
     return (
         <>
             <div className="bv-emoji" aria-hidden="true">{anniversary ? "💍" : "🎂"}</div>
-            <h1>
+            <h1 aria-label={`${anniversary ? i.happyAnniversary : i.happyBirthday}, ${anniversary ? r.coupleName || r.name : r.nickname || r.name}!`}>
                 {anniversary ? i.happyAnniversary : i.happyBirthday},<br />
-                <span className="bv-grad">{anniversary ? r.coupleName || r.name : r.nickname || r.name}!</span>
+                <span className="bv-grad"><Letters text={(anniversary ? r.coupleName || r.name : r.nickname || r.name) || ""} />!</span>
             </h1>
             {anniversary
                 ? r.anniversaryYear && <p className="bv-muted" style={{ fontSize: 20 }}>{r.anniversaryYear} {i.yearsOfLove}</p>
@@ -96,7 +108,7 @@ function Memory({ config, ctx }: SlideProps<"memory">) {
     return (
         <>
             <h2>{ctx.i.rememberThat}</h2>
-            <div className="bv-card"><p className="bv-quote">&ldquo;{config.text}&rdquo;</p></div>
+            <div className="bv-card"><p className="bv-quote bv-dropcap">{config.text}</p></div>
         </>
     );
 }
@@ -104,21 +116,32 @@ function Memory({ config, ctx }: SlideProps<"memory">) {
 function Photos({ config, ctx }: SlideProps<"photos">) {
     const items = config.items.filter((m) => m.url);
     const [n, setN] = useState(0);
-    const item = items[Math.min(n, items.length - 1)];
+    const idx = Math.min(n, Math.max(0, items.length - 1));
+    const item = items[idx];
     return (
         <>
-            <h2>{n === 0 ? ctx.i.aLittleMemory : ctx.i.andAnother}</h2>
+            <h2>{idx === 0 ? ctx.i.aLittleMemory : ctx.i.andAnother}</h2>
             {item && (
-                <div className="bv-photo" key={item.url}>
-                    {item.type === "video"
-                        ? <video src={item.url} autoPlay loop muted playsInline controls />
-                        // eslint-disable-next-line @next/next/no-img-element
-                        : <img src={item.url} alt={ctx.i.memoryVault} />}
+                <div className="bv-photo-wrap">
+                    <span className="bv-photo-tape" aria-hidden="true" />
+                    <div className={`bv-photo ${item.type === "photo" ? "is-kenburns" : ""}`} key={item.url} style={{ transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)` }}>
+                        {item.type === "video"
+                            ? <video src={item.url} autoPlay loop muted playsInline controls />
+                            // eslint-disable-next-line @next/next/no-img-element
+                            : <img src={item.url} alt={ctx.i.memoryVault} />}
+                        {items.length > 1 && <span className="bv-photo-count">{idx + 1} / {items.length}</span>}
+                        {items.length > 1 && idx > 0 && (
+                            <button type="button" className="bv-photo-arrow prev" aria-label="Previous photo" onClick={() => setN(idx - 1)}>‹</button>
+                        )}
+                        {items.length > 1 && idx < items.length - 1 && (
+                            <button type="button" className="bv-photo-arrow next" aria-label="Next photo" onClick={() => setN(idx + 1)}>›</button>
+                        )}
+                    </div>
                 </div>
             )}
             {items.length > 1 && (
                 <div className="bv-dots" role="tablist" aria-label={ctx.i.memoryVault}>
-                    {items.map((_, idx) => <button key={idx} type="button" aria-label={`Photo ${idx + 1}`} className={idx === n ? "is-on" : ""} onClick={() => setN(idx)} />)}
+                    {items.map((_, k) => <button key={k} type="button" aria-label={`Photo ${k + 1}`} className={k === idx ? "is-on" : ""} onClick={() => setN(k)} />)}
                 </div>
             )}
         </>
@@ -136,12 +159,24 @@ function Award({ config, ctx }: SlideProps<"award">) {
 }
 
 function Voice({ config, ctx }: SlideProps<"voice">) {
+    const [playing, setPlaying] = useState(false);
     return (
         <>
             <div className="bv-emoji" aria-hidden="true">🎤</div>
             <h2>{ctx.i.listenClosely}</h2>
             <p className="bv-muted">{ctx.i.tapPlayVoice}</p>
-            <audio className="bv-audio" controls src={config.audioUrl} preload="metadata" />
+            <div className={`bv-eq ${playing ? "is-playing" : ""}`} aria-hidden="true">
+                {Array.from({ length: 7 }, (_, k) => <i key={k} />)}
+            </div>
+            <audio
+                className="bv-audio"
+                controls
+                src={config.audioUrl}
+                preload="metadata"
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                onEnded={() => setPlaying(false)}
+            />
         </>
     );
 }
@@ -151,8 +186,46 @@ function Gratitude({ config, ctx }: SlideProps<"gratitude">) {
         <>
             <div className="bv-emoji" aria-hidden="true">🙏</div>
             <h2>{ctx.i.imSoThankful}</h2>
-            <div className="bv-card"><p className="bv-quote">&ldquo;{ctx.i.because} {config.text}&rdquo;</p></div>
+            <div className="bv-card"><p className="bv-quote bv-dropcap">{ctx.i.because} {config.text}</p></div>
         </>
+    );
+}
+
+const SCRAMBLE = "01#$%&@*+=";
+
+function TypewriterBody({ text, terminal, instant }: { text: string; terminal: boolean; instant: boolean }) {
+    const [len, setLen] = useState(() => {
+        if (instant) return text.length;
+        if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return text.length;
+        return 0;
+    });
+
+    useEffect(() => {
+        if (len >= text.length) return;
+        const ch = text[len - 1] || "";
+        const delay = /[.!?\n]/.test(ch) ? 230 : /[,;:]/.test(ch) ? 115 : text.length > 260 ? 16 : 26;
+        const t = setTimeout(() => setLen((v) => Math.min(text.length, v + 1)), delay);
+        return () => clearTimeout(t);
+    }, [len, text]);
+
+    const done = len >= text.length;
+    const tail = !done && terminal
+        ? Array.from({ length: Math.min(3, text.length - len) }, (_, k) => SCRAMBLE[(len + k * 3) % SCRAMBLE.length]).join("")
+        : "";
+
+    return (
+        <div
+            className="bv-card"
+            onClick={() => { if (!done) setLen(text.length); }}
+            style={{ cursor: done ? "default" : "pointer" }}
+        >
+            <p className={`bv-big ${done ? "bv-dropcap" : ""}`}>
+                {text.slice(0, len)}
+                {tail && <span style={{ opacity: 0.45 }}>{tail}</span>}
+                {!done && <span className="bv-cursor" aria-hidden="true" />}
+            </p>
+            {!done && <p className="bv-type-hint">Tap letter to read all at once</p>}
+        </div>
     );
 }
 
@@ -160,7 +233,12 @@ function Message({ config, ctx }: SlideProps<"message">) {
     return (
         <>
             <h2>💌 {ctx.i.heartToHeart}</h2>
-            <div className="bv-card"><p className="bv-big">{config.text}</p></div>
+            <TypewriterBody
+                key={config.text}
+                text={config.text}
+                terminal={ctx.wish.look.presentationStyle === "terminal"}
+                instant={!!ctx.embed}
+            />
         </>
     );
 }
@@ -199,23 +277,14 @@ function GiftCard({ config }: SlideProps<"giftCard">) {
 
 function Finale({ config, ctx }: SlideProps<"finale">) {
     const { wish, i } = ctx;
-    const effect = config?.effect || "confetti";
-    useEffect(() => { ctx.celebrate(effect === "confetti" ? 220 : 90); }, []); // eslint-disable-line react-hooks/exhaustive-deps
     const name = wish.wishType === "anniversary" ? wish.recipient.coupleName || wish.recipient.name : wish.recipient.name;
-    const rise = effect === "hearts" ? ["💗", "💖", "🤗", "💕"] : effect === "lanterns" ? ["🏮", "🏮", "🪔"] : null;
+    // The Grand Finale renders as a full-screen overlay; this text stays underneath for screen readers / no-JS.
     return (
         <>
-            {rise && (
-                <div className="bv-rise" aria-hidden="true">
-                    {Array.from({ length: 16 }, (_, n) => (
-                        <span key={n} style={{ left: `${(n * 61) % 100}%`, animationDelay: `${(n % 8) * 0.55}s`, animationDuration: `${6 + (n % 5)}s`, fontSize: 22 + ((n * 7) % 22) }}>{rise[n % rise.length]}</span>
-                    ))}
-                </div>
-            )}
+            <GrandFinale wish={wish} i={i} wishId={ctx.wishId} effect={config?.effect} />
             <p className="bv-muted" style={{ fontSize: 18 }}>{wish.wishType === "anniversary" ? i.happyAnniversary : i.happyBirthdayFinale}</p>
             <h1 className="bv-finale-name bv-grad">{name}</h1>
-            <p className="bv-muted" style={{ fontSize: 18 }}>{i.withAllMyLove} 💖</p>
-            <a className="bv-make" href="/">🎁 Make a surprise like this for someone</a>
+            <p className="bv-muted" style={{ fontSize: 18 }}>{i.withAllMyLove} ❤️</p>
         </>
     );
 }
@@ -225,9 +294,10 @@ function Finale({ config, ctx }: SlideProps<"finale">) {
 function useGateFeedback() {
     const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
     const [shake, setShake] = useState(false);
-    const fail = () => { setMsg({ text: pick(ERR), ok: false }); setShake(true); setTimeout(() => setShake(false), 460); };
+    const [tries, setTries] = useState(0);
+    const fail = () => { setTries((v) => v + 1); setMsg({ text: pick(ERR), ok: false }); setShake(true); setTimeout(() => setShake(false), 460); };
     const pass = () => setMsg({ text: pick(OK), ok: true });
-    return { msg, shake, fail, pass, setMsg };
+    return { msg, shake, tries, fail, pass, setMsg };
 }
 
 function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
@@ -236,6 +306,7 @@ function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
     const submit = () => {
         if (guess === config.date) { fb.pass(); ctx.unlock(); ctx.celebrate(50); } else fb.fail();
     };
+    const yearHint = config.date ? config.date.slice(0, 4) : "";
     return (
         <>
             <div className="bv-emoji" aria-hidden="true">{ctx.unlocked ? "🔓" : "🔒"}</div>
@@ -244,6 +315,7 @@ function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
                 <div className={fb.shake ? "bv-shake" : ""} style={{ display: "grid", gap: 12, justifyItems: "center", width: "100%" }}>
                     <input className="bv-input" type="date" value={guess} onChange={(e) => setGuess(e.target.value)} aria-label={ctx.i.enterSecretDate} />
                     <button type="button" className="bv-btn" onClick={submit}>{ctx.i.unlock}</button>
+                    {fb.tries >= 2 && yearHint && <p className="bv-muted" style={{ fontSize: 13 }}>💡 Hint: the year is <b>{yearHint}</b></p>}
                     <LockTimer durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: "Time's up! Here it is...", ok: true }); ctx.unlock(); ctx.celebrate(50); }} />
                 </div>
             )}
@@ -303,6 +375,7 @@ function Quiz({ config, ctx }: SlideProps<"quiz">) {
             <div className={fb.shake ? "bv-shake" : ""} style={{ display: "grid", gap: 12, justifyItems: "center", width: "100%" }}>
                 <input className="bv-input" value={guess} onChange={(e) => setGuess(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} placeholder="Type your answer…" aria-label={q.q} />
                 <button type="button" className="bv-btn" onClick={submit}>{ctx.i.submit}</button>
+                {fb.tries >= 2 && q.a && <p className="bv-muted" style={{ fontSize: 13 }}>💡 Hint: starts with &ldquo;{q.a.trim().slice(0, 1).toUpperCase()}…&rdquo;</p>}
                 <LockTimer key={n} durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: `Time's up! It was "${q.a}"`, ok: true }); setTimeout(next, 900); }} />
             </div>
             <p className={`bv-feedback ${fb.msg?.ok ? "ok" : "bad"}`} aria-live="polite">{fb.msg?.text}</p>

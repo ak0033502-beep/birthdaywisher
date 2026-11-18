@@ -2,24 +2,52 @@
 
 import "@/components/viewer/viewer.css";
 import "@/components/viewer/styles.css";
-import { useEffect, useRef } from "react";
+import "@/components/viewer/intro.css";
+import "@/components/viewer/moods.css";
+import { useEffect, useRef, useState } from "react";
 import { getTranslations, type Locale } from "@/lib/i18n";
 import type { BlockType, WishDataV2 } from "@/lib/wish/schema";
 import { BlockSlide, type SlideCtx } from "@/blocks/slides";
 import { getSkin, skinVars } from "@/components/viewer/skins";
 import { BlockViewer } from "@/components/viewer/BlockViewer";
 import { normalizeStyle, styleSkin } from "@/components/viewer/styles";
-import { SlideFrame, StyleDecor, StyleHeader } from "@/components/viewer/StyleChrome";
+import { SlideFrame, StyleCover, StyleDecor, StyleHeader } from "@/components/viewer/StyleChrome";
 
-/** Live preview: renders the REAL viewer slide for the block being edited, inside a phone frame. */
-export function PreviewPhone({ wish, focus, tilt = true }: { wish: WishDataV2; focus: BlockType | null; tilt?: boolean }) {
+export type PreviewScene = "cover" | "slide" | "finale";
+
+/** Live preview: renders the REAL viewer cover / slide / finale inside a 3D phone frame. */
+export function PreviewPhone({
+    wish,
+    focus,
+    tilt = true,
+    showScenes = false,
+    sceneOverride,
+    onSceneChange,
+}: {
+    wish: WishDataV2;
+    focus: BlockType | null;
+    tilt?: boolean;
+    showScenes?: boolean;
+    sceneOverride?: PreviewScene;
+    onSceneChange?: (s: PreviewScene) => void;
+}) {
     const ref = useRef<HTMLDivElement>(null);
-    const block = (focus && wish.blocks.find((b) => b.type === focus)) || wish.blocks.find((b) => b.type === "intro") || wish.blocks[0];
+    const [localScene, setLocalScene] = useState<PreviewScene>("slide");
+    const scene = showScenes ? (sceneOverride ?? localScene) : "slide";
+    const setScene = (s: PreviewScene) => {
+        setLocalScene(s);
+        onSceneChange?.(s);
+    };
+
+    const effectiveFocus: BlockType | null = scene === "finale" ? "finale" : focus;
+    const block = (effectiveFocus && wish.blocks.find((b) => b.type === effectiveFocus))
+        || wish.blocks.find((b) => b.type === "intro")
+        || wish.blocks[0];
     const i = getTranslations((wish.look.language as Locale) || "en");
-    const ctx: SlideCtx = { wish, i, unlocked: true, unlock: () => {}, celebrate: () => {} };
+    const ctx: SlideCtx = { wish, i, unlocked: true, unlock: () => {}, celebrate: () => {}, embed: true };
 
     // little jiggle whenever the previewed content changes
-    const sig = JSON.stringify(block?.config ?? null) + wish.look.theme + wish.look.presentationStyle + wish.recipient.name;
+    const sig = scene + JSON.stringify(block?.config ?? null) + wish.look.theme + wish.look.presentationStyle + wish.recipient.name;
     const styleId = normalizeStyle(wish.look.presentationStyle);
     const idx = Math.max(0, block ? wish.blocks.indexOf(block) : 0);
     useEffect(() => {
@@ -47,23 +75,38 @@ export function PreviewPhone({ wish, focus, tilt = true }: { wish: WishDataV2; f
         return () => window.removeEventListener("pointermove", onMove);
     }, [tilt]);
 
+    const vars = skinVars(styleSkin(styleId, getSkin(wish.look.theme), wish.look.theme)) as React.CSSProperties;
+
     return (
-        <div className="wz2-phone" ref={ref} aria-label="Live preview">
-            <div className="wz2-screen">
-                <div className="bv bv-embed" data-style={styleId} style={skinVars(styleSkin(styleId, getSkin(wish.look.theme))) as React.CSSProperties}>
-                    <StyleDecor style={styleId} />
-                    <StyleHeader style={styleId} wish={wish} idx={idx} total={wish.blocks.length} type={block?.type} i={i} />
-                    <div className="bv-stage">
-                        {block && (
-                            <section className="bv-slide" key={block.id + styleId}>
-                                <SlideFrame style={styleId} idx={idx} type={block.type} embed>
-                                    <BlockSlide block={block} ctx={ctx} />
-                                </SlideFrame>
-                            </section>
-                        )}
-                    </div>
+        <div className="wz2-preview-wrap">
+            <div className="wz2-phone" ref={ref} aria-label="Live preview">
+                <div className="wz2-screen">
+                    {scene === "cover" ? (
+                        <StyleCover style={styleId} wish={wish} i={i} vars={vars} onOpen={() => setScene("slide")} embed />
+                    ) : (
+                        <div className="bv bv-embed" data-style={styleId} data-skin={wish.look.theme} style={vars}>
+                            <StyleDecor style={styleId} theme={wish.look.theme} />
+                            <StyleHeader style={styleId} wish={wish} idx={idx} total={wish.blocks.length} type={block?.type} i={i} />
+                            <div className="bv-stage">
+                                {block && (
+                                    <section className="bv-slide" key={block.id + styleId + wish.look.theme}>
+                                        <SlideFrame style={styleId} idx={idx} type={block.type} embed>
+                                            <BlockSlide block={block} ctx={ctx} />
+                                        </SlideFrame>
+                                    </section>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
+            {showScenes && (
+                <div className="wz2-scenes" role="tablist" aria-label="Preview moment">
+                    <button type="button" role="tab" aria-selected={scene === "cover"} className={scene === "cover" ? "is-on" : ""} onClick={() => setScene("cover")}>🎁 Cover</button>
+                    <button type="button" role="tab" aria-selected={scene === "slide"} className={scene === "slide" ? "is-on" : ""} onClick={() => setScene("slide")}>🎬 Story</button>
+                    <button type="button" role="tab" aria-selected={scene === "finale"} className={scene === "finale" ? "is-on" : ""} onClick={() => setScene("finale")}>🎆 Finale</button>
+                </div>
+            )}
         </div>
     );
 }

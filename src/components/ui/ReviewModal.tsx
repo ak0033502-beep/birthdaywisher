@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Star, Send, Loader2 } from "lucide-react";
+import { X, Heart, Send, Loader2 } from "lucide-react";
 
 interface ReviewModalProps {
     isOpen: boolean;
@@ -97,9 +97,9 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
                                 className="text-center py-8"
                             >
                                 <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
-                                    <Star className="w-10 h-10 text-green-500 fill-green-500" />
+                                    <Heart className="w-10 h-10 text-green-500 fill-green-500" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-3">Thank You! 💖</h3>
+                                <h3 className="text-2xl font-bold mb-3">Thank You! ❤️</h3>
                                 <p className="text-foreground/60 mb-6">Your review has been submitted. It means the world to us!</p>
                                 <button
                                     onClick={handleClose}
@@ -111,24 +111,24 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
                         ) : (
                             // Form State
                             <>
-                                <h3 className="text-2xl font-bold mb-2">Leave a Review ⭐</h3>
+                                <h3 className="text-2xl font-bold mb-2">Leave a Review ❤️</h3>
                                 <p className="text-foreground/50 text-sm mb-6">Tell us about your experience creating a wish!</p>
 
-                                {/* Star Rating */}
+                                {/* Heart Rating */}
                                 <div className="mb-5">
                                     <label className="text-sm font-medium text-foreground/70 mb-2 block">Your Rating</label>
                                     <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map((star) => (
+                                        {[1, 2, 3, 4, 5].map((n) => (
                                             <button
-                                                key={star}
-                                                onClick={() => setRating(star)}
-                                                onMouseEnter={() => setHoveredRating(star)}
+                                                key={n}
+                                                onClick={() => setRating(n)}
+                                                onMouseEnter={() => setHoveredRating(n)}
                                                 onMouseLeave={() => setHoveredRating(0)}
                                                 className="p-1 transition-transform hover:scale-110"
                                             >
-                                                <Star
-                                                    className={`w-8 h-8 transition-colors ${star <= (hoveredRating || rating)
-                                                            ? "text-yellow-400 fill-yellow-400"
+                                                <Heart
+                                                    className={`w-8 h-8 transition-colors ${n <= (hoveredRating || rating)
+                                                            ? "text-pink-400 fill-pink-400"
                                                             : "text-foreground/20"
                                                         }`}
                                                 />

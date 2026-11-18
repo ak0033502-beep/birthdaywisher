@@ -1,0 +1,16 @@
+Wish viewer UI sounds (public/sfx/ui)
+=====================================
+All source recordings are CC0 1.0 (public domain) from Freesound, found via Openverse.
+Trimmed, mono, level-matched, 64 kbps MP3. No attribution required; listed for transparency.
+
+rip.mp3        <- "Paper Ripping"                          https://freesound.org/s/234221/
+rustle.mp3     <- "Wrapping Paper Tears and Manipulations" https://freesound.org/s/495052/
+whoosh.mp3     <- "Deep Whoosh #1"                         https://freesound.org/s/351256/
+swoosh.mp3     <- "Swosh swoosh whoosh air sound"          https://freesound.org/s/60026/
+typing.mp3     <- "Computer keyboard typing snippet mono"  https://freesound.org/s/361639/
+page.mp3       <- "Page Turn"                              https://freesound.org/s/136778/
+ping.mp3       <- "Chime Notification"                     https://freesound.org/s/380482/
+msg.mp3        <- "chat-message-6"                         https://freesound.org/s/269189/
+projector.mp3  <- "35mm-film-projector-start"              https://freesound.org/s/458569/
+curtain.mp3    <- "Curtains Opening or Closing"            https://freesound.org/s/51137/
+chime.mp3      <- "GLEAM-GLOW-SFX-CHIME"                   https://freesound.org/s/351408/

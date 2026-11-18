@@ -1,0 +1,354 @@
+/* =========================================================
+   Atmospheric Moods (Skins -> Full Worlds) + Style Upgrades
+   Zero star/sparkle icons: balloons, petals, gold motes, bokeh,
+   cinema beams, code rain, cosmic dust circles, velvet ropes.
+   ========================================================= */
+
+/* ---------- Ambient mood particle layer ---------- */
+.bvm-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.bvm-vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 85% 75% at 50% 45%, transparent 52%, rgba(0, 0, 0, .28) 100%);
+}
+.bv[data-skin="pastel"] .bvm-vignette,
+.bv[data-skin="party"] .bvm-vignette,
+.bv[data-skin="cherry-blossom"] .bvm-vignette {
+    background: radial-gradient(ellipse 90% 80% at 50% 45%, rgba(255, 255, 255, .25) 0%, transparent 65%);
+}
+
+/* Floating ambient motes / petals / balloons */
+.bvm-mote {
+    position: absolute;
+    bottom: -40px;
+    border-radius: 50%;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: bvm-float linear infinite;
+}
+@keyframes bvm-float {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(.85); opacity: 0; }
+    12%  { opacity: var(--m-op, .55); }
+    55%  { transform: translate3d(var(--m-dx, 22px), -55vh, 0) rotate(140deg) scale(1); }
+    88%  { opacity: var(--m-op, .45); }
+    100% { transform: translate3d(calc(var(--m-dx, 22px) * -0.7), -112vh, 0) rotate(280deg) scale(.9); opacity: 0; }
+}
+
+/* Skin-specific particle appearances */
+.bvm-party .bvm-mote {
+    width: 12px; height: 15px; border-radius: 50% 50% 48% 48%;
+    background: var(--m-c, #ff5c8a);
+    --m-op: .38;
+}
+.bvm-neon .bvm-mote {
+    width: 8px; height: 8px;
+    background: var(--m-c, #ec4899);
+    box-shadow: 0 0 14px var(--m-c, #ec4899);
+    --m-op: .55;
+}
+.bvm-neon::before {
+    content: ""; position: absolute; inset: -20%;
+    background:
+        radial-gradient(45% 35% at 20% 20%, rgba(236, 72, 153, .18), transparent 70%),
+        radial-gradient(45% 35% at 80% 75%, rgba(34, 211, 238, .16), transparent 70%);
+    animation: bvm-aurora 11s ease-in-out infinite alternate;
+}
+@keyframes bvm-aurora { to { transform: translate3d(3%, -3%, 0) scale(1.06); } }
+
+.bvm-elegant .bvm-mote {
+    width: 6px; height: 6px;
+    background: radial-gradient(circle, #fff6d1 0%, #facc15 65%, transparent 100%);
+    box-shadow: 0 0 10px rgba(250, 204, 21, .6);
+    --m-op: .65;
+}
+.bvm-pastel .bvm-mote {
+    width: 13px; height: 9px;
+    border-radius: 80% 15% 80% 15%;
+    background: linear-gradient(135deg, #fda4af, #fbcfe8);
+    --m-op: .5;
+}
+.bvm-monochrome::before {
+    content: ""; position: absolute; top: -20%; left: 15%; width: 42%; height: 140%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .06), transparent);
+    transform: rotate(-18deg);
+}
+.bvm-monochrome .bvm-mote {
+    width: 4px; height: 4px; background: rgba(255, 255, 255, .7); --m-op: .35;
+}
+.bvm-paper {
+    background-image:
+        radial-gradient(ellipse at center, transparent 58%, rgba(62, 44, 24, .22) 100%);
+}
+.bvm-paper .bvm-mote {
+    width: 5px; height: 5px; background: rgba(120, 72, 42, .35); --m-op: .3;
+}
+
+/* ---------- Mute / Sound control pill ---------- */
+.bv-sound-btn {
+    position: absolute;
+    top: 44px;
+    right: 14px;
+    z-index: 45;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--v-text) 18%, transparent);
+    background: color-mix(in srgb, var(--v-card) 86%, transparent);
+    color: var(--v-text);
+    font-size: 16px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform .15s;
+}
+.bv-sound-btn:active { transform: scale(.92); }
+.bv[data-style="messenger"] .bv-sound-btn { top: 12px; right: 44px; background: rgba(255, 255, 255, .18); border-color: transparent; color: #fff; width: 34px; height: 34px; font-size: 14px; }
+.bv[data-style="terminal"] .bv-sound-btn { top: 48px; border-radius: 4px; background: #000; border-color: var(--v-accent); color: var(--v-accent); }
+.bv[data-style="gallery"] .bv-sound-btn { top: 56px; background: #fffdf8; color: #2b2420; border-color: #c9a24a; }
+.bv.bv-embed .bv-sound-btn { display: none; }
+
+/* ---------- Cinematic upgrades ---------- */
+.bv[data-style="cinematic"] .bvs-cine-glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 68% 50% at 50% 42%, color-mix(in srgb, var(--v-accent) 14%, transparent), transparent 72%);
+}
+.bvs-cine-head {
+    position: absolute; top: 22px; left: 16px; right: 16px; z-index: 30;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--v-muted);
+}
+.bvs-cine-scene {
+    padding: 3px 10px; border-radius: 999px;
+    background: color-mix(in srgb, var(--v-card) 85%, transparent);
+    border: 1px solid var(--v-card-border);
+    font-size: 11px;
+}
+
+/* ---------- Terminal upgrades (dynamic skin phosphor + code rain) ---------- */
+.bv[data-style="terminal"], .bvs-cover-terminal {
+    text-shadow: 0 0 8px color-mix(in srgb, var(--v-accent) 42%, transparent);
+}
+.bv[data-style="terminal"] .bvs-term-bar {
+    border-bottom-color: color-mix(in srgb, var(--v-accent) 38%, transparent);
+    background: color-mix(in srgb, var(--v-accent) 6%, #050605);
+}
+.bv[data-style="terminal"] .bvs-term-out,
+.bv[data-style="terminal"] .bv-card,
+.bv[data-style="terminal"] .bv-input {
+    border-color: color-mix(in srgb, var(--v-accent) 52%, transparent);
+}
+.bvs-code-rain {
+    position: absolute; inset: 0; overflow: hidden; opacity: .14;
+    font: 600 11px var(--v-font); color: var(--v-accent);
+}
+.bvs-code-rain span {
+    position: absolute; top: -120px; writing-mode: vertical-rl; letter-spacing: 4px;
+    animation: bvs-rain linear infinite;
+}
+@keyframes bvs-rain { to { transform: translateY(125vh); } }
+
+/* ---------- Storybook upgrades (bookmark + gold corners + drop-cap) ---------- */
+.bvs-bookmark {
+    position: absolute; top: -4px; right: 26px; width: 22px; height: 48px;
+    background: linear-gradient(180deg, var(--v-accent), color-mix(in srgb, var(--v-accent) 70%, #000));
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+}
+.bvs-corner {
+    position: absolute; font-size: 16px; color: color-mix(in srgb, var(--v-accent2) 65%, transparent); line-height: 1; pointer-events: none;
+}
+.bvs-corner.tl { top: 8px; left: 10px; }
+.bvs-corner.tr { top: 8px; right: 10px; transform: scaleX(-1); }
+.bvs-corner.bl { bottom: 8px; left: 10px; transform: scaleY(-1); }
+.bvs-corner.br { bottom: 8px; right: 10px; transform: scale(-1); }
+.bv[data-style="storybook"] .bv-dropcap::first-letter {
+    float: left;
+    font-family: Georgia, serif;
+    font-size: 3.1em;
+    line-height: .82;
+    padding: 4px 10px 0 0;
+    font-weight: 800;
+    color: var(--v-accent);
+}
+.bv[data-style="storybook"] .bvs-cover-book {
+    background: linear-gradient(135deg, var(--v-accent), color-mix(in srgb, var(--v-accent) 55%, #1a0810));
+}
+
+/* ---------- Secret Chat upgrades (blue ticks, thread context, reaction chips) ---------- */
+.bvs-ticks { color: #38bdf8; font-weight: 900; margin-left: 3px; }
+.bvs-prev-msg {
+    align-self: flex-start;
+    margin-bottom: 10px;
+    padding: 7px 12px;
+    border-radius: 14px 14px 14px 4px;
+    background: color-mix(in srgb, var(--v-card) 72%, transparent);
+    color: var(--v-muted);
+    font-size: 12px;
+    font-weight: 700;
+    max-width: 85%;
+    opacity: .78;
+}
+.bvs-react-bar {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    align-self: flex-end;
+}
+.bvs-react-chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--v-accent) 38%, transparent);
+    background: color-mix(in srgb, var(--v-card) 92%, transparent);
+    color: var(--v-text);
+    font: 800 12px var(--v-font);
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+    transition: transform .15s, background .15s;
+}
+.bvs-react-chip:hover { transform: translateY(-2px); }
+.bvs-react-chip:active { transform: scale(.93); }
+.bvs-react-chip.is-sent {
+    background: var(--v-accent);
+    color: #fff;
+    border-color: var(--v-accent);
+}
+.bvs-reply-out {
+    align-self: flex-end;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 18px 18px 4px 18px;
+    background: var(--v-accent);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+    animation: bvs-bubble .32s cubic-bezier(.34, 1.56, .64, 1) both;
+    transform-origin: bottom right;
+}
+.bvs-float-react {
+    position: fixed;
+    bottom: 90px;
+    right: 28px;
+    font-size: 30px;
+    pointer-events: none;
+    z-index: 55;
+    animation: bvs-react-up 1.25s ease-out forwards;
+}
+@keyframes bvs-react-up {
+    0%   { opacity: 0; transform: translateY(10px) scale(.5); }
+    20%  { opacity: 1; transform: translateY(-14px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-150px) translateX(-18px) scale(.9); }
+}
+
+/* ---------- Space Odyssey upgrades (cosmic dust + HUD brackets) ---------- */
+.bvs-dust {
+    position: absolute; border-radius: 50%; background: #fff; opacity: .45;
+    animation: bvs-twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes bvs-twinkle { from { opacity: .18; } to { opacity: .7; } }
+.bvs-holo { position: relative; }
+.bvs-holo::before, .bvs-holo::after {
+    content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none;
+    border-color: var(--v-accent); border-style: solid; opacity: .75;
+}
+.bvs-holo::before { top: 10px; left: 10px; border-width: 2px 0 0 2px; border-radius: 6px 0 0 0; }
+.bvs-holo::after  { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; border-radius: 0 0 6px 0; }
+.bvs-holo-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--v-accent2); opacity: .85;
+}
+
+/* ---------- Art Museum upgrades (velvet rope + brass plaque) ---------- */
+.bvs-rope {
+    position: absolute; left: 8%; right: 8%; bottom: 68px; height: 26px;
+    border-bottom: 5px solid #8f1626;
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .35));
+    opacity: .85;
+}
+.bvs-rope::before, .bvs-rope::after {
+    content: ""; position: absolute; bottom: -16px; width: 10px; height: 34px; border-radius: 4px 4px 0 0;
+    background: linear-gradient(90deg, #a67c2e, #f4db91, #9e7325);
+}
+.bvs-rope::before { left: -4px; }
+.bvs-rope::after  { right: -4px; }
+.bvs-placard {
+    background: linear-gradient(135deg, #f8ecc9, #e5c878 52%, #f6e7be);
+    border: 1px solid #b58d3d;
+    color: #2b2114;
+}
+
+/* ---------- Upgraded inner blocks (Photos Ken Burns, Typewriter, Voice EQ) ---------- */
+.bv-photo-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.bv-photo.is-kenburns img { animation: bv-kenburns 11s ease-in-out infinite alternate; }
+@keyframes bv-kenburns {
+    from { transform: scale(1) translate3d(0, 0, 0); }
+    to   { transform: scale(1.1) translate3d(-1.5%, -1.5%, 0); }
+}
+.bv-photo-tape {
+    position: absolute; top: -11px; left: 50%; width: 78px; height: 22px; z-index: 4;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 238, 190, .78);
+    border-left: 2px dotted rgba(0, 0, 0, .12);
+    border-right: 2px dotted rgba(0, 0, 0, .12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+    pointer-events: none;
+}
+.bv[data-style="terminal"] .bv-photo-tape,
+.bv[data-style="galaxy"] .bv-photo-tape,
+.bv[data-style="gallery"] .bv-photo-tape,
+.bv[data-style="messenger"] .bv-photo-tape { display: none; }
+.bv-photo-count {
+    position: absolute; bottom: 10px; right: 10px; z-index: 4;
+    padding: 3px 9px; border-radius: 999px;
+    background: rgba(0, 0, 0, .62); color: #fff; font-size: 11px; font-weight: 800;
+}
+.bv-photo-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+    width: 34px; height: 34px; border-radius: 50%; border: 0;
+    background: rgba(0, 0, 0, .52); color: #fff; font-size: 18px; font-weight: 800; cursor: pointer;
+}
+.bv-photo-arrow.prev { left: 8px; }
+.bv-photo-arrow.next { right: 8px; }
+
+/* Typewriter cursor & hint */
+.bv-cursor {
+    display: inline-block; width: 2px; height: 1em; margin-left: 3px; vertical-align: -2px;
+    background: var(--v-accent); animation: bvs-blink .85s steps(1) infinite;
+}
+.bv-type-hint {
+    margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--v-muted); opacity: .72;
+}
+
+/* Live voice note equalizer */
+.bv-eq {
+    display: flex; align-items: flex-end; justify-content: center; gap: 5px; height: 34px; margin: 4px 0;
+}
+.bv-eq i {
+    display: block; width: 5px; height: 8px; border-radius: 99px;
+    background: linear-gradient(180deg, var(--v-accent), var(--v-accent2));
+    transition: height .2s;
+}
+.bv-eq.is-playing i { animation: bv-eq .65s ease-in-out infinite alternate; }
+.bv-eq.is-playing i:nth-child(2) { animation-delay: .12s; }
+.bv-eq.is-playing i:nth-child(3) { animation-delay: .26s; }
+.bv-eq.is-playing i:nth-child(4) { animation-delay: .06s; }
+.bv-eq.is-playing i:nth-child(5) { animation-delay: .32s; }
+.bv-eq.is-playing i:nth-child(6) { animation-delay: .18s; }
+.bv-eq.is-playing i:nth-child(7) { animation-delay: .29s; }
+@keyframes bv-eq { from { height: 7px; } to { height: 32px; } }
+
+/* Story edge-tap hint pill (fades out after first slide) */
+.bv-tap-hint {
+    font-size: 12px; font-weight: 800; color: var(--v-muted); opacity: .75;
+    pointer-events: none; animation: bv-hint-fade 4.5s ease forwards;
+}
+@keyframes bv-hint-fade { 0%, 70% { opacity: .8; } 100% { opacity: 0; } }
+
+/* Low-tier & reduced-motion safety */
+html[data-tier="low"] .bvm-mote,
+html[data-tier="low"] .bvs-code-rain span,
+html[data-tier="low"] .bv-photo.is-kenburns img { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+    .bvm-mote, .bvs-code-rain span, .bv-photo.is-kenburns img, .bv-eq.is-playing i { animation: none !important; }
+}

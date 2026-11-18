@@ -2,9 +2,13 @@ import { WishTimeCapsuleWrapper } from "@/components/story/WishTimeCapsuleWrappe
 import { AnalyticsTracker } from "@/components/story/AnalyticsTracker";
 import { V2WishShell } from "@/components/viewer/V2WishShell";
 import type { Metadata } from "next";
-import { getWish, peekWishPreview } from "@/lib/db";
+import { getWish, getWishReadOnly, peekWishPreview } from "@/lib/db";
+import { isAdmin } from "@/lib/adminAuth";
 import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { isV2 } from "@/lib/wish/migrate";
+
+export const dynamic = "force-dynamic";
 
 // Private, personal wish page: keep it out of search results
 const ROBOTS: Metadata["robots"] = { index: false, follow: false, googleBot: { index: false, follow: false } };
@@ -16,6 +20,7 @@ const PREVIEW_BOT = /WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
     const peek = await peekWishPreview(id);
+    if (!peek) return { title: { absolute: "Wish not found | BirthdayWisher.fun" }, robots: ROBOTS };
     const anniversary = peek?.kind === "anniversary";
     const title = peek?.name
         ? `🎁 ${peek.name}, you've got ${anniversary ? "an anniversary" : "a birthday"} surprise!`
@@ -35,21 +40,23 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     const ua = (await headers()).get("user-agent") || "";
     if (PREVIEW_BOT.test(ua)) {
         // Link-preview crawler: show a neutral page (OG tags come from generateMetadata) without opening the wish.
-        return <div className="min-h-screen flex items-center justify-center text-center px-4"><h1 className="text-3xl font-bold">You've got a surprise! 🎁</h1></div>;
+        return <div className="min-h-screen flex items-center justify-center text-center px-4"><h1 className="text-3xl font-bold">You&apos;ve got a surprise! 🎁</h1></div>;
     }
-    const raw: unknown = await getWish(resolvedParams.id);
+    const admin = await isAdmin();
+    let raw: unknown = null;
+    let adminMeta: { openedAt: string | null; viewCount: number } | undefined;
+
+    if (admin) {
+        const ro = await getWishReadOnly(resolvedParams.id);
+        raw = ro?.data ?? null;
+        if (ro) adminMeta = { openedAt: ro.openedAt, viewCount: ro.viewCount };
+    } else {
+        raw = await getWish(resolvedParams.id);
+    }
 
     if (!raw) {
-        return (
-            <div className="min-h-screen flex items-center justify-center text-center px-4">
-                <div>
-                    <h1 className="text-4xl font-bold text-red-500 mb-4">404 - Wish Not Found</h1>
-                    <p className="text-foreground/60 max-w-md">
-                        This wish link is either invalid or has self-destructed for privacy reasons.
-                    </p>
-                </div>
-            </div>
-        );
+        // Missing / expired wish: real 404 status + the themed "balloon floated away" page with a way back home
+        notFound();
     }
 
     // Wishes made with Wizard 2.0 (v2 blocks): every presentation style (cinematic, terminal,
@@ -57,17 +64,26 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     if (isV2(raw)) {
         return (
             <>
-                <AnalyticsTracker />
-                <V2WishShell wish={raw} wishId={resolvedParams.id} />
+                {!admin && <AnalyticsTracker />}
+                <V2WishShell
+                    wish={raw}
+                    wishId={admin ? undefined : resolvedParams.id}
+                    adminBypass={admin}
+                    adminMeta={adminMeta}
+                />
             </>
         );
     }
 
-    // All existing (v1) wishes: unchanged
+    // All existing (v1) wishes: unchanged for visitors; read-only + lock bypass for admin
     return (
         <>
-            <AnalyticsTracker />
-            <WishTimeCapsuleWrapper wishData={raw as Parameters<typeof WishTimeCapsuleWrapper>[0]["wishData"]} />
+            {!admin && <AnalyticsTracker />}
+            <WishTimeCapsuleWrapper
+                wishData={raw as Parameters<typeof WishTimeCapsuleWrapper>[0]["wishData"]}
+                adminBypass={admin}
+                adminMeta={adminMeta}
+            />
         </>
     );
 }

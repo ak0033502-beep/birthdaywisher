@@ -9,6 +9,7 @@ import confetti from "canvas-confetti";
 import { ShareModal } from "@/components/ui/ShareModal";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
+import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
 
 export function WizardLayout({
     children,
@@ -35,6 +36,7 @@ export function WizardLayout({
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedId, setGeneratedId] = useState<string | null>(null);
     const [showShare, setShowShare] = useState(false);
+    const [askReview, setAskReview] = useState(false);
 
     const shareLink = typeof window !== "undefined" && generatedId
         ? `${window.location.origin}/wish/${generatedId}`
@@ -55,6 +57,7 @@ export function WizardLayout({
                 if (data.id) {
                     setGeneratedId(data.id);
                     setIsGenerated(true);
+                    if (shouldAskReview("creator")) setTimeout(() => setAskReview(true), 9000);
                     clearWizardProgress();
                     // Save creator token for analytics dashboard
                     if (data.creatorToken) {
@@ -308,6 +311,11 @@ export function WizardLayout({
                 shareLink={shareLink}
                 recipientName={wishData.targetName}
             />
+
+            {/* Quick review popup a few seconds after the link is ready */}
+            {askReview && generatedId && !showShare && (
+                <ReviewPrompt who="creator" wishId={generatedId} mode="modal" onClose={() => setAskReview(false)} />
+            )}
         </div>
     );
 }

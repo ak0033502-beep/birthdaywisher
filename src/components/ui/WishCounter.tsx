@@ -34,7 +34,13 @@ export function WishCounter({ variant = "full" }: { variant?: "full" | "birthday
                 const res = await fetch("/api/stats");
                 if (res.ok) {
                     const data = await res.json();
-                    setStats(data);
+                    if (!data || !(data.total > 0)) return;
+                    // Counter only ever moves up (never flickers down between polls)
+                    setStats((prev) => ({
+                        birthday: Math.max(prev.birthday, Number(data.birthday) || 0),
+                        anniversary: Math.max(prev.anniversary, Number(data.anniversary) || 0),
+                        total: Math.max(prev.total, Number(data.total) || 0),
+                    }));
                     setLoaded(true);
                 }
             } catch {

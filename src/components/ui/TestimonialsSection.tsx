@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Star, MessageSquare, Quote } from "lucide-react";
+import { Heart, MessageSquare, Quote } from "lucide-react";
 import { ReviewModal } from "./ReviewModal";
 
 interface Review {
@@ -11,6 +11,7 @@ interface Review {
     rating: number;
     message: string;
     relationship: string;
+    source?: string;
     created_at: string;
 }
 
@@ -54,15 +55,15 @@ export function TestimonialsSection() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold uppercase tracking-wider mb-6">
-                            <Star className="w-3.5 h-3.5 fill-yellow-400" /> Real User Reviews
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-bold uppercase tracking-wider mb-6">
+                            <Heart className="w-3.5 h-3.5 fill-pink-400" /> Real User Reviews
                         </div>
                         <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
                             What People Are Saying
                         </h2>
                         <p className="text-foreground/60 max-w-2xl mx-auto text-lg">
                             {reviews.length > 0
-                                ? `${reviews.length} creators have shared their experience. Average rating: ${averageRating}/5 ⭐`
+                                ? `${reviews.length} creators have shared their experience. Average rating: ${averageRating}/5 ❤️`
                                 : "Be the first to share your experience! We'd love to hear how your wish turned out."
                             }
                         </p>
@@ -83,13 +84,13 @@ export function TestimonialsSection() {
                                 {/* Decorative quote */}
                                 <Quote className="absolute top-4 right-4 w-8 h-8 text-white/5 group-hover:text-primary/10 transition-colors" />
 
-                                {/* Stars */}
-                                <div className="flex gap-0.5 mb-4">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <Star
-                                            key={star}
-                                            className={`w-4 h-4 ${star <= review.rating
-                                                    ? "text-yellow-400 fill-yellow-400"
+                                {/* Hearts */}
+                                <div className="flex gap-1 mb-4">
+                                    {[1, 2, 3, 4, 5].map((n) => (
+                                        <Heart
+                                            key={n}
+                                            className={`w-4 h-4 ${n <= review.rating
+                                                    ? "text-pink-400 fill-pink-400"
                                                     : "text-foreground/15"
                                                 }`}
                                         />
@@ -105,7 +106,7 @@ export function TestimonialsSection() {
                                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
                                     <div>
                                         <p className="font-bold text-sm text-white">{review.name}</p>
-                                        <p className="text-xs text-foreground/40">Created for {review.relationship}</p>
+                                        <p className="text-xs text-foreground/40">{review.source === "recipient" ? "Received a surprise" : `Created for ${review.relationship}`}</p>
                                     </div>
                                     <div className="text-xs text-foreground/30">
                                         {new Date(review.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
@@ -130,7 +131,7 @@ export function TestimonialsSection() {
                         onClick={() => setIsModalOpen(true)}
                         className="px-8 py-4 bg-white/5 border border-white/10 text-foreground font-bold rounded-full hover:bg-white/10 hover:border-primary/30 transition-all inline-flex items-center gap-2"
                     >
-                        <Star className="w-5 h-5 text-yellow-400" />
+                        <Heart className="w-5 h-5 text-pink-400 fill-pink-400" />
                         Leave a Review
                     </button>
                 </div>
