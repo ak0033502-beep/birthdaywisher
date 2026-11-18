@@ -79,7 +79,7 @@ const en: HomeStrings = {
         { e: "🎤", t: "Voice Note", d: "Say it in your own voice", bg: "linear-gradient(135deg,#C9F2FF,#FFE3EC)" },
         { e: "⏳", t: "Midnight Countdown", d: "Unlocks exactly at 12 on their birthday", bg: "linear-gradient(135deg,#E8F5D0,#FFF1C9)" },
     ],
-    moreGames: "New: Blow the Candles, Prank Link & Birthday Quiz games. Play them all →",
+    moreGames: "12 playable games: Hold My Hand ❤️, Sky Lanterns 🏮, Balloon Pop, Candles & more →",
     swipe: "◀ swipe ▶",
     stylesTitle: "Pick a style they'll remember",
     stylesSub: "The same wish, six completely different experiences.",

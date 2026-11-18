@@ -362,6 +362,77 @@ export async function cleanupExpiredWishes() {
     }
 }
 
+/**
+ * Cloudinary Auto-Saver: cleans up orphan files in `birthday_wishes/` that were uploaded
+ * >36 hours ago by visitors who closed the wizard without ever creating a wish.
+ *
+ * Triple safety guard:
+ *  1. Only inspects resources strictly inside `birthday_wishes/`
+ *  2. Never touches anything uploaded in the last 36 hours (protects saved wizard drafts)
+ *  3. Aborts immediately if reading active `wishes` fails, and skips any asset whose public_id
+ *     or basename appears anywhere inside any active wish's JSON payload.
+ */
+export async function cleanupOrphanCloudinaryMedia(maxPerType = 400): Promise<{ deletedOrphans: number; freedMb: number }> {
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+        return { deletedOrphans: 0, freedMb: 0 };
+    }
+    await ensureDb();
+    // Read ALL active wishes first; if this query fails for any reason, do NOT delete anything
+    const { rows } = await sql`SELECT data FROM wishes`;
+    const allActiveJson = rows.map((r) => JSON.stringify(r.data ?? "")).join("\n");
+    const activeIds = new Set<string>();
+    const matches = allActiveJson.match(/birthday_wishes\/[^"'\s\\.?#]+/g) || [];
+    for (const m of matches) activeIds.add(m);
+
+    const cutoffMs = Date.now() - 36 * 3600 * 1000; // 36-hour grace period for unfinished drafts
+    let deletedOrphans = 0;
+    let freedBytes = 0;
+
+    for (const resourceType of ["image", "video"] as const) {
+        let nextCursor: string | undefined;
+        const toDelete: string[] = [];
+        let scannedPages = 0;
+
+        while (scannedPages < 3 && toDelete.length < maxPerType) {
+            scannedPages++;
+            const page = await cloudinary.api.resources({
+                type: "upload",
+                prefix: "birthday_wishes/",
+                resource_type: resourceType,
+                max_results: 500,
+                ...(nextCursor ? { next_cursor: nextCursor } : {}),
+            }) as { resources?: Array<{ public_id?: string; created_at?: string; bytes?: number }>; next_cursor?: string };
+
+            for (const item of page.resources || []) {
+                const pid = item.public_id || "";
+                if (!pid.startsWith("birthday_wishes/")) continue;
+                const createdMs = item.created_at ? Date.parse(item.created_at) : NaN;
+                if (!Number.isFinite(createdMs) || createdMs >= cutoffMs) continue;
+                const base = pid.slice("birthday_wishes/".length);
+                if (activeIds.has(pid) || (base.length >= 6 && allActiveJson.includes(base))) continue;
+
+                toDelete.push(pid);
+                freedBytes += Number(item.bytes) || 0;
+                if (toDelete.length >= maxPerType) break;
+            }
+            nextCursor = page.next_cursor;
+            if (!nextCursor) break;
+        }
+
+        // Bulk delete in chunks of 100 (1 Admin API call per 100 files)
+        for (let i = 0; i < toDelete.length; i += 100) {
+            const chunk = toDelete.slice(i, i + 100);
+            await cloudinary.api.delete_resources(chunk, { resource_type: resourceType });
+            deletedOrphans += chunk.length;
+        }
+    }
+
+    return {
+        deletedOrphans,
+        freedMb: Math.round((freedBytes / 1048576) * 10) / 10,
+    };
+}
+
 /** Admin: delete one wish right now (privacy / DMCA request), by id or custom slug. */
 export async function deleteWishNow(idOrSlug: string): Promise<{ ok: boolean; id?: string }> {
     await ensureDb();

@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { TestimonialsSection } from "@/components/ui/TestimonialsSection";
+import type { PublicReviewsSummary } from "@/lib/reviews";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations, type SiteStrings } from "@/lib/siteTranslations";
 import { SITE_URL } from "@/lib/site";
@@ -13,9 +14,10 @@ import { Hero3D } from "./Hero3D";
 import { PartyFooter } from "@/components/party/PartyFooter";
 import { getHomeStrings, HOME_FAQ_EN, type HomeStrings } from "./homeStrings";
 
-/* ---------- Structured data (English; Google renders the default English page) ---------- */
-const STRUCTURED_DATA = [
-  {
+/* ---------- Structured data (English; Google & AI crawlers read SSR HTML + JSON-LD) ---------- */
+function buildStructuredData(reviews?: PublicReviewsSummary) {
+  const hasRating = !!reviews && reviews.stats.totalCount > 0 && reviews.stats.averageRating > 0;
+  const webApp: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "BirthdayWisher.fun",
@@ -23,24 +25,53 @@ const STRUCTURED_DATA = [
     applicationCategory: "EntertainmentApplication",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    description: "Create a free birthday wishes game: an interactive birthday or wedding anniversary surprise with puzzles, quizzes, photos, voice notes and confetti, shared as one link.",
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "How To Create The Best Birthday & Anniversary Surprise Online",
-    step: [
-      { "@type": "HowToStep", name: "Personalize The Journey", text: "Answer fun questions about the birthday boy/girl. Add inside jokes, upload photos, and set the emotional vibe (Roast or Toast)." },
-      { "@type": "HowToStep", name: "Select Aesthetics", text: "Choose a presentation style, select soundtrack music, and customize the final celebration." },
-      { "@type": "HowToStep", name: "Share The Secret Link", text: "Get a unique URL instantly. Send it via WhatsApp or Instagram. The link auto-destructs after opening for privacy." },
-    ],
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: HOME_FAQ_EN.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-  },
-];
+    description:
+      "Create a free birthday wishes game: an interactive birthday or wedding anniversary surprise with heartbeat sync, sky lanterns, quizzes, photos, voice notes and confetti, shared as one private WhatsApp link.",
+  };
+
+  if (hasRating && reviews) {
+    webApp.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: reviews.stats.averageRating.toFixed(1),
+      ratingCount: reviews.stats.totalCount,
+      bestRating: "5",
+      worstRating: "1",
+    };
+    if (reviews.reviews.length > 0) {
+      webApp.review = reviews.reviews.slice(0, 6).map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.name },
+        datePublished: r.created_at.slice(0, 10),
+        reviewBody: r.message,
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: String(r.rating),
+          bestRating: "5",
+          worstRating: "1",
+        },
+      }));
+    }
+  }
+
+  return [
+    webApp,
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      name: "How To Create The Best Birthday & Anniversary Surprise Online",
+      step: [
+        { "@type": "HowToStep", name: "Personalize The Journey", text: "Answer fun questions about the birthday star. Add inside jokes, interactive games, photos, and your heartfelt letter." },
+        { "@type": "HowToStep", name: "Select Aesthetics", text: "Choose from 6 presentation styles, gentle background music, and the Happy Birthday candle finale." },
+        { "@type": "HowToStep", name: "Share The Secret Link", text: "Get a private URL instantly. Send it via WhatsApp or Instagram — no app install or login needed, and links auto-destruct after opening." },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: HOME_FAQ_EN.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    },
+  ];
+}
 
 const RELATIONS: Array<{ key: keyof HomeStrings["relations"]; e: string; href: string }> = [
   { key: "bestie", e: "👯", href: "/blog/best-friend-quotes" },
@@ -72,7 +103,7 @@ const GUIDES = [
   { e: "💍", t: "Wedding anniversary wishes for couple", href: "/blog/wedding-anniversary-wishes-for-couple" },
 ];
 
-export function HomeClient() {
+export function HomeClient({ initialReviews }: { initialReviews?: PublicReviewsSummary }) {
   const { lang } = useSiteLanguage();
   const s = getSiteTranslations(lang);
   const h = getHomeStrings(lang);
@@ -80,13 +111,14 @@ export function HomeClient() {
   const rootRef = useRef<HTMLDivElement>(null);
   useReveal(rootRef, tier);
   useTiltAndMagnet(rootRef, tier);
+  const structuredData = useMemo(() => buildStructuredData(initialReviews), [initialReviews]);
 
   const [hint, setHint] = useState<{ msg: string | null; cta: boolean }>({ msg: null, cta: false });
   const onHint = useCallback((msg: string | null, cta = false) => setHint({ msg, cta }), []);
 
   return (
     <div className="party" ref={rootRef}>
-      <JsonLd data={STRUCTURED_DATA} />
+      <JsonLd data={structuredData} />
 
       {/* ① HERO */}
       <header className="bw-hero">
@@ -116,8 +148,8 @@ export function HomeClient() {
         </div>
       </header>
 
-      {/* ② TRUST STRIP (real numbers from /api/stats) */}
-      <TrustStrip h={h} />
+      {/* ② TRUST STRIP (real numbers from /api/stats + SSR verified user rating) */}
+      <TrustStrip h={h} reviewStats={initialReviews?.stats} />
 
       {/* ③ WHO IS IT FOR */}
       <section className="bw-section">
@@ -241,9 +273,9 @@ export function HomeClient() {
         </div>
       </section>
 
-      {/* ⑩ REAL REVIEWS: existing component, hosted in a night band (it is designed for dark) */}
+      {/* ⑩ REAL REVIEWS: SSR-hydrated for Google + AI crawlers, hosted in a night band */}
       <section className="bw-night-band" style={{ marginTop: 40 }}>
-        <TestimonialsSection />
+        <TestimonialsSection initialData={initialReviews} />
       </section>
 
       {/* ⑪ FAQ (visible; same content as the FAQPage schema) */}
@@ -294,7 +326,7 @@ function Wave({ flip = false }: { flip?: boolean }) {
   );
 }
 
-function TrustStrip({ h }: { h: HomeStrings }) {
+function TrustStrip({ h, reviewStats }: { h: HomeStrings; reviewStats?: { totalCount: number; averageRating: number } }) {
   const [total, setTotal] = useState<number | null>(null);
   const [shown, setShown] = useState(0);
   useEffect(() => {
@@ -317,6 +349,9 @@ function TrustStrip({ h }: { h: HomeStrings }) {
   return (
     <div className="bw-container bw-trust">
       {total !== null && total > 0 && <div className="bw-pill">🎉 <b>{shown.toLocaleString("en-IN")}</b> {h.trustCreated}</div>}
+      {reviewStats && reviewStats.totalCount > 0 && (
+        <div className="bw-pill">❤️ <b>{reviewStats.averageRating.toFixed(1)}/5</b> ({reviewStats.totalCount} reviews)</div>
+      )}
       <div className="bw-pill">💸 {h.trustFree}</div>
       <div className="bw-pill">💬 {h.trustWorks}</div>
     </div>

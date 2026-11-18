@@ -11,6 +11,7 @@
 import "@/lib/netFix";
 import { sql } from "@vercel/postgres";
 import { normalizeWish } from "@/lib/wish/migrate";
+import { isGame } from "@/blocks/registry";
 
 const g = globalThis as unknown as { __bwAnalyticsReady?: Promise<void> | null };
 
@@ -184,7 +185,7 @@ export async function ledgerWishCreated(id: string, raw: unknown, hasSlug: boole
         const { v1, v2 } = normalizeWish(raw);
         const isV2 = !!raw && typeof raw === "object" && (raw as { schemaVersion?: number }).schemaVersion === 2;
         const blocks = v2.blocks.map((b) => b.type);
-        const games = blocks.filter((t) => t === "candles" || t === "prank" || t === "trivia");
+        const games = blocks.filter((t) => isGame(t));
         const extra = (v2.meta?.extra ?? {}) as Record<string, unknown>;
         const source = typeof extra.source === "string" ? extra.source.slice(0, 40) : isV2 ? "wizard2" : "classic";
         const mediaCount = Array.isArray(v1.mediaItems) ? v1.mediaItems.length : v1.mediaUrl ? 1 : 0;

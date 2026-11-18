@@ -61,7 +61,7 @@ export function defaultOrder(): BlockType[] {
     return o;
 }
 
-export const MAX_GAMES = 3;
+export const MAX_GAMES = 4;
 
 export function getConfig<K extends BlockType>(d: Draft, type: K): BlockConfigMap[K] {
     return (d.configs[type] as BlockConfigMap[K] | undefined) ?? (BLOCKS[type].defaultConfig() as BlockConfigMap[K]);

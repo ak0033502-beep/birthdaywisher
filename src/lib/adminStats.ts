@@ -285,7 +285,7 @@ export async function getWishOps(includeUsage = true) {
                  MIN(created_at) FILTER (WHERE opened_at IS NULL) oldest_unopened,
                  COUNT(*) FILTER (WHERE custom_slug IS NOT NULL) slugs FROM wishes`, { rows: [] as Row[] } as never, "ops.active"),
         safe(() => sql`SELECT COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) deleted, COALESCE(SUM(media_count) FILTER (WHERE deleted_at IS NULL), 0) media FROM wish_ledger`, { rows: [] as Row[] } as never, "ops.ledger"),
-        safe(() => kvGet<{ deleted?: number; prunedEvents?: number; at?: string; error?: string }>("last_cleanup"), null, "ops.kv"),
+        safe(() => kvGet<{ deleted?: number; orphanMedia?: number; freedMb?: number; prunedEvents?: number; at?: string; error?: string }>("last_cleanup"), null, "ops.kv"),
         includeUsage
             ? safe(() => sql`SELECT id, custom_slug, created_at, opened_at, view_count,
                      COALESCE(data->'look'->>'presentationStyle', data->>'theme', 'classic') AS style,

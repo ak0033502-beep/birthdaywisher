@@ -63,7 +63,7 @@ export const BLOCKS = {
         summary: (c) => `${c.level}% ${c.level > 50 ? "roast" : "toast"}`,
     }),
     quirks: def({
-        type: "quirks", label: "Things I love", icon: "💖", category: "memories", gate: false, supports: both,
+        type: "quirks", label: "Things I love", icon: "💗", category: "memories", gate: false, supports: both,
         defaultConfig: () => ({ items: [] }),
         isFilled: (c) => c.items.some(has),
         fromV1: (v1) => (Array.isArray(v1.quirks) && v1.quirks.length > 0 ? { items: [...v1.quirks] } : null),
@@ -186,6 +186,61 @@ export const BLOCKS = {
         summary: (c) => c.effect,
     }),
     /* ---------- Mini-games (v2 only: no v1 fields, so old wishes never contain them) ---------- */
+    heartbeat: def({
+        type: "heartbeat", label: "Hold My Hand", icon: "🫶", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({ message: "No matter how far apart we are, I'm right here with you ❤️", placement: "finale" }),
+        isFilled: (c) => has(c.message),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `Heartbeat sync · ${c.placement}`,
+    }),
+    lanterns: def({
+        type: "lanterns", label: "Sky Lanterns", icon: "🏮", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({
+            wishes: [
+                "May every morning bring you peace & big smiles 🌅",
+                "May all your secret dreams come true this year 🏮",
+                "Thank you for making life warmer just by being in it ❤️",
+            ],
+            placement: "finale",
+        }),
+        isFilled: (c) => Array.isArray(c.wishes) && c.wishes.some(has),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${c.wishes.filter(has).length} lanterns · ${c.placement}`,
+    }),
+    balloons: def({
+        type: "balloons", label: "Love-Note Balloons", icon: "🎈", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({
+            notes: [
+                "Your laugh makes the hardest days feel light 🥰",
+                "Nobody understands me the way you do ❤️",
+                "So proud of the person you are becoming 🎉",
+                "Here's to 100 more memories together 🎈",
+            ],
+            placement: "fun",
+        }),
+        isFilled: (c) => Array.isArray(c.notes) && c.notes.some(has),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${c.notes.filter(has).length} balloons · ${c.placement}`,
+    }),
+    memoryMatch: def({
+        type: "memoryMatch", label: "Memory Match", icon: "🃏", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({ message: "Every moment with you is worth remembering ❤️", usePhotos: true, placement: "fun" }),
+        isFilled: () => true,
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `6 pairs${c.usePhotos ? " (uses photos)" : ""} · ${c.placement}`,
+    }),
+    guessYear: def({
+        type: "guessYear", label: "Guess the Year", icon: "📅", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({ moments: [{ caption: "When our favourite memory began ❤️", year: 2022 }], placement: "fun" }),
+        isFilled: (c) => Array.isArray(c.moments) && c.moments.some((m) => has(m.caption) && m.year >= 1950 && m.year <= 2035),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${c.moments.filter((m) => has(m.caption)).length} moments · ${c.placement}`,
+    }),
     candles: def({
         type: "candles", label: "Blow the Candles", icon: "🕯️", category: "game", gate: true, supports: both,
         defaultConfig: () => ({ candles: 5, message: "Make a wish! 🎂", placement: "finale" }),
@@ -194,25 +249,75 @@ export const BLOCKS = {
         toV1: () => ({}),
         summary: (c) => `${c.candles} candles · ${c.placement}`,
     }),
+    trivia: def({
+        type: "trivia", label: "Birthday Quiz", icon: "🎯", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({ title: "", questions: [{ q: "", options: ["", "", ""], correct: 0 }], placement: "fun" }),
+        isFilled: (c) => c.questions.some((x) => has(x.q) && x.options.filter(has).length >= 2),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${c.questions.filter((x) => has(x.q)).length} questions · ${c.placement}`,
+    }),
     prank: def({
         type: "prank", label: "Prank Link", icon: "😂", category: "game", gate: false, supports: both,
         defaultConfig: () => ({ kind: "error", placement: "opener" }),
         isFilled: () => true,
         fromV1: () => null,
         toV1: () => ({}),
-        summary: (c) => ({ error: "Fake error screen", prediction: "Fake birthday prediction", loading: "Never-ending loading" }[c.kind] + ` · ${c.placement}`),
+        summary: (c) => ({ error: "Fake error screen", prediction: "Funny prediction", loading: "99% stuck loading" }[c.kind] + ` · ${c.placement}`),
     }),
-    trivia: def({
-        type: "trivia", label: "Quiz + Leaderboard", icon: "🏅", category: "game", gate: true, supports: both,
-        defaultConfig: () => ({ title: "", questions: [{ q: "", options: ["", "", ""], correct: 0 }], leaderboard: true, placement: "fun" }),
-        isFilled: (c) => c.questions.some((x) => has(x.q) && x.options.filter(has).length >= 2),
+    wheel: def({
+        type: "wheel", label: "Spin the Wheel", icon: "🎡", category: "game", gate: false, supports: both,
+        defaultConfig: () => ({
+            slices: ["🍕 Pizza treat on me", "☕ Late-night coffee drive", "🎬 Movie of your choice", "🍰 Extra birthday cake", "🤗 Tightest hug ever", "🎁 Mystery treat"],
+            placement: "fun",
+        }),
+        isFilled: (c) => Array.isArray(c.slices) && c.slices.filter(has).length >= 3,
         fromV1: () => null,
         toV1: () => ({}),
-        summary: (c) => `${c.questions.filter((x) => has(x.q)).length} questions${c.leaderboard ? " · leaderboard" : ""}`,
+        summary: (c) => `${c.slices.filter(has).length} wheel slices · ${c.placement}`,
+    }),
+    catchGifts: def({
+        type: "catchGifts", label: "Catch the Gifts", icon: "🎁", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({ target: 8, message: "You caught every bit of birthday love! 🎉", placement: "fun" }),
+        isFilled: (c) => c.target > 0,
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `Catch ${c.target} gifts · ${c.placement}`,
+    }),
+    treasure: def({
+        type: "treasure", label: "Treasure Hunt", icon: "🗺️", category: "game", gate: true, supports: both,
+        defaultConfig: () => ({
+            clues: [
+                { riddle: "Clue 1: What has candles on top and wishes inside? 🎂", answer: "cake" },
+                { riddle: "Clue 2: Who is the star of today's celebration? (Hint: type 'me' 😄)", answer: "me" },
+            ],
+            reward: "You unlocked the real treasure: endless love & your best year yet ❤️",
+            placement: "fun",
+        }),
+        isFilled: (c) => Array.isArray(c.clues) && c.clues.some((x) => has(x.riddle) && has(x.answer)),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${c.clues.filter((x) => has(x.riddle)).length} clues · ${c.placement}`,
+    }),
+    newspaper: def({
+        type: "newspaper", label: "Birthday Gazette", icon: "📰", category: "game", gate: false, supports: both,
+        defaultConfig: () => ({
+            headline: "LOCAL LEGEND OFFICIALLY LEVELS UP TODAY!",
+            subhead: "Experts confirm smiles and good vibes have reached an all-time high",
+            story: "Witnesses report cake supplies are running dangerously low while friends & family gather to celebrate their favourite human.",
+            placement: "opener",
+        }),
+        isFilled: (c) => has(c.headline),
+        fromV1: () => null,
+        toV1: () => ({}),
+        summary: (c) => `${short(c.headline, 28)} · ${c.placement}`,
     }),
 } satisfies { [K in BlockType]: BlockDefinition<K> };
 
-export const GAME_TYPES = ["candles", "prank", "trivia"] as const satisfies readonly BlockType[];
+export const GAME_TYPES = [
+    "heartbeat", "lanterns", "balloons", "memoryMatch", "guessYear",
+    "candles", "trivia", "prank", "wheel", "catchGifts", "treasure", "newspaper",
+] as const satisfies readonly BlockType[];
 export type GameType = (typeof GAME_TYPES)[number];
 export const isGame = (t: BlockType): t is GameType => (GAME_TYPES as readonly BlockType[]).includes(t);
 

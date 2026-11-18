@@ -11,7 +11,8 @@ import type { getTranslations } from "@/lib/i18n";
 import type { BlockConfigMap, BlockInstance, BlockType, WishDataV2 } from "@/lib/wish/schema";
 import { LockTimer } from "@/components/story/LockTimer";
 import { SlidingPuzzle } from "@/components/story/SlidingPuzzle";
-import { CandlesSlide, PrankSlide, TriviaSlide } from "./games";
+import { BalloonsSlide, CandlesSlide, HeartbeatSlide, LanternsSlide, PrankSlide, TriviaSlide } from "./games";
+import { CatchGiftsSlide, GuessYearSlide, MemoryMatchSlide, NewspaperSlide, TreasureSlide, WheelSlide } from "./gamesMore";
 import { GrandFinale } from "@/components/celebration/GrandFinale";
 
 // Heavy/optional interactions load only when a wish actually uses them (SmileLock pulls in face detection)
@@ -27,7 +28,7 @@ export interface SlideCtx {
     /** Mark this gate as solved (or auto-skipped) */
     unlock: () => void;
     celebrate: (n?: number) => void;
-    /** Real wish id (needed for the live leaderboard); undefined in previews/demos */
+    /** Real wish id for anonymous completion events; undefined in previews/demos */
     wishId?: string;
     /** True inside the Wizard preview phone (shows full text immediately). */
     embed?: boolean;
@@ -390,6 +391,9 @@ const SLIDES: { [K in BlockType]: (p: SlideProps<K>) => ReactNode } = {
     secretDate: SecretDate, puzzle: Puzzle, quiz: Quiz, award: Award, voice: Voice, gratitude: Gratitude,
     message: Message, promise: PromiseSlide, giftCard: GiftCard, finale: Finale,
     candles: CandlesSlide, prank: PrankSlide, trivia: TriviaSlide,
+    heartbeat: HeartbeatSlide, lanterns: LanternsSlide, balloons: BalloonsSlide,
+    memoryMatch: MemoryMatchSlide, guessYear: GuessYearSlide, wheel: WheelSlide,
+    catchGifts: CatchGiftsSlide, treasure: TreasureSlide, newspaper: NewspaperSlide,
 };
 
 export function BlockSlide({ block, ctx }: { block: BlockInstance; ctx: SlideCtx }) {

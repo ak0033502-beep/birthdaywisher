@@ -3,19 +3,27 @@ import { JsonLd, articleLd, breadcrumbLd } from "@/components/seo/JsonLd";
 import Link from "next/link";
 import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPage";
 
+const BFF_FAQ = [
+    { q: "What is the best heart-touching birthday wish for a best friend?", a: "Speak to a real memory you share, thank them for showing up on hard days, and pair your paragraph with an interactive surprise like Love-Note Balloons or a photo slideshow on BirthdayWisher.fun." },
+    { q: "How do I wish my best friend at midnight in a unique way?", a: "Create a private birthday surprise link locked until 12:00 AM, add inside-joke quiz questions or a harmless Prank Link opener, and send it on WhatsApp two minutes before midnight." },
+    { q: "What can I write on an Instagram story for my bestie's birthday?", a: "Keep story captions punchy (under 10 words) like 'My emergency contact & favourite chaos — HBD!' and send your longer emotional letter privately." },
+    { q: "How do I make a long-distance best friend feel special on their birthday?", a: "Use our free Hold My Hand (Heartbeat Sync) or Blow the Candles link alongside a recorded voice note so they hear your real voice when the confetti bursts." },
+];
+
 export const metadata: Metadata = {
     alternates: { canonical: "/blog/best-friend-quotes" },
-    title: "100+ Best Friend Birthday Quotes & Wishes That Hit Different | BirthdayWisher.fun",
-    description: "Find the most heart-touching, funny, and unique birthday wishes for your best friend. Copy-paste ready emotional quotes, roast messages, and creative surprise ideas to make their day unforgettable.",
-    keywords: "best friend birthday quotes, funny birthday wishes for best friend, emotional birthday wishes, happy birthday bestie, heart touching birthday wishes for best friend, birthday wishes for BFF, cute birthday messages for best friend, long birthday paragraph for best friend, unique birthday gift for bestie, birthday wishes for close friend, sentimental birthday wishes, birthday quotes for soulmate friend",
+    title: "100+ Best Friend Birthday Wishes, Quotes & Roasts (2026)",
+    description: "Copy-paste emotional best friend birthday quotes, funny roasts, Hindi/Hinglish wishes, Instagram captions & interactive surprise ideas.",
+    keywords: "best friend birthday quotes, funny birthday wishes for best friend, emotional birthday wishes, happy birthday bestie, heart touching birthday wishes for best friend, birthday wishes for BFF, cute birthday messages for best friend, long birthday paragraph for best friend, unique birthday gift for bestie, birthday wishes in hindi for best friend",
 };
 
 export default function BestFriendQuotesPage() {
     return (
         <PartyPage>
             <JsonLd data={[
-                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/best-friend-quotes", datePublished: "Oct 25, 2024" }),
+                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/best-friend-quotes", datePublished: "Oct 25, 2024", dateModified: "Nov 18, 2026" }),
                 breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: String(metadata.title), path: "/blog/best-friend-quotes" }]),
+                { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: BFF_FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
             ]} />
             <PageHero
                 crumbs={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: "100+ Best Friend Birthday Quotes & Wishes That Won't Get Ignored" }]}
@@ -123,17 +131,41 @@ export default function BestFriendQuotesPage() {
                             </div>
                             <div className="glass-panel p-6 rounded-2xl border border-primary/30 bg-primary/5">
                                 <h3 className="text-xl font-bold mb-2 text-primary">Level 3: The Gamified Interactive Wish (Legendary) ⚡</h3>
-                                <p className="text-foreground/70">Hide your quote at the end of a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> with puzzles, voice notes, and a heartbeat photo reveal. Your best friend has to solve trivia about your friendship before they earn the message. <strong>This is the method that gets screenshots and tears.</strong></p>
+                                <p className="text-foreground/70">Hide your quote at the end of a <Link href="/blog/how-to-create-a-gamified-birthday-card" className="text-primary hover:text-secondary">gamified birthday card</Link> with <Link href="/games/balloon-pop" className="text-primary hover:text-secondary">Love-Note Balloons</Link>, a <Link href="/games/birthday-prank-link" className="text-primary hover:text-secondary">Birthday Prank Link</Link>, or a personal <Link href="/games/birthday-quiz" className="text-primary hover:text-secondary">Bestie Quiz</Link>. <strong>This is the method that gets screenshots and happy tears.</strong></p>
                             </div>
                         </div>
+
+                        {/* Section 7 — Hindi & Hinglish */}
+                        <h2 className="text-3xl font-bold mt-12 mb-6 text-primary">🇮🇳 Hindi &amp; Hinglish Birthday Wishes for Best Friend</h2>
+                        <p className="mb-4 text-foreground/70">Sometimes <strong>Hinglish ya Hindi dosti wishes</strong> hit straight in the heart more than formal English ever could:</p>
+                        <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                            <li>&quot;Janamdin mubarak mere bhai / meri jaan! Duniya idhar se udhar ho jaaye, par apni yaari hamesha top par rahegi ❤️🎂&quot;</li>
+                            <li>&quot;Tere bina college, chai aur late-night rants sab adhure hote. Happy Birthday to my permanent therapist &amp; partner-in-crime! 🎉&quot;</li>
+                            <li>&quot;हज़ारों दोस्त मिलेंगे ज़िंदगी में, पर तेरे जैसा पागल और सच्चा यार नसीब से मिलता है। जन्मदिन की ढेर सारी शुभकामनाएं! ❤️&quot;</li>
+                            <li>&quot;Party toh aaj tujhse le kar hi rahenge! Happy Birthday bestie — khush reh aur aise hi chamakta reh 🥳&quot;</li>
+                        </ul>
+
+                        {/* Section 8 — Instagram Captions */}
+                        <h2 className="text-3xl font-bold mt-12 mb-6">📸 One-Line Instagram Story &amp; Reel Captions for Bestie</h2>
+                        <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                            <li>&quot;Main character day for my favourite human 🎂❤️&quot;</li>
+                            <li>&quot;0% filter, 100% chaos since day one. Happy Birthday bestie! 🎈&quot;</li>
+                            <li>&quot;Built-in therapist, unpaid comedian &amp; forever friend. HBD! 🥂&quot;</li>
+                            <li>&quot;Proof that chosen family is real. Happy Birthday! 🥰&quot;</li>
+                        </ul>
                         </Prose>
                     </div>
 
+                    <h2 className="bw-section-title" style={{ marginTop: 48, fontSize: "clamp(26px, 4vw, 34px)" }}>🤔 Frequently Asked Questions</h2>
+                    <div className="bw-faq">
+                        {BFF_FAQ.map((f, i) => <details key={f.q} open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+                    </div>
+
                     {/* Internal Linking Section */}
-                    <h2 className="bw-section-title" style={{ marginTop: 56, fontSize: "clamp(26px, 4vw, 36px)" }}>📚 More Birthday Content You'll Love</h2>
+                    <h2 className="bw-section-title" style={{ marginTop: 56, fontSize: "clamp(26px, 4vw, 36px)" }}>📚 More Birthday Content You&apos;ll Love</h2>
                     <div className="bw-guide-grid">
                         <Link href="/blog/romantic-wishes" className="bw-card bw-guide">
-                            <span className="e" aria-hidden="true">💖</span>
+                            <span className="e" aria-hidden="true">💗</span>
                             <span>
                                 Romantic Birthday Wishes & Surprises
                                 <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>For boyfriend, girlfriend & partner</small>

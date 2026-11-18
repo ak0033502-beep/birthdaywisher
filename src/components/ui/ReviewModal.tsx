@@ -7,9 +7,10 @@ import { X, Heart, Send, Loader2 } from "lucide-react";
 interface ReviewModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSubmitted?: () => void;
 }
 
-export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
+export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) {
     const [name, setName] = useState("");
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState(0);
@@ -39,6 +40,7 @@ export function ReviewModal({ isOpen, onClose }: ReviewModalProps) {
 
             if (res.ok) {
                 setSubmitted(true);
+                onSubmitted?.();
             } else {
                 const data = await res.json();
                 setError(data.error || "Something went wrong. Please try again.");

@@ -4,7 +4,7 @@ import { PartyPage, PageHero } from "@/components/party/PartyPage";
 export const metadata: Metadata = {
     alternates: { canonical: "/terms" },
     title: "Terms & Conditions | BirthdayWisher.fun",
-    description: "Terms of service and usage conditions for the BirthdayWisher.fun platform.",
+    description: "Read the terms of service, acceptable use rules, and temporary media retention conditions for creating free interactive surprises on BirthdayWisher.fun.",
 };
 
 export default function TermsPage() {

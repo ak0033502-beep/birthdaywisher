@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { HomeClient } from "@/components/home/HomeClient";
+import { getPublicReviews } from "@/lib/reviews";
 
-// Server wrapper so the homepage can have its own metadata + canonical
-// (the page UI itself is a client component because of the language switcher).
+// Revalidate SSR reviews & AggregateRating JSON-LD every 2 minutes (and immediately on POST /api/reviews)
+export const revalidate = 120;
+
 export const metadata: Metadata = {
     title: "Birthday Wishes Game – Free Interactive Birthday Surprise Link",
     description:
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
     },
 };
 
-export default function HomePage() {
-    return <HomeClient />;
+export default async function HomePage() {
+    const initialReviews = await getPublicReviews();
+    return <HomeClient initialReviews={initialReviews} />;
 }

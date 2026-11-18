@@ -3,8 +3,8 @@ import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/about" },
-    title: "About Us | BirthdayWisher.fun — Birthday & Anniversary Wishes",
-    description: "Learn about the mission behind BirthdayWisher. We believe birthdays and wedding anniversaries should be unforgettable, emotional, and interactive experiences. Create the perfect anniversary wishes for couple.",
+    title: "About Us — Interactive Birthday & Anniversary Surprises",
+    description: "Learn the story behind BirthdayWisher.fun — turning ordinary birthday & wedding anniversary texts into private, emotional, interactive surprises.",
 };
 
 export default function AboutPage() {

@@ -61,6 +61,10 @@ const COPY = {
     },
 };
 const RELS = ["Friend", "Partner", "Sibling", "Parent", "Colleague", "Other"];
+const QUICK_IDEAS: Record<ReviewWho, string[]> = {
+    creator: ["Super easy & fun!", "Loved the games & music ❤️", "Best free birthday surprise"],
+    recipient: ["Made my birthday so special ❤️", "Loved blowing the candles!", "Best surprise ever!"],
+};
 
 export function ReviewPrompt({ who, wishId, mode, onClose }: { who: ReviewWho; wishId?: string; mode: "modal" | "inline"; onClose?: () => void }) {
     const c = COPY[who];
@@ -155,6 +159,20 @@ export function ReviewPrompt({ who, wishId, mode, onClose }: { who: ReviewWho; w
 
                     {rating > 0 && (
                         <div className="rv-more">
+                            {rating >= 4 && (
+                                <div className="rv-rels" aria-label="Quick notes">
+                                    {QUICK_IDEAS[who].map((idea) => (
+                                        <button
+                                            key={idea}
+                                            type="button"
+                                            className={`rv-chip ${message === idea ? "is-on" : ""}`}
+                                            onClick={() => setMessage((m) => (m === idea ? "" : idea))}
+                                        >
+                                            {idea}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                             <textarea
                                 className="rv-field"
                                 rows={2}

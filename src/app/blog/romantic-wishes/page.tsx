@@ -5,8 +5,8 @@ import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPag
 
 export const metadata: Metadata = {
     alternates: { canonical: "/blog/romantic-wishes" },
-    title: "Romantic Birthday Wishes & Surprises for Boyfriend, Girlfriend & Partner | BirthdayWisher.fun",
-    description: "Find the most romantic birthday wishes, love quotes, surprise ideas, and creative digital gifts for your boyfriend, girlfriend, husband, or wife. Make their birthday truly unforgettable.",
+    title: "Romantic Birthday Wishes for Boyfriend, Girlfriend & Partner",
+    description: "Heart-touching romantic birthday wishes, love quotes & interactive surprise ideas for your boyfriend, girlfriend, husband or wife.",
     keywords: "romantic birthday wishes, birthday wishes for boyfriend, birthday wishes for girlfriend, romantic birthday quotes, birthday surprise for husband, birthday surprise for wife, love birthday messages, happy birthday my love, romantic birthday text messages, heart touching birthday wishes for lover, birthday gift ideas for partner, digital birthday surprise, long distance birthday wish for boyfriend, midnight birthday surprise ideas, wedding anniversary wishes for couple, anniversary wishes for couple, romantic anniversary messages",
 };
 
@@ -19,7 +19,7 @@ export default function RomanticWishesPage() {
             ]} />
             <PageHero
                 crumbs={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: "The Ultimate Guide to Romantic Birthday Wishes & Surprises for Your Partner" }]}
-                eyebrow="💖 For Partners"
+                eyebrow="💗 For Partners"
                 title={<>The Ultimate Guide to Romantic Birthday Wishes & Surprises for Your Partner</>}
                 sub={String(metadata.description)}
             >
@@ -160,7 +160,7 @@ export default function RomanticWishesPage() {
                             </span>
                         </Link>
                         <Link href="/use-cases/boyfriend-birthday-surprise" className="bw-card bw-guide">
-                            <span className="e" aria-hidden="true">💖</span>
+                            <span className="e" aria-hidden="true">💗</span>
                             <span>
                                 Boyfriend Birthday Surprise
                                 <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>The ultimate roast + toast method</small>
@@ -174,7 +174,7 @@ export default function RomanticWishesPage() {
                             </span>
                         </Link>
                         <Link href="/use-cases/girlfriend-birthday-surprise" className="bw-card bw-guide">
-                            <span className="e" aria-hidden="true">💖</span>
+                            <span className="e" aria-hidden="true">💗</span>
                             <span>
                                 Girlfriend Birthday Surprise
                                 <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>Aesthetic & Instagram-worthy ideas</small>
@@ -193,7 +193,7 @@ export default function RomanticWishesPage() {
                     <CtaCard
                         title="Make Them Cry Happy Tears"
                         text="Build them a completely personalized, highly interactive, and gamified digital love story in less than 5 minutes. Voice notes, heartbeat photo reveals, and fireworks included."
-                        cta="💖 Start Building For Free"
+                        cta="💗 Start Building For Free"
                         emoji="💌"
                     />
                 </div>

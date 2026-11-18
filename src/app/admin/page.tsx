@@ -344,10 +344,11 @@ async function WishesTab() {
                 <Kpi label="Deleted so far" value={w.deletedTotal} />
             </div>
             <div className="adm-grid">
-                <Card title="Cleanup job" sub="Runs once a day (Vercel cron /api/cleanup, 00:00 UTC): deletes wishes opened more than 10 h ago, or created more than 7 days ago and never opened. So an opened wish can live up to ~34 h.">
+                <Card title="Cleanup & Cloudinary Auto-Saver" sub="Runs daily (/api/cleanup, 00:00 UTC): deletes expired wishes (>10 h opened or >7 d unopened) AND cleans abandoned wizard uploads in birthday_wishes/ older than 36 h.">
                     <ul className="adm-facts">
                         <li><span>Last run</span><b>{w.lastCleanup ? when(lc?.at || w.lastCleanup.updated_at) : "never recorded"}</b></li>
-                        <li><span>Deleted in last run</span><b>{lc?.error ? <span className="bad">error</span> : fmt(lc?.deleted ?? 0)}</b></li>
+                        <li><span>Expired wishes deleted</span><b>{lc?.error ? <span className="bad">error</span> : fmt(lc?.deleted ?? 0)}</b></li>
+                        <li><span>Orphan uploads cleaned</span><b>{lc?.orphanMedia !== undefined ? `${fmt(lc.orphanMedia)} (${lc.freedMb ?? 0} MB freed)` : "—"}</b></li>
                         <li><span>Oldest unopened wish</span><b>{w.oldestUnopened ? when(w.oldestUnopened) : "—"}</b></li>
                         <li><span>Custom links in use</span><b>{fmt(w.slugs)}</b></li>
                     </ul>

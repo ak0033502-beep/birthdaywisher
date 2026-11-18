@@ -124,35 +124,48 @@ describe("mini-games (Phase 5)", () => {
 
     it("placement: opener after the cover, finale right before the finale, fun after the quiz", () => {
         const d: Draft = {
-            ...base(), wantGames: true, enabled: ["quiz", "candles", "prank", "trivia"],
+            ...base(), wantGames: true, enabled: ["quiz", "candles", "prank", "trivia", "heartbeat"],
             configs: {
                 ...base().configs,
                 candles: { candles: 5, message: "Wish!", placement: "finale" },
+                heartbeat: { message: "Holding your hand ❤️", placement: "finale" },
                 prank: { kind: "error", placement: "opener" },
-                trivia: { title: "", questions: [{ q: "Fav colour?", options: ["Red", "Blue"], correct: 1 }], leaderboard: true, placement: "fun" },
+                trivia: { title: "", questions: [{ q: "Fav colour?", options: ["Red", "Blue"], correct: 1 }], placement: "fun" },
             },
         };
-        expect(buildWish(d).blocks.map((b) => b.type)).toEqual(["intro", "prank", "quiz", "trivia", "message", "candles", "finale"]);
+        expect(buildWish(d).blocks.map((b) => b.type)).toEqual(["intro", "prank", "quiz", "trivia", "message", "heartbeat", "candles", "finale"]);
     });
 
     it("an unfinished trivia game (no options) is left out", () => {
-        const d: Draft = { ...base(), wantGames: true, enabled: ["trivia"], configs: { message: { text: "Hi" }, trivia: { title: "", questions: [{ q: "Q?", options: ["only one", ""], correct: 0 }], leaderboard: false, placement: "fun" } } };
+        const d: Draft = { ...base(), wantGames: true, enabled: ["trivia"], configs: { message: { text: "Hi" }, trivia: { title: "", questions: [{ q: "Q?", options: ["only one", ""], correct: 0 }], placement: "fun" } } };
         expect(buildWish(d).blocks.some((b) => b.type === "trivia")).toBe(false);
     });
 
+    it("emotional & party games build with valid default configs out of the box", () => {
+        const d: Draft = {
+            ...base(), wantGames: true,
+            enabled: ["heartbeat", "lanterns", "balloons", "memoryMatch", "guessYear", "wheel", "catchGifts", "treasure", "newspaper"],
+        };
+        const built = buildWish(d).blocks.map((b) => b.type);
+        for (const g of ["heartbeat", "lanterns", "balloons", "memoryMatch", "guessYear", "wheel", "catchGifts", "treasure", "newspaper"] as const) {
+            expect(built).toContain(g);
+        }
+    });
+
     it("games are v2-only: v1 viewers simply don't see them", () => {
-        const d: Draft = { ...base(), wantGames: true, enabled: ["candles"], configs: { message: { text: "Hi" }, candles: { candles: 3, message: "x", placement: "finale" } } };
+        const d: Draft = { ...base(), wantGames: true, enabled: ["candles", "heartbeat"], configs: { message: { text: "Hi" }, candles: { candles: 3, message: "x", placement: "finale" } } };
         const v1 = v2ToV1(buildWish(d));
         expect(v1.coreMessage).toBe("Hi");
         expect(Object.keys(v1)).not.toContain("candles");
+        expect(Object.keys(v1)).not.toContain("heartbeat");
     });
 
     it("the games step blocks Next until every picked game is playable", () => {
         const gs = { id: "games", chapter: 3 } as Parameters<typeof stepValid>[1];
-        const blank: Draft = { ...base(), wantGames: true, enabled: ["candles", "trivia"], configs: { message: { text: "Hi" }, candles: { candles: 5, message: "x", placement: "finale" }, trivia: { title: "", questions: [{ q: "", options: ["", "", ""], correct: 0 }], leaderboard: true, placement: "fun" } } };
+        const blank: Draft = { ...base(), wantGames: true, enabled: ["candles", "trivia"], configs: { message: { text: "Hi" }, candles: { candles: 5, message: "x", placement: "finale" }, trivia: { title: "", questions: [{ q: "", options: ["", "", ""], correct: 0 }], placement: "fun" } } };
         expect(stepValid(blank, gs)).toBe(false);
-        const filled: Draft = { ...blank, configs: { ...blank.configs, trivia: { title: "", questions: [{ q: "Fav colour?", options: ["Red", "Blue", ""], correct: 1 }], leaderboard: true, placement: "fun" } } };
+        const filled: Draft = { ...blank, configs: { ...blank.configs, trivia: { title: "", questions: [{ q: "Fav colour?", options: ["Red", "Blue", ""], correct: 1 }], placement: "fun" } } };
         expect(stepValid(filled, gs)).toBe(true);
-        expect(stepValid({ ...blank, enabled: ["candles"] }, gs)).toBe(true);
+        expect(stepValid({ ...blank, enabled: ["candles", "heartbeat", "lanterns"] }, gs)).toBe(true);
     });
 });

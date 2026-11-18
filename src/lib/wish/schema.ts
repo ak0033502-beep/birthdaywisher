@@ -31,12 +31,23 @@ export interface PromiseConfig { text: string; scratchOff: boolean; smileLock: b
 export interface GiftCardConfig { kind: string; url: string; message?: string }
 export interface FinaleConfig { effect: string }
 
-/* ---------- Mini-games (Phase 5). Placement decides where the game sits in the story. ---------- */
+/* ---------- Mini-games (Phase 5 & 6). Placement decides where the game sits in the story. ---------- */
 export type GamePlacement = "opener" | "fun" | "finale";
 export interface CandlesConfig { candles: number; message: string; placement: GamePlacement }
 export interface PrankConfig { kind: "error" | "prediction" | "loading"; placement: GamePlacement }
 export interface TriviaQuestion { q: string; options: string[]; correct: number }
-export interface TriviaConfig { title: string; questions: TriviaQuestion[]; leaderboard: boolean; placement: GamePlacement }
+export interface TriviaConfig { title: string; questions: TriviaQuestion[]; leaderboard?: boolean; placement: GamePlacement }
+export interface HeartbeatConfig { message: string; placement: GamePlacement }
+export interface LanternsConfig { wishes: string[]; placement: GamePlacement }
+export interface BalloonsConfig { notes: string[]; placement: GamePlacement }
+export interface MemoryMatchConfig { message: string; usePhotos: boolean; placement: GamePlacement }
+export interface WheelConfig { slices: string[]; placement: GamePlacement }
+export interface CatchGiftsConfig { target: number; message: string; placement: GamePlacement }
+export interface TreasureClue { riddle: string; answer: string }
+export interface TreasureConfig { clues: TreasureClue[]; reward: string; placement: GamePlacement }
+export interface NewspaperConfig { headline: string; subhead: string; story: string; placement: GamePlacement }
+export interface YearMoment { caption: string; year: number }
+export interface GuessYearConfig { moments: YearMoment[]; placement: GamePlacement }
 
 export interface BlockConfigMap {
     intro: IntroConfig;
@@ -58,6 +69,15 @@ export interface BlockConfigMap {
     candles: CandlesConfig;
     prank: PrankConfig;
     trivia: TriviaConfig;
+    heartbeat: HeartbeatConfig;
+    lanterns: LanternsConfig;
+    balloons: BalloonsConfig;
+    memoryMatch: MemoryMatchConfig;
+    wheel: WheelConfig;
+    catchGifts: CatchGiftsConfig;
+    treasure: TreasureConfig;
+    newspaper: NewspaperConfig;
+    guessYear: GuessYearConfig;
 }
 
 export type BlockType = keyof BlockConfigMap;

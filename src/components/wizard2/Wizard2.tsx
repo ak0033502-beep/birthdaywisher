@@ -14,7 +14,7 @@ import {
     CHAPTERS, INGREDIENTS, REQUIRED, TEMPLATES, applyTemplate, buildWish, getConfig, isOn, newDraft, recommended,
     stepValid, supports, visibleSteps, wishPower, chosenGames, MAX_GAMES, type Draft, type Mode,
 } from "./draft";
-import { CandlesEditor, COMING_SOON, GAME_LIBRARY, PlacementChips, PrankEditor, TriviaEditor } from "./gameEditors";
+import { GameConfigEditor, GAME_LIBRARY, PlacementChips } from "./gameEditors";
 import { BLOCK_COPY, EDITORS, type EditorEnv } from "./editors";
 import { Cuppy, PowerMeter, RELATIONS, VIBES, popSound, useWizardSettings } from "./ui";
 import { FullPreview, PreviewPhone, type PreviewScene } from "./PreviewPhone";
@@ -72,6 +72,7 @@ export function Wizard2() {
     const [sheet, setSheet] = useState(false);
     const [full, setFull] = useState(false);
     const [lookScene, setLookScene] = useState<PreviewScene>("slide");
+    const [focusGame, setFocusGame] = useState<GameType | null>(null);
     const [hearingMusic, setHearingMusic] = useState(false);
     const wizBgmRef = useRef<BgmController | null>(null);
     const [nudge, setNudge] = useState("");
@@ -190,7 +191,6 @@ export function Wizard2() {
     // Chapter label matching the numbered stepper (Quick mode skips chapters, so numbers must follow the visible order)
     const chapNo = (c: number) => { const k = usedChapters.indexOf(c); return `Chapter ${(k < 0 ? c : k) + 1}`; };
 
-    if (!loaded) return <div className="party wz2" />;
 
     const cuppyLine = cuppyFor(step.id, step.block, d, Name);
 
@@ -247,7 +247,7 @@ export function Wizard2() {
                         <span className="lbl">📱 LIVE PREVIEW</span>
                         <PreviewPhone
                             wish={wish}
-                            focus={step.block ?? (step.id === "games" ? chosenGames(d)[0] ?? null : step.id === "look" ? "intro" : null)}
+                            focus={step.block ?? (step.id === "games" ? (focusGame && chosenGames(d).includes(focusGame) ? focusGame : chosenGames(d)[0] ?? null) : step.id === "look" ? "intro" : null)}
                             showScenes={step.id === "look"}
                             sceneOverride={step.id === "look" ? lookScene : undefined}
                             onSceneChange={setLookScene}
@@ -279,7 +279,7 @@ export function Wizard2() {
                         <b>📱 Live preview</b>
                         <PreviewPhone
                             wish={wish}
-                            focus={step.block ?? (step.id === "look" ? "intro" : null)}
+                            focus={step.block ?? (step.id === "games" ? (focusGame && chosenGames(d).includes(focusGame) ? focusGame : chosenGames(d)[0] ?? null) : step.id === "look" ? "intro" : null)}
                             tilt={false}
                             showScenes={step.id === "look"}
                             sceneOverride={step.id === "look" ? lookScene : undefined}
@@ -451,43 +451,54 @@ export function Wizard2() {
 
         if (step.id === "games") {
             const chosen = chosenGames(d);
+            const heartGames = GAME_LIBRARY.filter((g) => g.mood === "heart");
+            const funGames = GAME_LIBRARY.filter((g) => g.mood === "fun");
             const toggleGame = (g: GameType, e: React.MouseEvent<HTMLElement>) => {
                 if (chosen.includes(g)) { setD((x) => ({ ...x, enabled: x.enabled.filter((y) => y !== g) })); return; }
                 if (chosen.length >= MAX_GAMES) return setNudge(`Max ${MAX_GAMES} games per wish 🎮`);
                 flip(e); celebrate(e.currentTarget, 30);
+                setFocusGame(g);
                 setD((x) => ({ ...x, enabled: [...x.enabled, g] }));
             };
+            const renderCard = (g: (typeof GAME_LIBRARY)[number]) => (
+                <button key={g.type} type="button" className={`bw-card wz2-choice wz2-style-card ${chosen.includes(g.type) ? "is-on" : ""}`} onClick={(e) => toggleGame(g.type, e)}>
+                    {g.badge && <span className="wz2-style-tag">{g.badge}</span>}
+                    <span className="e" aria-hidden="true">{g.e}</span>
+                    <h4>{g.t}</h4>
+                    <p>{g.d}</p>
+                </button>
+            );
             return (
                 <>
                     <div className="wz2-meta">{chapNo(3)} · Fun &amp; Games</div>
                     <h1 className="wz2-title">Add games to {Name}&apos;s surprise 🎮</h1>
-                    <p className="wz2-sub">Up to {MAX_GAMES} · {chosen.length}/{MAX_GAMES} added · every game has a no-mic tap option and auto-skips after 60 s.</p>
+                    <p className="wz2-sub">Pick up to {MAX_GAMES} ({chosen.length}/{MAX_GAMES} added). Every game is personal, private (no public leaderboard), and auto-skips if needed.</p>
+
+                    <span className="wz2-label">❤️ Sweet, Emotional &amp; Connected</span>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
-                        {GAME_LIBRARY.map((g) => (
-                            <button key={g.type} type="button" className={`bw-card wz2-choice ${chosen.includes(g.type) ? "is-on" : ""}`} onClick={(e) => toggleGame(g.type, e)}>
-                                <span className="e" aria-hidden="true">{g.e}</span><h4>{g.t}</h4><p>{g.d}</p>
-                            </button>
-                        ))}
+                        {heartGames.map(renderCard)}
                     </div>
+
+                    <span className="wz2-label" style={{ marginTop: 18 }}>🎉 Party, Playful &amp; Fun</span>
+                    <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
+                        {funGames.map(renderCard)}
+                    </div>
+
                     {chosen.map((g) => {
                         const meta = GAME_LIBRARY.find((x) => x.type === g)!;
                         const cfg = getConfig(d, g);
                         return (
-                            <div key={g} className="bw-card" style={{ padding: 18, marginTop: 16 }}>
+                            <div key={g} className="bw-card" style={{ padding: 18, marginTop: 16 }} onFocusCapture={() => setFocusGame(g)} onClick={() => setFocusGame(g)}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                     <b style={{ fontFamily: "var(--p-font-display)", fontSize: 19 }}>{meta.e} {meta.t}</b>
-                                    <button type="button" className="wz2-edit" onClick={() => setD((x) => ({ ...x, enabled: x.enabled.filter((y) => y !== g) }))}>Remove</button>
+                                    <button type="button" className="wz2-edit" onClick={(ev) => { ev.stopPropagation(); setD((x) => ({ ...x, enabled: x.enabled.filter((y) => y !== g) })); }}>Remove</button>
                                 </div>
                                 <span className="wz2-label">Where should it play?</span>
                                 <PlacementChips value={cfg.placement} onChange={(p) => setConfig(g, { ...cfg, placement: p } as never)} />
-                                {g === "candles" && <CandlesEditor value={getConfig(d, "candles")} onChange={(v) => setConfig("candles", v)} age={d.recipient.age} />}
-                                {g === "prank" && <><span className="wz2-label">Which prank?</span><PrankEditor value={getConfig(d, "prank")} onChange={(v) => setConfig("prank", v)} /></>}
-                                {g === "trivia" && <TriviaEditor value={getConfig(d, "trivia")} onChange={(v) => setConfig("trivia", v)} name={name} />}
+                                <GameConfigEditor game={g} value={cfg} onChange={(v) => setConfig(g, v as never)} name={name} age={d.recipient.age} />
                             </div>
                         );
                     })}
-                    <span className="wz2-label">Coming soon</span>
-                    <div className="wz2-chips">{COMING_SOON.map((c) => <span key={c.t} className="wz2-chip" style={{ opacity: 0.55 }}>{c.e} {c.t}</span>)}</div>
                 </>
             );
         }

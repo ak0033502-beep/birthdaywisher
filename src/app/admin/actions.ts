@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { sql } from "@vercel/postgres";
 import { isAdmin } from "@/lib/adminAuth";
-import { cleanupExpiredWishes, deleteWishNow } from "@/lib/db";
+import { cleanupExpiredWishes, cleanupOrphanCloudinaryMedia, deleteWishNow } from "@/lib/db";
 import { kvSet, rollupAndPrune } from "@/lib/analytics";
 
 export type ActionResult = { ok: boolean; msg: string };
@@ -23,18 +23,31 @@ export async function toggleReviewAction(form: FormData): Promise<void> {
     const id = Number(form.get("id"));
     const show = String(form.get("show")) === "1";
     if (!Number.isInteger(id)) return;
-    await sql`UPDATE reviews SET approved = ${show} WHERE id = ${id}`;
+    await sql`UPDATE reviews SET approved = ${show}, hidden_by_admin = ${!show} WHERE id = ${id}`;
     revalidatePath("/admin");
+    revalidatePath("/");
+    revalidatePath("/llms.txt");
 }
 
 export async function runCleanupAction(_: ActionResult | null): Promise<ActionResult> {
     if (!(await isAdmin())) return { ok: false, msg: "Not logged in" };
     try {
         const deleted = await cleanupExpiredWishes();
+        const orph = await cleanupOrphanCloudinaryMedia().catch(() => ({ deletedOrphans: 0, freedMb: 0 }));
         const prunedEvents = await rollupAndPrune().catch(() => 0);
-        await kvSet("last_cleanup", { deleted, prunedEvents, at: new Date().toISOString(), manual: true });
+        await kvSet("last_cleanup", {
+            deleted,
+            orphanMedia: orph.deletedOrphans,
+            freedMb: orph.freedMb,
+            prunedEvents,
+            at: new Date().toISOString(),
+            manual: true,
+        });
         revalidatePath("/admin");
-        return { ok: true, msg: `Cleanup done: ${deleted} expired wishes deleted.` };
+        return {
+            ok: true,
+            msg: `Cleanup done: ${deleted} expired wishes + ${orph.deletedOrphans} orphan uploads deleted (${orph.freedMb} MB freed).`,
+        };
     } catch (e) {
         return { ok: false, msg: `Cleanup failed: ${String(e).slice(0, 120)}` };
     }

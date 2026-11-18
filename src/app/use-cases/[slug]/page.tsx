@@ -128,7 +128,7 @@ const getUseCaseData = (slug: string) => {
                 "Make her laugh with custom inside jokes."
             ],
             ctaText: "Create Her Perfect Surprise",
-            heroEmoji: "💖",
+            heroEmoji: "💗",
             seoSections: [
                 {
                     heading: "Creating a Core Memory",
@@ -230,6 +230,41 @@ const getUseCaseData = (slug: string) => {
     return useCases[slug] || null;
 }
 
+const USE_CASE_SEO: Record<string, { title: string; description: string }> = {
+    "unique-birthday-gift-online": {
+        title: "Unique Birthday Gift Online — Interactive Surprise Link",
+        description: "Send a unique online birthday gift: build a personalised interactive story with photos, games, voice notes & fireworks. 100% free on WhatsApp.",
+    },
+    "digital-story-greeting-card": {
+        title: "Digital Story Greeting Card Maker | BirthdayWisher.fun",
+        description: "Upgrade from plain texts to an interactive digital story greeting card with photos, music, quizzes, voice notes & fireworks. Free, no login.",
+    },
+    "boyfriend-birthday-surprise": {
+        title: "Boyfriend Birthday Surprise Online — Romantic & Playful",
+        description: "Surprise your boyfriend at midnight with a playful roast-and-toast story, couple quiz, photos, voice note & heartbeat sync. Free WhatsApp link.",
+    },
+    "anniversary-wishes-for-couple": {
+        title: "Interactive Wedding Anniversary Wishes for Couples",
+        description: "Create a heartfelt interactive wedding anniversary wish for any couple — from 1st to 50th year — with photos, timeline games, voice notes & fireworks.",
+    },
+    "girlfriend-birthday-surprise": {
+        title: "Romantic Girlfriend Birthday Surprise Link | Free Maker",
+        description: "Make your girlfriend's birthday unforgettable with love-note balloons, aesthetic photo frames, your recorded voice & a grand fireworks finale.",
+    },
+    "long-distance-birthday-surprise": {
+        title: "Long-Distance Birthday Surprise Link — Feel Close Online",
+        description: "Bridge the distance in one tap: sync heartbeats on screen, release sky lanterns, add photos & a voice note in a private birthday surprise link.",
+    },
+    "colleague-birthday-wish": {
+        title: "Creative Birthday Wish for Colleague & Coworker | Free",
+        description: "Go beyond a generic Slack message: make a fun, workplace-friendly interactive birthday card with team trivia, breaking news & warm wishes.",
+    },
+    "parents-birthday-surprise": {
+        title: "Birthday Surprise for Mom & Dad — Digital Gratitude Card",
+        description: "Thank Mom or Dad with a warm digital birthday story featuring family photos, glowing sky lantern blessings & a heartfelt voice note. 100% free.",
+    },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
     const data = getUseCaseData(resolvedParams.slug);
@@ -238,13 +273,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         return { title: "Use Case Not Found | BirthdayWisher.fun", robots: { index: false } };
     }
 
+    const seo = USE_CASE_SEO[resolvedParams.slug] || { title: data.title.slice(0, 62), description: data.description.slice(0, 158) };
     return {
-        title: `${data.title} | BirthdayWisher.fun`,
+        title: seo.title,
         alternates: { canonical: `/use-cases/${resolvedParams.slug}` },
-        description: data.description,
+        description: seo.description,
         openGraph: {
-            title: data.title,
-            description: data.description,
+            title: seo.title,
+            description: seo.description,
             url: `/use-cases/${resolvedParams.slug}`,
             images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "BirthdayWisher.fun - Turn your birthday wish into a game" }],
         },
@@ -255,7 +291,7 @@ const USE_CASE_LINKS: { slug: string; e: string; name: string }[] = [
     { slug: "unique-birthday-gift-online", e: "🎁", name: "Unique Birthday Gift Online" },
     { slug: "digital-story-greeting-card", e: "📱", name: "Digital Story Greeting Card" },
     { slug: "boyfriend-birthday-surprise", e: "💙", name: "Boyfriend Birthday Surprise" },
-    { slug: "girlfriend-birthday-surprise", e: "💖", name: "Girlfriend Birthday Surprise" },
+    { slug: "girlfriend-birthday-surprise", e: "💗", name: "Girlfriend Birthday Surprise" },
     { slug: "anniversary-wishes-for-couple", e: "💍", name: "Anniversary Wishes for Couple" },
     { slug: "long-distance-birthday-surprise", e: "✈️", name: "Long Distance Birthday Surprise" },
     { slug: "colleague-birthday-wish", e: "🎉", name: "Colleague Birthday Wish" },

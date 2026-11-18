@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { WishProvider } from "@/lib/WishContext";
 
 export const metadata: Metadata = {
-    title: "Create a Birthday Wishes Game Link – Free | BirthdayWisher.fun",
-    description: "Build your interactive birthday or anniversary surprise in minutes: photos, quiz, voice note, puzzle and confetti. Free, no login. Get a link to share on WhatsApp.",
+    title: "Create a Birthday Wishes Game Link – Free | BirthdayWisher",
+    description: "Build an interactive birthday or anniversary surprise with photos, games, quiz, voice note & fireworks. 100% free, no login, instant WhatsApp link.",
     alternates: { canonical: "/create" },
 };
 

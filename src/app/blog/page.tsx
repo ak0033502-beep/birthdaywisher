@@ -4,14 +4,14 @@ import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/blog" },
-    title: "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration | BirthdayWisher.fun Blog",
-    description: "Discover the best birthday wishes, wedding anniversary wishes for couple, rare quotes, funny roasts, and unique gift ideas. Heart-touching ideas for best friends, partners, couples, family, and coworkers.",
+    title: "Birthday & Anniversary Wishes, Quotes & Ideas | BirthdayWisher",
+    description: "Explore heart-touching birthday wishes, wedding anniversary quotes, funny roasts & surprise gift ideas for best friends, partners, parents and coworkers.",
     keywords: "Birthday wishes, birthday quotes, happy birthday messages, birthday ideas, best friend birthday, romantic birthday wishes, funny birthday wishes, birthday wishes for brother, birthday wishes for sister, birthday wishes for husband, birthday wishes for wife, birthday wishes for mom, birthday wishes for dad, wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, marriage anniversary wishes",
 };
 
 const CAT_STYLE: Record<string, { e: string; c: string }> = {
     "For Friends": { e: "🎈", c: "var(--p-pink)" },
-    "For Partners": { e: "💖", c: "var(--p-grape)" },
+    "For Partners": { e: "💗", c: "var(--p-grape)" },
     "Guides": { e: "🎮", c: "var(--p-mint)" },
     "For Family": { e: "🏡", c: "var(--p-orange)" },
     "For Everyone": { e: "🎉", c: "var(--p-pink)" },
@@ -56,9 +56,9 @@ const blogPosts = [
     },
     {
         slug: "how-to-create-a-gamified-birthday-card",
-        title: "How to Create a Gamified Birthday Card Online in 2025",
-        excerpt: "Text messages are boring. Learn how you can build a 20-step interactive journey with puzzles, voice notes, and fireworks to give them an unforgettable birthday experience.",
-        date: "Oct 05, 2024",
+        title: "How to Create a Gamified Birthday Card Online in 2026",
+        excerpt: "Text messages are boring. Learn how you can build an interactive journey with quizzes, heartbeat sync, voice notes, and fireworks in under 3 minutes.",
+        date: "Nov 18, 2026",
         author: "Product Team",
         category: "Guides"
     },
@@ -112,25 +112,25 @@ const blogPosts = [
     },
     {
         slug: "wedding-anniversary-wishes-for-couple",
-        title: "100+ Wedding Anniversary Wishes for Couple — Romantic, Funny & Heartfelt",
-        excerpt: "The best wedding anniversary wishes for couple — from 1st to 50th year. Romantic, funny, and heart-touching anniversary messages for husband, wife, parents, and friends.",
-        date: "Mar 02, 2026",
+        title: "120+ Wedding Anniversary Wishes for Couple — Romantic, Funny, Hindi & Milestones",
+        excerpt: "The best wedding anniversary wishes for couple — from 1st to 50th year, plus Hindi/Hinglish wishes, Instagram captions, parents & bhaiya-bhabhi messages.",
+        date: "Nov 18, 2026",
         author: "BirthdayWisher.fun Editorial",
         category: "For Couples"
     },
     {
         slug: "birthday-wishes-for-colleague",
-        title: "Birthday Wishes for Colleague & Coworker — Professional Yet Heartfelt",
-        excerpt: "Find the perfect birthday wishes for your colleague or coworker. From professional to funny, these messages strike the right balance between warmth and workplace appropriateness.",
-        date: "Mar 05, 2026",
+        title: "80+ Birthday Wishes for Colleague, Coworker & Boss — Warm, Short & Funny",
+        excerpt: "Copy warm, professional, funny and Hinglish birthday wishes for colleagues, Slack/Teams channels, remote coworkers and bosses.",
+        date: "Nov 18, 2026",
         author: "BirthdayWisher.fun Editorial",
         category: "For Coworkers"
     },
     {
         slug: "birthday-wishes-for-crush",
-        title: "Birthday Wishes for Crush — Sweet, Subtle & Smooth Messages",
-        excerpt: "Don't know what to say to your crush on their birthday? These sweet, subtle, and smooth birthday wishes help you express your feelings without being too forward.",
-        date: "Mar 06, 2026",
+        title: "75+ Birthday Wishes for Your Crush — Sweet, Subtle & Smooth Texts",
+        excerpt: "Wondering how to say happy birthday to your crush without being awkward? Copy sweet, subtle, flirty and Hinglish birthday wishes that spark a real chat.",
+        date: "Nov 18, 2026",
         author: "BirthdayWisher.fun Editorial",
         category: "For Crush"
     },

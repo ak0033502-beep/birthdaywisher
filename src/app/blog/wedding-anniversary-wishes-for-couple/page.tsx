@@ -3,19 +3,27 @@ import { JsonLd, articleLd, breadcrumbLd } from "@/components/seo/JsonLd";
 import Link from "next/link";
 import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPage";
 
+const ANNIV_FAQ = [
+    { q: "What is the best wedding anniversary wish for a couple?", a: "Celebrate both partners together — mention how their bond inspires everyone around them, and wish them laughter, good health and many more years side by side." },
+    { q: "How do I send an interactive wedding anniversary surprise online?", a: "Open BirthdayWisher.fun's free Anniversary Maker, add couple photos, pick Sky Lanterns or Guess the Year, record a warm voice blessing, and share the private link on WhatsApp." },
+    { q: "What should I write for a 25th or 50th milestone anniversary?", a: "Honour the decades of patience, family memories and shared storms — Silver (25th) and Golden (50th) milestones deserve a warm tribute paragraph rather than a one-liner." },
+    { q: "Can I wish a couple Happy Anniversary in Hindi or Hinglish?", a: "Yes! Warm lines like 'Shaadi ki saalgirah ki dher saari shubhkamnayein — aap dono ki jodi hamesha salamat rahe' feel deeply personal for family and close friends." },
+];
+
 export const metadata: Metadata = {
     alternates: { canonical: "/blog/wedding-anniversary-wishes-for-couple" },
-    title: "100+ Wedding Anniversary Wishes for Couple — Romantic, Funny & Heartfelt | BirthdayWisher.fun",
-    description: "Find the best wedding anniversary wishes for couple. Romantic, funny, and heart-touching anniversary messages for husband, wife, parents, and friends. Perfect anniversary wishes for couple to celebrate every milestone year.",
-    keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, funny anniversary wishes, anniversary wishes for husband, anniversary wishes for wife, marriage anniversary wishes, 1st anniversary wishes, 25th anniversary wishes, 50th anniversary wishes, anniversary quotes for couple, happy wedding anniversary, anniversary wishes for parents, couple anniversary wishes, romantic anniversary wishes for couple, heart touching anniversary wishes",
+    title: "100+ Wedding Anniversary Wishes for Couples, Husband & Wife",
+    description: "Romantic, funny & heartfelt wedding anniversary wishes for couples, husband, wife & parents — including 1st, 25th, 50th & Hindi messages.",
+    keywords: "wedding anniversary wishes for couple, anniversary wishes for couple, happy anniversary wishes, romantic anniversary messages, wedding anniversary greetings, funny anniversary wishes, anniversary wishes for husband, anniversary wishes for wife, marriage anniversary wishes, 1st anniversary wishes, 25th anniversary wishes, 50th anniversary wishes, shaadi ki saalgirah ki shubhkamnaye",
 };
 
 export default function WeddingAnniversaryWishesPage() {
     return (
         <PartyPage>
             <JsonLd data={[
-                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/wedding-anniversary-wishes-for-couple", datePublished: "Mar 02, 2026" }),
+                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/wedding-anniversary-wishes-for-couple", datePublished: "Mar 02, 2026", dateModified: "Nov 18, 2026" }),
                 breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: String(metadata.title), path: "/blog/wedding-anniversary-wishes-for-couple" }]),
+                { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: ANNIV_FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
             ]} />
             <PageHero
                 crumbs={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: "100+ Wedding Anniversary Wishes for Couple — Messages That Celebrate Your Love" }]}
@@ -158,7 +166,7 @@ export default function WeddingAnniversaryWishesPage() {
                         <div className="space-y-4 mb-8">
                             <div className="glass-panel p-5 rounded-2xl border border-white/10">
                                 <h3 className="font-bold text-lg mb-1">1. The Interactive Anniversary Story</h3>
-                                <p className="text-foreground/70">Create a <Link href="/create" className="text-primary hover:text-secondary">gamified anniversary wish</Link> on BirthdayWisher.fun. Add your wedding photos, record a heartfelt voice note, and set up a &quot;How Well Do You Know Your Spouse?&quot; quiz. The couple taps through an emotional, interactive story that ends with fireworks and your custom message.</p>
+                                <p className="text-foreground/70">Create a <Link href="/anniversary" className="text-primary hover:text-secondary">gamified anniversary surprise</Link> on BirthdayWisher.fun. Add couple photos, release glowing <Link href="/games/sky-lanterns" className="text-primary hover:text-secondary">Sky Lantern blessings</Link>, play <Link href="/games/guess-the-year" className="text-primary hover:text-secondary">Guess the Year</Link> on their milestones, or sync hearts with <Link href="/games/hold-my-hand" className="text-primary hover:text-secondary">Hold My Hand</Link>.</p>
                             </div>
                             <div className="glass-panel p-5 rounded-2xl border border-white/10">
                                 <h3 className="font-bold text-lg mb-1">2. The Memory Lane Video</h3>
@@ -169,14 +177,29 @@ export default function WeddingAnniversaryWishesPage() {
                                 <p className="text-foreground/70">Write a long anniversary paragraph and hide it inside a <Link href="/use-cases/anniversary-wishes-for-couple" className="text-primary hover:text-secondary">digital anniversary greeting card</Link> with puzzles they must solve. The couple earns the right to read your message by answering trivia about their own love story.</p>
                             </div>
                         </div>
+
+                        {/* Section 9 — Hindi & Hinglish */}
+                        <h2 className="text-3xl font-bold mt-12 mb-6 text-amber-400">🇮🇳 Wedding Anniversary Wishes in Hindi &amp; Hinglish (शादी की सालगिरह)</h2>
+                        <p className="mb-4 text-foreground/70">Heartfelt <strong>shaadi ki saalgirah ki shubhkamnayein</strong> for parents, bhaiya-bhabhi, didi-jiju or your own partner:</p>
+                        <ul className="list-disc pl-6 mb-8 text-foreground/80 space-y-3">
+                            <li>&quot;शादी की सालगिरह की ढेर सारी शुभकामनाएं! आप दोनों का प्यार, विश्वास और मुस्कान यूं ही हमेशा बनी रहे ❤️💍&quot;</li>
+                            <li>&quot;Aap dono ki jodi dekh kar lagta hai ki saccha pyar aaj bhi hota hai. Happy Wedding Anniversary to our favourite couple! 🥂&quot;</li>
+                            <li>&quot;हर मौसम में एक-दूसरे का हाथ थामे रखने वाले सबसे प्यारे कपल को शादी की सालगिरह मुबारक हो! 🏮❤️&quot;</li>
+                            <li>&quot;Saath hasna, saath ladna aur har din ek doosre ko chunna — yahi asli humsafar ki pehchan hai. Happy Anniversary! 🥰&quot;</li>
+                        </ul>
                         </Prose>
                     </div>
 
+                    <h2 className="bw-section-title" style={{ marginTop: 48, fontSize: "clamp(26px, 4vw, 34px)" }}>🤔 Wedding Anniversary Wishes FAQ</h2>
+                    <div className="bw-faq">
+                        {ANNIV_FAQ.map((f, i) => <details key={f.q} open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+                    </div>
+
                     {/* Internal Linking Section */}
-                    <h2 className="bw-section-title" style={{ marginTop: 56, fontSize: "clamp(26px, 4vw, 36px)" }}>📚 Explore More Wishes & Ideas</h2>
+                    <h2 className="bw-section-title" style={{ marginTop: 56, fontSize: "clamp(26px, 4vw, 36px)" }}>📚 Explore More Wishes &amp; Ideas</h2>
                     <div className="bw-guide-grid">
                         <Link href="/blog/romantic-wishes" className="bw-card bw-guide">
-                            <span className="e" aria-hidden="true">💖</span>
+                            <span className="e" aria-hidden="true">💗</span>
                             <span>
                                 Romantic Birthday Wishes & Surprises
                                 <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>For boyfriend, girlfriend & partner</small>
