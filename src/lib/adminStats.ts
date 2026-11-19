@@ -246,7 +246,12 @@ export async function getDevices(days: number) {
 export async function getErrors(days: number) {
     const [js, api] = await Promise.all([
         safe(() => sql`SELECT props->>'msg' msg, props->>'where' loc, COUNT(*) n, COUNT(DISTINCT sid) users, MAX(ts) last, MIN(path) path, MIN(browser) browser
-                 FROM site_events WHERE name = 'js_error' AND ts > NOW() - (${days}::int * INTERVAL '1 day') GROUP BY 1, 2 ORDER BY 3 DESC LIMIT 25`, { rows: [] as Row[] } as never, "err.js"),
+                 FROM site_events
+                 WHERE name = 'js_error'
+                   AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                   AND COALESCE(props->>'where', '') NOT LIKE 'navigation_performance_logger%'
+                   AND COALESCE(props->>'msg', '') NOT LIKE '%Java object is gone%'
+                 GROUP BY 1, 2 ORDER BY 3 DESC LIMIT 25`, { rows: [] as Row[] } as never, "err.js"),
         safe(() => sql`SELECT name, COALESCE(props->>'route', props->>'reason', '') detail, COALESCE(props->>'status', '') status, COUNT(*) n, MAX(ts) last
                  FROM site_events WHERE name IN ('api_error','upload_fail','wizard_create_fail') AND ts > NOW() - (${days}::int * INTERVAL '1 day')
                  GROUP BY 1, 2, 3 ORDER BY 4 DESC LIMIT 25`, { rows: [] as Row[] } as never, "err.api"),

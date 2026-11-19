@@ -1,7 +1,7 @@
 "use client";
 
 import "./wizard2.css";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { languages } from "@/lib/i18n";
@@ -79,6 +79,15 @@ export function Wizard2() {
     const [result, setResult] = useState<{ id: string; slug?: string } | null>(null);
     const [busy, setBusy] = useState(false);
     const [saveError, setSaveError] = useState("");
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 901px)");
+        const sync = () => setIsDesktop(mq.matches);
+        sync();
+        mq.addEventListener("change", sync);
+        return () => mq.removeEventListener("change", sync);
+    }, []);
 
     /* ---------- analytics: wizard funnel (anonymous) ---------- */
     const openedAt = useRef(Date.now());
@@ -106,6 +115,7 @@ export function Wizard2() {
     const idx = Math.max(0, steps.findIndex((s) => s.id === d.step));
     const step = steps[idx];
     const wish = useMemo(() => buildWish(d), [d]);
+    const deferredWish = useDeferredValue(wish);
     useEffect(() => {
         if (!loaded || !step || step.id === lastStep.current) return;
         lastStep.current = step.id;
@@ -242,11 +252,11 @@ export function Wizard2() {
                         {step.chapter >= 0 && step.id !== "finish" && <PowerMeter {...power} />}
                     </div>
                 </main>
-                {step.id !== "finish" && step.id !== "start" && (
+                {isDesktop && step.id !== "finish" && step.id !== "start" && (
                     <aside className="wz2-side">
                         <span className="lbl">📱 LIVE PREVIEW</span>
                         <PreviewPhone
-                            wish={wish}
+                            wish={deferredWish}
                             focus={step.block ?? (step.id === "games" ? (focusGame && chosenGames(d).includes(focusGame) ? focusGame : chosenGames(d)[0] ?? null) : step.id === "look" ? "intro" : null)}
                             showScenes={step.id === "look"}
                             sceneOverride={step.id === "look" ? lookScene : undefined}

@@ -19,8 +19,8 @@
 @keyframes bv-in-next { from { opacity: 0; transform: translateX(50px) rotateY(-16deg) translateZ(-80px); } to { opacity: 1; transform: none; } }
 @keyframes bv-in-prev { from { opacity: 0; transform: translateX(-50px) rotateY(16deg) translateZ(-80px); } to { opacity: 1; transform: none; } }
 
-.bv h1, .bv h2 { font-family: var(--v-display); line-height: 1.05; margin: 0; }
-.bv h1 { font-size: clamp(38px, 10vw, 64px); font-weight: 800; }
+.bv h1, .bv .bv-h1, .bv h2 { font-family: var(--v-display); line-height: 1.05; margin: 0; }
+.bv h1, .bv .bv-h1 { font-size: clamp(38px, 10vw, 64px); font-weight: 800; }
 .bv h2 { font-size: clamp(26px, 7vw, 40px); font-weight: 800; color: var(--v-accent); }
 .bv p { margin: 0; }
 .bv-muted { color: var(--v-muted); font-weight: 600; }

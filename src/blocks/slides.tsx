@@ -41,6 +41,12 @@ const OK = ["Aww, you got it! ❤️", "Look at you go! 🎉", "Perfect memory! 
 const pick = (a: string[]) => a[Math.floor(Math.random() * a.length)];
 const norm = (s: string) => s.toLowerCase().trim();
 
+function fastCloudinaryUrl(url: string): string {
+    if (!url || !url.includes("res.cloudinary.com/") || !url.includes("/image/upload/")) return url;
+    if (url.includes("/image/upload/f_") || url.includes("/image/upload/q_") || url.includes("/image/upload/w_")) return url;
+    return url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1280/");
+}
+
 /* ---------- Content slides ---------- */
 
 /** The name, letter by letter, bouncing in (grapheme-safe for Hindi etc.). */
@@ -53,16 +59,17 @@ function Letters({ text, start = 0.2 }: { text: string; start?: number }) {
 }
 
 function Intro({ ctx }: SlideProps<"intro">) {
-    const { wish, i } = ctx;
+    const { wish, i, embed } = ctx;
     const r = wish.recipient;
     const anniversary = wish.wishType === "anniversary";
+    const TitleTag = embed ? "div" : "h1";
     return (
         <>
             <div className="bv-emoji" aria-hidden="true">{anniversary ? "💍" : "🎂"}</div>
-            <h1 aria-label={`${anniversary ? i.happyAnniversary : i.happyBirthday}, ${anniversary ? r.coupleName || r.name : r.nickname || r.name}!`}>
+            <TitleTag className="bv-h1" aria-label={`${anniversary ? i.happyAnniversary : i.happyBirthday}, ${anniversary ? r.coupleName || r.name : r.nickname || r.name}!`}>
                 {anniversary ? i.happyAnniversary : i.happyBirthday},<br />
                 <span className="bv-grad"><Letters text={(anniversary ? r.coupleName || r.name : r.nickname || r.name) || ""} />!</span>
-            </h1>
+            </TitleTag>
             {anniversary
                 ? r.anniversaryYear && <p className="bv-muted" style={{ fontSize: 20 }}>{r.anniversaryYear} {i.yearsOfLove}</p>
                 : r.age && <p className="bv-muted" style={{ fontSize: 20 }}>{i.turning} {r.age} {i.looksGoodOnYou}</p>}
@@ -129,7 +136,7 @@ function Photos({ config, ctx }: SlideProps<"photos">) {
                         {item.type === "video"
                             ? <video src={item.url} autoPlay loop muted playsInline controls />
                             // eslint-disable-next-line @next/next/no-img-element
-                            : <img src={item.url} alt={ctx.i.memoryVault} />}
+                            : <img src={fastCloudinaryUrl(item.url)} alt={ctx.i.memoryVault} decoding="async" />}
                         {items.length > 1 && <span className="bv-photo-count">{idx + 1} / {items.length}</span>}
                         {items.length > 1 && idx > 0 && (
                             <button type="button" className="bv-photo-arrow prev" aria-label="Previous photo" onClick={() => setN(idx - 1)}>‹</button>

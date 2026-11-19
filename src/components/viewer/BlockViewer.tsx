@@ -25,6 +25,12 @@ import { prefetchStyleBgm, startBgm, type BgmController } from "@/lib/celebratio
  * - Preloads photos while on cover so slides never flash blank images
  * - Story edge-tap + swipe + keyboard + visible bottom nav buttons
  */
+function fastCloudinaryUrl(url: string): string {
+    if (!url || !url.includes("res.cloudinary.com/") || !url.includes("/image/upload/")) return url;
+    if (url.includes("/image/upload/f_") || url.includes("/image/upload/q_") || url.includes("/image/upload/w_")) return url;
+    return url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1280/");
+}
+
 export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishDataV2; wishId?: string; adminBypass?: boolean }) {
     const i = getTranslations((wish.look.language as Locale) || "en");
     const styleId = normalizeStyle(wish.look.presentationStyle);
@@ -49,19 +55,38 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
     const isGate = current ? getBlock(current.type).gate : false;
     const locked = !adminBypass && isGate && !solved.has(current.id);
 
-    // Preload this style's signature music + wish photos + slide SFX while still on the cover
+    // Defer background audio & photo preloading until AFTER the cover screen paints LCP
     useEffect(() => {
-        void prefetchStyleBgm(styleId);
-        prefetchUi(["page", "msg", "swoosh", "ping"]);
-        for (const b of wish.blocks) {
-            if (b.type === "photos") {
-                for (const m of b.config.items || []) {
-                    if (m.type === "photo" && m.url) { const img = new Image(); img.src = m.url; }
+        let cancelled = false;
+        const runPreload = () => {
+            if (cancelled) return;
+            void prefetchStyleBgm(styleId);
+            prefetchUi(["page", "msg", "swoosh", "ping"]);
+            for (const b of wish.blocks) {
+                if (b.type === "photos") {
+                    for (const m of b.config.items || []) {
+                        if (m.type === "photo" && m.url) {
+                            const img = new Image();
+                            img.decoding = "async";
+                            img.src = fastCloudinaryUrl(m.url);
+                        }
+                    }
+                } else if (b.type === "puzzle" && b.config.imageUrl) {
+                    const img = new Image();
+                    img.decoding = "async";
+                    img.src = fastCloudinaryUrl(b.config.imageUrl);
                 }
-            } else if (b.type === "puzzle" && b.config.imageUrl) {
-                const img = new Image(); img.src = b.config.imageUrl;
             }
-        }
+        };
+        const timer = setTimeout(() => {
+            const ric = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+            if (typeof ric === "function") ric(runPreload, { timeout: 1500 });
+            else runPreload();
+        }, 700);
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [styleId, wish.blocks]);
 
     // Cleanup BGM on unmount

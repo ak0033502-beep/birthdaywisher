@@ -8,6 +8,7 @@ import { SiteLanguageProvider } from "@/lib/SiteLanguageContext";
 import { SITE_NAME, SITE_URL, absUrl } from "@/lib/site";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
 import { SiteTracker } from "@/components/seo/SiteTracker";
+import { AdSenseLoader } from "@/components/seo/AdSenseLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,12 +71,7 @@ export default function RootLayout({
       <head>
         {/* Day Party / Night Party: set before first paint to avoid a theme flash */}
         <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <script
-          suppressHydrationWarning
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6302942607473891"
-          crossOrigin="anonymous"
-        />
+        <meta name="google-adsense-account" content="ca-pub-6302942607473891" />
         <script
           suppressHydrationWarning
           type="application/ld+json"
@@ -104,6 +100,7 @@ export default function RootLayout({
           <SiteLanguageProvider>
             <Navbar />
             {children}
+            <AdSenseLoader />
             <GoogleAnalytics />
             <SiteTracker />
           </SiteLanguageProvider>

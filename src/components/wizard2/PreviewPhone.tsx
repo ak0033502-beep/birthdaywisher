@@ -46,13 +46,15 @@ export function PreviewPhone({
     const i = getTranslations((wish.look.language as Locale) || "en");
     const ctx: SlideCtx = { wish, i, unlocked: true, unlock: () => {}, celebrate: () => {}, embed: true };
 
-    // little jiggle whenever the previewed content changes
-    const sig = scene + JSON.stringify(block?.config ?? null) + wish.look.theme + wish.look.presentationStyle + wish.recipient.name;
+    // Subtle jiggle only when switching scene, slide, style, or theme (never force layout reflow on every keystroke)
     const styleId = normalizeStyle(wish.look.presentationStyle);
+    const sig = `${scene}|${effectiveFocus || ""}|${styleId}|${wish.look.theme}`;
     const idx = Math.max(0, block ? wish.blocks.indexOf(block) : 0);
     useEffect(() => {
         const el = ref.current; if (!el) return;
-        el.classList.remove("jiggle"); void el.offsetWidth; el.classList.add("jiggle");
+        el.classList.add("jiggle");
+        const t = setTimeout(() => el.classList.remove("jiggle"), 420);
+        return () => clearTimeout(t);
     }, [sig]);
 
     // 3D tilt toward the pointer (desktop)

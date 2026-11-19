@@ -5,6 +5,7 @@ import { useStepTitle } from "@/lib/useStepTitle";
 import { Image as ImageIcon, Video, Loader2, X, Plus, UploadCloud } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { prepareUploadFile } from "@/components/wizard2/uploads";
 
 const MAX_PHOTOS = 5;
 const MAX_VIDEOS = 3;
@@ -107,8 +108,9 @@ export function Step5Media() {
             let currentSpeed = 0; // Bytes per millisecond
 
             for (let i = 0; i < validFiles.length; i++) {
-                const file = validFiles[i];
-                const isVideo = file.type.startsWith("video/");
+                const rawFile = validFiles[i];
+                const isVideo = rawFile.type.startsWith("video/");
+                const file = isVideo ? rawFile : ((await prepareUploadFile(rawFile)) as File);
 
                 const formData = new FormData();
                 formData.append("api_key", String(apiKey));
