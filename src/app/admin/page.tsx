@@ -139,6 +139,32 @@ async function OverviewTab({ days }: { days: number }) {
                         )}
                     </div>
                 </div>
+                {vault.recentClaims.length > 0 && (
+                    <div style={{ marginTop: 18 }}>
+                        <p style={{ margin: "0 0 8px", fontSize: 12, fontWeight: 700, opacity: 0.75 }}>
+                            Claimed Memory Vault Wishes (Latest {vault.recentClaims.length})
+                        </p>
+                        <Table
+                            head={["Spot", "Wish ID", "Plan & Price", "Who · Screen", "Claimed At", "Saved Until", "Preview"]}
+                            rows={vault.recentClaims.map((c) => [
+                                <b key="sp">#{c.spot || "—"}</b>,
+                                <code key="id">{c.wishId}</code>,
+                                `${c.plan === "1y" ? "1 Year" : "30 Days"} · ${c.currency === "INR" ? `₹${c.price}` : c.currency === "GBP" ? `£${c.price.toFixed(2)}` : `$${c.price.toFixed(2)}`} (${c.country || c.region})`,
+                                `${c.who} · ${c.surface}`,
+                                when(c.createdAt),
+                                when(c.keepUntil),
+                                c.stillActive ? (
+                                    <a key="p" href={`/wish/${c.wishId}`} target="_blank" rel="noopener noreferrer" className="adm-btn sm ghost">
+                                        Open (Read-Only)
+                                    </a>
+                                ) : (
+                                    <span key="exp" style={{ opacity: 0.55 }}>Expired</span>
+                                ),
+                            ])}
+                            empty="No claims yet"
+                        />
+                    </div>
+                )}
             </Card>
             <Suspense fallback={<Card title="💡 Suggestions" sub="Analysing funnel, wizard, speed & SEO…" wide><p className="adm-empty">Loading recommendations…</p></Card>}>
                 <InsightsCard days={days} overview={overview} reviews={reviews} />
@@ -389,6 +415,7 @@ async function WishesTab() {
                         <li><span>Expired wishes deleted</span><b>{lc?.error ? <span className="bad">error</span> : fmt(lc?.deleted ?? 0)}</b></li>
                         <li><span>Orphan uploads cleaned</span><b>{lc?.orphanMedia !== undefined ? `${fmt(lc.orphanMedia)} (${lc.freedMb ?? 0} MB freed)` : "—"}</b></li>
                         <li><span>Oldest unopened wish</span><b>{w.oldestUnopened ? when(w.oldestUnopened) : "—"}</b></li>
+                        <li><span>Saved in Memory Vault</span><b>{fmt(w.vaultSaved)}</b></li>
                         <li><span>Custom links in use</span><b>{fmt(w.slugs)}</b></li>
                     </ul>
                     <CleanupButton />
@@ -417,8 +444,13 @@ async function WishesTab() {
                             <code>{r.id}</code>
                             {r.slug ? <small> · /w/{r.slug}</small> : null}
                         </span>,
-                        <span key="st">
+                        <span key="st" style={{ display: "inline-flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
                             <span className={`adm-tag ${r.opened ? "good" : "warn"}`}>{r.opened ? "Opened" : "Unopened"}</span>
+                            {r.keepUntil ? (
+                                <span className="adm-tag good" title={`Memory Vault until ${when(r.keepUntil)}`}>
+                                    🛡️ Vault {r.vaultSpot ? `#${r.vaultSpot} · ` : ""}{r.vaultPlan === "1y" ? "1y" : "30d"} (until {when(r.keepUntil)})
+                                </span>
+                            ) : null}
                             {r.lockedUntil ? <span className="adm-tag warn" title={`Locked until ${when(r.lockedUntil)}`}>⏳ Locked ({when(r.lockedUntil)})</span> : null}
                         </span>,
                         r.style,

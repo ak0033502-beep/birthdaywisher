@@ -289,8 +289,10 @@ export async function getReviews() {
 
 /* ======================= 9. Wish management ======================= */
 export async function getWishOps(includeUsage = true) {
+    await ensureDb().catch(() => {});
     const [active, ledger, lastCleanup, recentRows] = await Promise.all([
         safe(() => sql`SELECT COUNT(*) n, COUNT(*) FILTER (WHERE opened_at IS NULL) unopened, COUNT(*) FILTER (WHERE opened_at IS NOT NULL) opened,
+                 COUNT(*) FILTER (WHERE keep_until IS NOT NULL AND keep_until > NOW()) vault_saved,
                  COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '8 hours') expiring2h,
                  COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND opened_at IS NULL AND created_at < NOW() - INTERVAL '6 days') expiring_unopened,
                  COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND ((opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '34 hours') OR (opened_at IS NULL AND created_at < NOW() - INTERVAL '8 days'))) overdue,
@@ -300,10 +302,13 @@ export async function getWishOps(includeUsage = true) {
         safe(() => sql`SELECT COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) deleted, COALESCE(SUM(media_count) FILTER (WHERE deleted_at IS NULL), 0) media FROM wish_ledger`, { rows: [] as Row[] } as never, "ops.ledger"),
         safe(() => kvGet<{ deleted?: number; orphanMedia?: number; freedMb?: number; prunedEvents?: number; at?: string; error?: string }>("last_cleanup"), null, "ops.kv"),
         includeUsage
-            ? safe(() => sql`SELECT id, custom_slug, created_at, opened_at, view_count,
-                     COALESCE(data->'look'->>'presentationStyle', data->>'theme', 'classic') AS style,
-                     COALESCE(data->'unlock'->>'date', data->>'unlockDate', '') AS unlock_date
-                     FROM wishes ORDER BY created_at DESC LIMIT 50`, { rows: [] as Row[] } as never, "ops.recent")
+            ? safe(() => sql`SELECT w.id, w.custom_slug, w.created_at, w.opened_at, w.view_count, w.keep_until, w.vault_plan, vc.spot_number,
+                     COALESCE(w.data->'look'->>'presentationStyle', w.data->>'theme', 'classic') AS style,
+                     COALESCE(w.data->'unlock'->>'date', w.data->>'unlockDate', '') AS unlock_date
+                     FROM wishes w
+                     LEFT JOIN vault_claims vc ON vc.wish_id = w.id
+                     ORDER BY (w.keep_until IS NOT NULL AND w.keep_until > NOW()) DESC, w.created_at DESC
+                     LIMIT 50`, { rows: [] as Row[] } as never, "ops.recent")
             : Promise.resolve({ rows: [] as Row[] }),
     ]);
     let usage: { storageMb: number; bandwidthMb: number; creditsUsedPct: number; plan: string } | null = null;
@@ -323,6 +328,8 @@ export async function getWishOps(includeUsage = true) {
     const recent = recentRows.rows.map((r) => {
         const unlockStr = str(r.unlock_date);
         const unlockMs = unlockStr ? Date.parse(unlockStr) : NaN;
+        const keepStr = r.keep_until ? str(r.keep_until) : "";
+        const keepMs = keepStr ? Date.parse(keepStr) : NaN;
         return {
             id: str(r.id),
             slug: str(r.custom_slug),
@@ -331,10 +338,13 @@ export async function getWishOps(includeUsage = true) {
             views: num(r.view_count),
             style: str(r.style) || "cinematic",
             lockedUntil: Number.isFinite(unlockMs) && unlockMs > now ? unlockStr : "",
+            keepUntil: Number.isFinite(keepMs) && keepMs > now ? keepStr : "",
+            vaultPlan: str(r.vault_plan),
+            vaultSpot: num(r.spot_number),
         };
     });
     return {
-        active: num(a.n), unopened: num(a.unopened), opened: num(a.opened), expiringSoon: num(a.expiring2h) + num(a.expiring_unopened),
+        active: num(a.n), unopened: num(a.unopened), opened: num(a.opened), vaultSaved: num(a.vault_saved), expiringSoon: num(a.expiring2h) + num(a.expiring_unopened),
         overdue: num(a.overdue), waitingCleanup: num(a.waiting_cleanup), oldestUnopened: str(a.oldest_unopened), slugs: num(a.slugs),
         deletedTotal: num(l.deleted), activeMedia: num(l.media), lastCleanup, usage, recent,
     };
@@ -345,7 +355,7 @@ export async function getVaultAdminStats(days: number) {
     await ensureDb().catch(() => {});
     await ensureAnalytics().catch(() => {});
 
-    const [totals, plans, regions, whoRows, evRows] = await Promise.all([
+    const [totals, plans, regions, whoRows, evRows, recentClaims] = await Promise.all([
         safe(
             () => sql`
                 SELECT
@@ -386,6 +396,18 @@ export async function getVaultAdminStats(days: number) {
             { rows: [] as Row[] } as never,
             "vault.events",
         ),
+        safe(
+            () => sql`
+                SELECT vc.wish_id, vc.plan, vc.region, vc.country, vc.currency, vc.listed_price, vc.surface, vc.who,
+                       vc.spot_number, vc.keep_until, vc.created_at, (w.id IS NOT NULL) AS still_active
+                FROM vault_claims vc
+                LEFT JOIN wishes w ON w.id = vc.wish_id
+                ORDER BY vc.created_at DESC
+                LIMIT 20
+            `,
+            { rows: [] as Row[] } as never,
+            "vault.recent",
+        ),
     ]);
 
     const t = totals.rows[0] || {};
@@ -403,5 +425,19 @@ export async function getVaultAdminStats(days: number) {
         plans: counts(plans.rows),
         regions: counts(regions.rows),
         who: counts(whoRows.rows),
+        recentClaims: recentClaims.rows.map((r) => ({
+            wishId: str(r.wish_id),
+            plan: str(r.plan),
+            region: str(r.region),
+            country: str(r.country),
+            currency: str(r.currency),
+            price: Number(r.listed_price || 0),
+            surface: str(r.surface),
+            who: str(r.who),
+            spot: num(r.spot_number),
+            keepUntil: str(r.keep_until),
+            createdAt: str(r.created_at),
+            stillActive: Boolean(r.still_active),
+        })),
     };
 }
