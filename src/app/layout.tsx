@@ -72,6 +72,16 @@ export default function RootLayout({
       <head>
         {/* Day Party / Night Party: set before first paint to avoid a theme flash */}
         <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-NB4BVN3F" />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());`,
+          }}
+        />
         <meta name="google-adsense-account" content="ca-pub-6302942607473891" />
         <script
           suppressHydrationWarning
@@ -97,6 +107,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${baloo.variable} ${nunito.variable} antialiased`}
       >
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-NB4BVN3F"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <ThemeProvider>
           <SiteLanguageProvider>
             <Navbar />
