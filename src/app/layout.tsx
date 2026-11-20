@@ -39,6 +39,20 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   // All relative URLs (canonical, Open Graph) resolve against the www host Google indexes
   metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon-144x144.png", sizes: "144x144", type: "image/png" },
+      { url: "/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+    ],
+    shortcut: [{ url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   verification: {
     google: "0U1YiEFE8R79Y3OBSHah0kzi2xrwwMaelRhnv9cjIeQ",
   },
@@ -89,17 +103,35 @@ gtag('js', new Date());`,
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "BirthdayWisher.fun",
-              "url": SITE_URL,
-              "logo": absUrl("/logo.png"),
-              "description": "The #1 Online Birthday & Anniversary Wish Creator. Create interactive, gamified wishes with puzzles, voice notes, and confetti.",
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "email": "akalloverservices@gmail.com",
-                "contactType": "customer service"
-              },
-              "sameAs": []
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  "name": "BirthdayWisher.fun",
+                  "alternateName": ["BirthdayWisher", "Birthday Wisher"],
+                  "url": SITE_URL,
+                },
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  "name": "BirthdayWisher.fun",
+                  "url": SITE_URL,
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": absUrl("/logo.png"),
+                    "width": 512,
+                    "height": 512,
+                  },
+                  "image": absUrl("/logo.png"),
+                  "description": "The #1 Online Birthday & Anniversary Wish Creator. Create interactive, gamified wishes with puzzles, voice notes, and confetti.",
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "email": "akalloverservices@gmail.com",
+                    "contactType": "customer service"
+                  },
+                  "sameAs": []
+                }
+              ]
             })
           }}
         />
