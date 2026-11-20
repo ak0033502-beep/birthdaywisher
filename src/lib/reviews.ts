@@ -17,6 +17,8 @@ export interface PublicReviewsSummary {
     stats: {
         totalCount: number;
         averageRating: number;
+        amazingCount?: number;
+        lovedCount?: number;
     };
 }
 
@@ -83,18 +85,20 @@ export async function getPublicReviews(): Promise<PublicReviewsSummary> {
                 FROM reviews
                 WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND BTRIM(message) <> ''
                 ORDER BY created_at DESC
-                LIMIT 12
+                LIMIT 24
             `,
             sql`
                 SELECT id, name, rating, message, relationship, COALESCE(source, 'site') AS source, created_at
                 FROM reviews
                 WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND BTRIM(message) = ''
                 ORDER BY created_at DESC
-                LIMIT 8
+                LIMIT 24
             `,
             sql`
                 SELECT COUNT(*)::int AS total_count,
-                       COALESCE(ROUND(AVG(rating)::numeric, 1), 0) AS avg_rating
+                       COALESCE(ROUND(AVG(rating)::numeric, 1), 0) AS avg_rating,
+                       COUNT(*) FILTER (WHERE rating = 5)::int AS amazing_count,
+                       COUNT(*) FILTER (WHERE rating = 4)::int AS loved_count
                 FROM reviews
                 WHERE NOT COALESCE(hidden_by_admin, false)
             `,
@@ -107,7 +111,12 @@ export async function getPublicReviews(): Promise<PublicReviewsSummary> {
         return {
             reviews: writtenRes.rows.map((r) => mapRow(r as Record<string, unknown>)),
             quickRatings: quickRes.rows.map((r) => mapRow(r as Record<string, unknown>)),
-            stats: { totalCount, averageRating },
+            stats: {
+                totalCount,
+                averageRating,
+                amazingCount: Math.max(0, Number(agg.amazing_count) || 0),
+                lovedCount: Math.max(0, Number(agg.loved_count) || 0),
+            },
         };
     };
 

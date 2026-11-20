@@ -1,0 +1,358 @@
+/* =========================================================
+   ❤️ 2-Layer Auto-Scrolling Reviews & Separate Instant Reactions
+   Fixed compact height regardless of whether there are 8 or 10,000 ratings.
+   ========================================================= */
+.rv-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+.rv-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.rv-head-left h2 {
+    font-size: clamp(28px, 4.6vw, 44px);
+    font-weight: 800;
+    margin: 12px 0 6px;
+}
+
+.rv-head-left p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--p-muted, #6b6380);
+}
+
+.rv-scorebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rv-score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    background: var(--p-surface, #ffffff);
+    border: 1.5px solid var(--p-line, rgba(43, 34, 64, 0.1));
+    box-shadow: var(--p-shadow, 0 8px 24px rgba(255, 92, 138, 0.1));
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--p-text, #2b2240);
+}
+
+.rv-score-pill b {
+    font-family: var(--p-font-display, inherit);
+    font-size: 19px;
+    color: var(--p-pink, #ff5c8a);
+}
+
+.rv-react-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: var(--p-surface, #ffffff);
+    border: 1.5px solid var(--p-line, rgba(43, 34, 64, 0.1));
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--p-text, #2b2240);
+}
+
+/* ---------- Layer Labels ---------- */
+.rv-layer-lbl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--p-muted, #6b6380);
+    margin: 0 0 10px;
+}
+
+.rv-layer-lbl span.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--p-pink, #ff5c8a);
+}
+
+.rv-layer-lbl span.dot-mint {
+    background: var(--p-mint, #2ed8b6);
+}
+
+/* ---------- Auto-Scrolling Marquee Viewport ---------- */
+.rv-marquee {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 6px 0;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+}
+
+.rv-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+}
+
+.rv-track.is-left {
+    animation: rv-scroll-left var(--rv-dur, 38s) linear infinite;
+}
+
+.rv-track.is-right {
+    animation: rv-scroll-right var(--rv-dur, 32s) linear infinite;
+}
+
+.rv-marquee:hover .rv-track,
+.rv-marquee:focus-within .rv-track,
+.rv-marquee:active .rv-track {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rv-marquee {
+        overflow-x: auto;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+    .rv-track.is-left,
+    .rv-track.is-right {
+        animation: none;
+    }
+}
+
+@keyframes rv-scroll-left {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes rv-scroll-right {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+}
+
+.rv-group {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    padding-right: 16px;
+    flex-shrink: 0;
+}
+
+/* ---------- Layer 1: Compact Written Review Cards ---------- */
+.rv-card {
+    width: 320px;
+    min-height: 158px;
+    padding: 18px 20px;
+    border-radius: 22px;
+    background: var(--p-surface, #ffffff);
+    border: 1.5px solid var(--p-line, rgba(43, 34, 64, 0.1));
+    box-shadow: var(--p-shadow, 0 8px 24px rgba(255, 92, 138, 0.1));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    flex-shrink: 0;
+    transition: transform 0.22s ease, border-color 0.22s ease;
+}
+
+.rv-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--p-pink, #ff5c8a) 45%, transparent);
+}
+
+@media (max-width: 480px) {
+    .rv-card {
+        width: 276px;
+        min-height: 150px;
+        padding: 16px 16px;
+    }
+}
+
+.rv-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.rv-hearts {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.rv-role-tag {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    background: var(--p-surface2, #fff4ea);
+    color: var(--p-muted, #6b6380);
+}
+
+.rv-quote {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.48;
+    color: var(--p-text, #2b2240);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.rv-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--p-line, rgba(43, 34, 64, 0.1));
+    font-size: 12px;
+}
+
+.rv-author {
+    font-weight: 800;
+    color: var(--p-text, #2b2240);
+}
+
+.rv-rel {
+    font-weight: 700;
+    color: var(--p-muted, #6b6380);
+}
+
+/* ---------- Layer 2: Separate Instant Reaction Chips ---------- */
+.rv-layer2 {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1.5px dashed var(--p-line, rgba(43, 34, 64, 0.1));
+}
+
+.rv-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--p-surface, #ffffff);
+    border: 1.5px solid color-mix(in srgb, var(--p-mint, #2ed8b6) 35%, var(--p-line, rgba(43, 34, 64, 0.1)));
+    box-shadow: 0 4px 14px rgba(43, 34, 64, 0.05);
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+}
+
+.rv-chip:hover {
+    transform: translateY(-2px);
+}
+
+.rv-chip-emoji {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--p-surface2, #fff4ea);
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.rv-chip-body {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13.5px;
+}
+
+.rv-chip-title {
+    font-weight: 800;
+    color: var(--p-text, #2b2240);
+}
+
+.rv-chip-score {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--p-pink, #ff5c8a) 14%, transparent);
+    color: var(--p-pink, #ff5c8a);
+    font-size: 11.5px;
+    font-weight: 900;
+}
+
+.rv-chip-who {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--p-muted, #6b6380);
+}
+
+@media (max-width: 720px) {
+    .rv-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ---------- Joyful Party Review Modal ---------- */
+.rv-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(18, 12, 34, 0.62);
+    backdrop-filter: blur(6px);
+}
+
+.rv-modal {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    padding: 26px 24px;
+    border-radius: 26px;
+    background: var(--p-surface, #ffffff);
+    color: var(--p-text, #2b2240);
+    border: 2px solid var(--p-line, rgba(43, 34, 64, 0.12));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+    font-family: var(--p-font-body, inherit);
+}
+
+.rv-modal h3 {
+    font-family: var(--p-font-display, inherit);
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 4px;
+}
+
+.rv-modal-field {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 14px;
+    background: var(--p-surface2, #fff4ea);
+    color: var(--p-text, #2b2240);
+    border: 1.5px solid var(--p-line, rgba(43, 34, 64, 0.14));
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+}
+
+.rv-modal-field:focus {
+    border-color: var(--p-pink, #ff5c8a);
+}

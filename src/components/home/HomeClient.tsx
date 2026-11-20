@@ -273,8 +273,8 @@ export function HomeClient({ initialReviews }: { initialReviews?: PublicReviewsS
         </div>
       </section>
 
-      {/* ⑩ REAL REVIEWS: SSR-hydrated for Google + AI crawlers, hosted in a night band */}
-      <section className="bw-night-band" style={{ marginTop: 40 }}>
+      {/* ⑩ REAL REVIEWS: 2-layer auto-scrolling SSR-hydrated reviews & separate instant reactions */}
+      <section className="bw-section" id="reviews" style={{ paddingBottom: 30 }}>
         <TestimonialsSection initialData={initialReviews} />
       </section>
 

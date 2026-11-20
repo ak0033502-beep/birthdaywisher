@@ -12,7 +12,7 @@ interface ReviewModalProps {
 
 export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) {
     const [name, setName] = useState("");
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState(5);
     const [hoveredRating, setHoveredRating] = useState(0);
     const [message, setMessage] = useState("");
     const [relationship, setRelationship] = useState("Friend");
@@ -24,7 +24,7 @@ export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) 
 
     const handleSubmit = async () => {
         if (!name.trim() || !message.trim() || rating === 0) {
-            setError("Please fill in your name, select a rating, and write a message.");
+            setError("Please fill in your name, select a rating, and write a short message.");
             return;
         }
 
@@ -54,10 +54,9 @@ export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) 
 
     const handleClose = () => {
         onClose();
-        // Reset after closing animation
         setTimeout(() => {
             setName("");
-            setRating(0);
+            setRating(5);
             setMessage("");
             setRelationship("Friend");
             setSubmitted(false);
@@ -72,137 +71,174 @@ export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                    className="rv-modal-backdrop"
                     onClick={handleClose}
                 >
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.92, y: 16 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-md border border-white/10 relative"
+                        exit={{ opacity: 0, scale: 0.92, y: 16 }}
+                        transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                        className="rv-modal"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Close button */}
                         <button
+                            type="button"
                             onClick={handleClose}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+                            aria-label="Close review dialog"
+                            style={{
+                                position: "absolute",
+                                top: 14,
+                                right: 14,
+                                width: 34,
+                                height: 34,
+                                borderRadius: "50%",
+                                border: "1px solid var(--p-line, rgba(0,0,0,0.1))",
+                                background: "var(--p-surface2, #fff4ea)",
+                                color: "var(--p-muted, #6b6380)",
+                                display: "grid",
+                                placeItems: "center",
+                                cursor: "pointer",
+                            }}
                         >
-                            <X className="w-5 h-5 text-foreground/50" />
+                            <X style={{ width: 17, height: 17 }} />
                         </button>
 
                         {submitted ? (
-                            // Success State
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-center py-8"
-                            >
-                                <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
-                                    <Heart className="w-10 h-10 text-green-500 fill-green-500" />
-                                </div>
-                                <h3 className="text-2xl font-bold mb-3">Thank You! ❤️</h3>
-                                <p className="text-foreground/60 mb-6">Your review has been submitted. It means the world to us!</p>
-                                <button
-                                    onClick={handleClose}
-                                    className="px-6 py-3 bg-primary text-white font-bold rounded-full hover:scale-105 transition-transform"
-                                >
-                                    Close
+                            <div style={{ textAlign: "center", padding: "24px 8px" }}>
+                                <div style={{ fontSize: 48, marginBottom: 10 }} aria-hidden="true">🎉</div>
+                                <h3>Thank You! ❤️</h3>
+                                <p style={{ color: "var(--p-muted)", fontWeight: 600, margin: "8px 0 20px" }}>
+                                    Your review is live! Thank you for spreading the joy.
+                                </p>
+                                <button type="button" onClick={handleClose} className="bw-btn bw-btn-primary bw-btn-sm">
+                                    Done
                                 </button>
-                            </motion.div>
+                            </div>
                         ) : (
-                            // Form State
                             <>
-                                <h3 className="text-2xl font-bold mb-2">Leave a Review ❤️</h3>
-                                <p className="text-foreground/50 text-sm mb-6">Tell us about your experience creating a wish!</p>
+                                <h3>Leave a Review ❤️</h3>
+                                <p style={{ color: "var(--p-muted)", fontSize: 14, fontWeight: 600, margin: "0 0 18px" }}>
+                                    Tell us how your surprise turned out!
+                                </p>
 
-                                {/* Heart Rating */}
-                                <div className="mb-5">
-                                    <label className="text-sm font-medium text-foreground/70 mb-2 block">Your Rating</label>
-                                    <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map((n) => (
-                                            <button
-                                                key={n}
-                                                onClick={() => setRating(n)}
-                                                onMouseEnter={() => setHoveredRating(n)}
-                                                onMouseLeave={() => setHoveredRating(0)}
-                                                className="p-1 transition-transform hover:scale-110"
-                                            >
-                                                <Heart
-                                                    className={`w-8 h-8 transition-colors ${n <= (hoveredRating || rating)
-                                                            ? "text-pink-400 fill-pink-400"
-                                                            : "text-foreground/20"
-                                                        }`}
-                                                />
-                                            </button>
-                                        ))}
+                                <div style={{ marginBottom: 16 }}>
+                                    <label style={{ display: "block", fontSize: 13, fontWeight: 800, marginBottom: 6 }}>
+                                        Your Rating
+                                    </label>
+                                    <div style={{ display: "flex", gap: 6 }}>
+                                        {[1, 2, 3, 4, 5].map((n) => {
+                                            const active = n <= (hoveredRating || rating);
+                                            return (
+                                                <button
+                                                    key={n}
+                                                    type="button"
+                                                    onClick={() => setRating(n)}
+                                                    onMouseEnter={() => setHoveredRating(n)}
+                                                    onMouseLeave={() => setHoveredRating(0)}
+                                                    aria-label={`Rate ${n} out of 5`}
+                                                    style={{
+                                                        padding: 4,
+                                                        border: 0,
+                                                        background: "transparent",
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    <Heart
+                                                        style={{
+                                                            width: 30,
+                                                            height: 30,
+                                                            color: active ? "#FF5C8A" : "rgba(120,110,145,0.28)",
+                                                            fill: active ? "#FF5C8A" : "none",
+                                                        }}
+                                                    />
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                {/* Name */}
-                                <div className="mb-4">
-                                    <label className="text-sm font-medium text-foreground/70 mb-2 block">Your Name</label>
+                                <div style={{ marginBottom: 14 }}>
+                                    <label style={{ display: "block", fontSize: 13, fontWeight: 800, marginBottom: 6 }}>
+                                        Your Name
+                                    </label>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="e.g., Priya S."
-                                        maxLength={100}
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors"
+                                        maxLength={80}
+                                        className="rv-modal-field"
                                     />
                                 </div>
 
-                                {/* Relationship */}
-                                <div className="mb-4">
-                                    <label className="text-sm font-medium text-foreground/70 mb-2 block">I created a wish for my...</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {relationships.map((rel) => (
-                                            <button
-                                                key={rel}
-                                                onClick={() => setRelationship(rel)}
-                                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${relationship === rel
-                                                        ? "bg-primary text-white"
-                                                        : "bg-white/5 text-foreground/60 hover:bg-white/10"
-                                                    }`}
-                                            >
-                                                {rel}
-                                            </button>
-                                        ))}
+                                <div style={{ marginBottom: 14 }}>
+                                    <label style={{ display: "block", fontSize: 13, fontWeight: 800, marginBottom: 6 }}>
+                                        Created for my…
+                                    </label>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                        {relationships.map((rel) => {
+                                            const on = relationship === rel;
+                                            return (
+                                                <button
+                                                    key={rel}
+                                                    type="button"
+                                                    onClick={() => setRelationship(rel)}
+                                                    style={{
+                                                        padding: "6px 13px",
+                                                        borderRadius: 999,
+                                                        fontSize: 12.5,
+                                                        fontWeight: 800,
+                                                        border: on ? "0" : "1.5px solid var(--p-line)",
+                                                        background: on ? "var(--p-pink, #ff5c8a)" : "var(--p-surface2, #fff4ea)",
+                                                        color: on ? "#fff" : "var(--p-text)",
+                                                        cursor: "pointer",
+                                                    }}
+                                                >
+                                                    {rel}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                {/* Message */}
-                                <div className="mb-5">
-                                    <label className="text-sm font-medium text-foreground/70 mb-2 block">Your Experience</label>
+                                <div style={{ marginBottom: 14 }}>
+                                    <label style={{ display: "block", fontSize: 13, fontWeight: 800, marginBottom: 6 }}>
+                                        Your Experience
+                                    </label>
                                     <textarea
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
-                                        placeholder="Tell us how the birthday wish turned out..."
-                                        maxLength={500}
+                                        placeholder="How did they react when they opened it?"
+                                        maxLength={400}
                                         rows={3}
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-primary/50 transition-colors resize-none"
+                                        className="rv-modal-field"
+                                        style={{ resize: "none" }}
                                     />
-                                    <p className="text-xs text-foreground/30 mt-1">{message.length}/500</p>
                                 </div>
 
-                                {/* Error */}
                                 {error && (
-                                    <p className="text-red-400 text-sm mb-4">{error}</p>
+                                    <p style={{ color: "#ef4444", fontSize: 12.5, fontWeight: 700, margin: "0 0 12px" }}>
+                                        {error}
+                                    </p>
                                 )}
 
-                                {/* Submit */}
                                 <button
+                                    type="button"
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
-                                    className="w-full px-6 py-3.5 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-full hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    className="bw-btn bw-btn-primary"
+                                    style={{ width: "100%", justifyContent: "center" }}
                                 >
                                     {isSubmitting ? (
                                         <>
-                                            <Loader2 className="w-5 h-5 animate-spin" /> Submitting...
+                                            <Loader2 style={{ width: 18, height: 18 }} className="animate-spin" />
+                                            <span>Submitting…</span>
                                         </>
                                     ) : (
                                         <>
-                                            <Send className="w-5 h-5" /> Submit Review
+                                            <Send style={{ width: 17, height: 17 }} />
+                                            <span>Submit Review</span>
                                         </>
                                     )}
                                 </button>
