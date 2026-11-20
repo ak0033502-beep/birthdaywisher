@@ -29,7 +29,10 @@ const RANGES = [7, 30, 90];
 const blockName = (k: string) => (BLOCKS as Record<string, { label: string; icon: string }>)[k] ? `${(BLOCKS as Record<string, { label: string; icon: string }>)[k].icon} ${(BLOCKS as Record<string, { label: string }>)[k].label}` : k;
 const secs = (s: number) => (s >= 3600 ? `${(s / 3600).toFixed(1)} h` : s >= 60 ? `${Math.round(s / 60)} min` : `${Math.round(s)} s`);
 const ms = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)} s` : `${Math.round(v)} ms`);
-const when = (iso: string) => (iso ? new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "—");
+const when = (iso: string) =>
+    iso
+        ? `${new Date(iso).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" })} IST`
+        : "—";
 const VITAL: Record<string, { good: number; poor: number; unit: "ms" | "" }> = { LCP: { good: 2500, poor: 4000, unit: "ms" }, INP: { good: 200, poor: 500, unit: "ms" }, CLS: { good: 0.1, poor: 0.25, unit: "" }, FCP: { good: 1800, poor: 3000, unit: "ms" }, TTFB: { good: 800, poor: 1800, unit: "ms" } };
 
 function AdminSkeleton() {

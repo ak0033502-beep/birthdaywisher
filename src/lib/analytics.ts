@@ -86,6 +86,7 @@ export const EVENT_NAMES = new Set([
     "wish_open", "wish_slide", "wish_gate", "wish_finale", "wish_make_own", "finale_action",
     "game_demo_play", "game_maker_create", "game_candles",
     "review_submit",
+    "vault_view", "vault_claim", "vault_post200_click",
     "vitals", "js_error", "api_error",
 ]);
 

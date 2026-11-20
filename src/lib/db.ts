@@ -146,6 +146,7 @@ export async function saveWish(data: WishData & { customSlug?: string }): Promis
         }
         // anonymous metadata for the admin dashboard (survives the self-destruct)
         await ledgerWishCreated(id, wishData, !!customSlug);
+        void maybeAutoSweepExpiredWishes();
         return { id, creatorToken };
     } catch (error) {
         if (error instanceof SlugTakenError || error instanceof InvalidSlugError) throw error;
@@ -210,11 +211,21 @@ export async function getWishForVisitor(id: string): Promise<VisitorWishResult> 
 
     try {
         const { rows } = await sql`
-            SELECT data, opened_at FROM wishes WHERE id = ${id}
+            SELECT data, created_at, opened_at, keep_until FROM wishes WHERE id = ${id}
         `;
         if (rows.length === 0) return { status: "missing" };
 
         const wishData = rows[0].data as WishData;
+        if (shouldDestroyWishNow({
+            data: wishData,
+            createdAt: rows[0].created_at,
+            openedAt: rows[0].opened_at,
+            keepUntil: rows[0].keep_until,
+        })) {
+            void destroySingleWish(id, wishData);
+            return { status: "missing" };
+        }
+
         const unlockMs = getScheduledUnlockTime(wishData);
         const stillLocked = unlockMs !== null && unlockMs > Date.now();
 
@@ -452,34 +463,98 @@ async function deleteWishMedia(raw: unknown) {
     }
 }
 
+const TEN_HOURS_MS = 10 * 3600 * 1000;
+const SEVEN_DAYS_MS = 7 * 24 * 3600 * 1000;
+const MAX_FREE_SCHEDULE_MS = 60 * 24 * 3600 * 1000; // cap free scheduled locks at 60 days
+
+function shouldDestroyWishNow(input: {
+    data: unknown;
+    createdAt: unknown;
+    openedAt: unknown;
+    keepUntil: unknown;
+}): boolean {
+    const now = Date.now();
+
+    // 1. Active Memory Vault wishes are protected until keep_until
+    if (input.keepUntil) {
+        const keepMs = new Date(String(input.keepUntil)).getTime();
+        if (Number.isFinite(keepMs) && keepMs > now) return false;
+    }
+
+    const createdMs = input.createdAt ? new Date(String(input.createdAt)).getTime() : 0;
+    const openedMs = input.openedAt ? new Date(String(input.openedAt)).getTime() : 0;
+    const rawUnlockMs = getScheduledUnlockTime(input.data);
+    const unlockMs = rawUnlockMs !== null && createdMs > 0
+        ? Math.min(rawUnlockMs, createdMs + MAX_FREE_SCHEDULE_MS)
+        : rawUnlockMs;
+
+    // 2. Opened wishes self-destruct 10 hours after first open
+    if (openedMs > 0) {
+        if (unlockMs !== null && now < unlockMs + TEN_HOURS_MS) return false;
+        return now - openedMs >= TEN_HOURS_MS;
+    }
+
+    // 3. Unopened wishes: if 7 days (1 week) old AND no active future unlock timer, destroy automatically
+    if (createdMs > 0 && now - createdMs >= SEVEN_DAYS_MS) {
+        // If creator scheduled a future birthday lock (e.g. next week), keep it until 24h after that unlock date if still unopened
+        if (unlockMs !== null && now < unlockMs + 24 * 3600 * 1000) {
+            return false;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+async function destroySingleWish(id: string, data: unknown): Promise<void> {
+    try {
+        await deleteWishMedia(data);
+        await sql`DELETE FROM wishes WHERE id = ${id}`;
+        await ledgerWishDeleted(id);
+    } catch (e) {
+        console.error("Failed destroying expired wish:", id, e);
+    }
+}
+
+const gSweep = globalThis as unknown as { __bwLastAutoSweep?: number };
+
+/** Lightweight hourly auto-sweep triggered opportunistically so expired/unopened wishes don't wait 24h for daily cron. */
+async function maybeAutoSweepExpiredWishes(): Promise<void> {
+    const now = Date.now();
+    if (gSweep.__bwLastAutoSweep && now - gSweep.__bwLastAutoSweep < 60 * 60 * 1000) return;
+    gSweep.__bwLastAutoSweep = now;
+    try {
+        await cleanupExpiredWishes();
+    } catch {
+        // ignore background sweep errors
+    }
+}
+
 export async function cleanupExpiredWishes() {
     await ensureDb();
     try {
-        // Find wishes opened > 10 hours ago OR created > 7 days ago (never opened), excluding active Memory Vault wishes
+        // Candidate rows: (a) opened > 10 hours ago, OR (b) unopened > 7 days (1 week) ago, excluding active Memory Vault wishes
         const { rows } = await sql`
-            SELECT id, data FROM wishes 
+            SELECT id, data, created_at, opened_at, keep_until FROM wishes 
             WHERE (keep_until IS NULL OR keep_until < NOW())
               AND (
                 (opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '10 hours')
-                OR (created_at < NOW() - INTERVAL '7 days')
+                OR (opened_at IS NULL AND created_at < NOW() - INTERVAL '7 days')
               )
         `;
 
         let deletedCount = 0;
 
         for (const row of rows) {
-            const unlockMs = getScheduledUnlockTime(row.data);
-            // Never delete a scheduled time-capsule wish before (unlock time + 10 hours)
-            if (unlockMs !== null && Date.now() < unlockMs + 10 * 3600 * 1000) {
+            if (!shouldDestroyWishNow({
+                data: row.data,
+                createdAt: row.created_at,
+                openedAt: row.opened_at,
+                keepUntil: row.keep_until,
+            })) {
                 continue;
             }
-            await deleteWishMedia(row.data);
-
-            // Delete row from postgres
-            await sql`
-                DELETE FROM wishes WHERE id = ${row.id}
-            `;
-            await ledgerWishDeleted(row.id);
+            await destroySingleWish(String(row.id), row.data);
             deletedCount++;
         }
 

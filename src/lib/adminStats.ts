@@ -67,11 +67,17 @@ export async function getOverview(days: number) {
         safe(() => sql`SELECT COUNT(DISTINCT sid) v, COUNT(*) pv FROM site_events WHERE name = 'page_view' AND ts > NOW() - (${days}::int * INTERVAL '1 day')`, { rows: [] as Row[] } as never, "overview.visitors"),
         safe(() => sql`SELECT COUNT(DISTINCT sid) v FROM site_events WHERE name = 'page_view'
                  AND ts <= NOW() - (${days}::int * INTERVAL '1 day') AND ts > NOW() - (${days * 2}::int * INTERVAL '1 day')`, { rows: [] as Row[] } as never, "overview.prevVisitors"),
-        safe(() => sql`WITH d AS (SELECT generate_series((NOW() - (${days - 1}::int * INTERVAL '1 day'))::date, NOW()::date, '1 day')::date AS day)
+        safe(() => sql`WITH d AS (
+                   SELECT generate_series(
+                     ((NOW() AT TIME ZONE 'Asia/Kolkata')::date - (${days - 1}::int * INTERVAL '1 day'))::date,
+                     (NOW() AT TIME ZONE 'Asia/Kolkata')::date,
+                     '1 day'
+                   )::date AS day
+                 )
                  SELECT to_char(d.day, 'YYYY-MM-DD') AS day,
-                   (SELECT COUNT(*) FROM wish_ledger l WHERE l.created_at::date = d.day) created,
-                   (SELECT COUNT(*) FROM wish_ledger l WHERE l.opened_at::date = d.day) opened,
-                   (SELECT COUNT(DISTINCT sid) FROM site_events e WHERE e.name = 'page_view' AND e.ts::date = d.day) visitors
+                   (SELECT COUNT(*) FROM wish_ledger l WHERE (l.created_at AT TIME ZONE 'Asia/Kolkata')::date = d.day) created,
+                   (SELECT COUNT(*) FROM wish_ledger l WHERE (l.opened_at AT TIME ZONE 'Asia/Kolkata')::date = d.day) opened,
+                   (SELECT COUNT(DISTINCT sid) FROM site_events e WHERE e.name = 'page_view' AND (e.ts AT TIME ZONE 'Asia/Kolkata')::date = d.day) visitors
                  FROM d ORDER BY d.day`, { rows: [] as Row[] } as never, "overview.series"),
         safe(() => sql`SELECT COUNT(*) n, COUNT(opened_at) opened, MIN(created_at) since FROM wish_ledger`, { rows: [] as Row[] } as never, "overview.allTime"),
         safe(() => sql`SELECT COALESCE(wish_type,'birthday') key, COUNT(*) n FROM wish_ledger WHERE created_at > NOW() - (${days}::int * INTERVAL '1 day') GROUP BY 1 ORDER BY 2 DESC`, { rows: [] as Row[] } as never, "overview.types"),
