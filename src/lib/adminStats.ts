@@ -307,7 +307,7 @@ export async function getWishOps(includeUsage = true) {
                      COALESCE(w.data->'unlock'->>'date', w.data->>'unlockDate', '') AS unlock_date
                      FROM wishes w
                      LEFT JOIN vault_claims vc ON vc.wish_id = w.id
-                     ORDER BY (w.keep_until IS NOT NULL AND w.keep_until > NOW()) DESC, w.created_at DESC
+                     ORDER BY w.created_at DESC
                      LIMIT 50`, { rows: [] as Row[] } as never, "ops.recent")
             : Promise.resolve({ rows: [] as Row[] }),
     ]);

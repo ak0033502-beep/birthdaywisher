@@ -5,6 +5,7 @@ import { V2WishShell } from "@/components/viewer/V2WishShell";
 import type { Metadata } from "next";
 import { getWishForVisitor, getWishReadOnly, peekWishPreview } from "@/lib/db";
 import { isAdmin } from "@/lib/adminAuth";
+import { isCreatorOfWish } from "@/lib/creatorPreview";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { isV2 } from "@/lib/wish/migrate";
@@ -41,10 +42,13 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     }
 
     const admin = await isAdmin();
+    const creator = !admin && (await isCreatorOfWish(resolvedParams.id));
+    const readOnlyMode = admin || creator;
+    const previewRole = admin ? "admin" : creator ? "creator" : undefined;
     let raw: unknown = null;
     let adminMeta: { openedAt: string | null; viewCount: number } | undefined;
 
-    if (admin) {
+    if (readOnlyMode) {
         const ro = await getWishReadOnly(resolvedParams.id);
         raw = ro?.data ?? null;
         if (ro) adminMeta = { openedAt: ro.openedAt, viewCount: ro.viewCount };
@@ -69,11 +73,12 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
     if (isV2(raw)) {
         return (
             <>
-                {!admin && <AnalyticsTracker />}
+                {!readOnlyMode && <AnalyticsTracker />}
                 <V2WishShell
                     wish={raw}
-                    wishId={admin ? undefined : resolvedParams.id}
+                    wishId={readOnlyMode ? undefined : resolvedParams.id}
                     adminBypass={admin}
+                    previewRole={previewRole}
                     adminMeta={adminMeta}
                 />
             </>
@@ -82,10 +87,11 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
 
     return (
         <>
-            {!admin && <AnalyticsTracker />}
+            {!readOnlyMode && <AnalyticsTracker />}
             <WishTimeCapsuleWrapper
                 wishData={raw as Parameters<typeof WishTimeCapsuleWrapper>[0]["wishData"]}
                 adminBypass={admin}
+                previewRole={previewRole}
                 adminMeta={adminMeta}
             />
         </>

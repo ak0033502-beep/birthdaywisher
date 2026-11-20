@@ -10,13 +10,17 @@ export interface AdminPreviewMeta {
     viewCount: number;
 }
 
+export type PreviewRole = "admin" | "creator";
+
 export function AdminPreviewBanner({
+    role = "admin",
     meta,
     visitorLocked,
     unlockDate,
     showingLock,
     onToggleLock,
 }: {
+    role?: PreviewRole;
     meta?: AdminPreviewMeta;
     visitorLocked: boolean;
     unlockDate?: string;
@@ -25,7 +29,10 @@ export function AdminPreviewBanner({
 }) {
     const [hidden, setHidden] = useState(false);
     if (hidden) return null;
-    const lockTime = unlockDate ? new Date(unlockDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "";
+    const lockTime = unlockDate
+        ? new Date(unlockDate).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
+        : "";
+    const isCreator = role === "creator";
     return (
         <div
             style={{
@@ -41,7 +48,7 @@ export function AdminPreviewBanner({
                 padding: "7px 12px",
                 borderRadius: 999,
                 background: "rgba(17, 14, 28, 0.88)",
-                border: "1px solid rgba(255, 92, 138, 0.45)",
+                border: isCreator ? "1px solid rgba(46, 216, 182, 0.5)" : "1px solid rgba(255, 92, 138, 0.45)",
                 color: "#fff",
                 fontSize: 12,
                 fontWeight: 700,
@@ -49,9 +56,15 @@ export function AdminPreviewBanner({
                 boxShadow: "0 6px 20px rgba(0,0,0,0.35)",
             }}
         >
-            <span>🛡️ Admin Read-Only</span>
-            <span style={{ opacity: 0.75 }}>
-                · {meta?.openedAt ? `Opened (${meta.viewCount} views)` : "Unopened (timer NOT started)"}
+            <span>{isCreator ? "👀 Creator Preview" : "🛡️ Admin Read-Only"}</span>
+            <span style={{ opacity: 0.82 }}>
+                {isCreator
+                    ? meta?.openedAt
+                        ? `· Opened by recipient (${meta.viewCount} views)`
+                        : "· 10h timer starts only when your friend opens this link"
+                    : meta?.openedAt
+                      ? `· Opened (${meta.viewCount} views)`
+                      : "· Unopened (timer NOT started)"}
             </span>
             {visitorLocked && (
                 <>
@@ -99,26 +112,31 @@ export function V2WishShell({
     wish,
     wishId,
     adminBypass = false,
+    previewRole,
     adminMeta,
 }: {
     wish: WishDataV2;
     wishId?: string;
     adminBypass?: boolean;
+    previewRole?: PreviewRole;
     adminMeta?: AdminPreviewMeta;
 }) {
+    const activeRole: PreviewRole | undefined = previewRole ?? (adminBypass ? "admin" : undefined);
+    const canBypassTimeLock = !!activeRole;
     const [visitorLocked, setVisitorLocked] = useState(false);
     const [showLockOverlay, setShowLockOverlay] = useState(false);
 
     useEffect(() => {
         const isFuture = !!(wish.unlock.date && new Date(wish.unlock.date).getTime() > Date.now());
         setVisitorLocked(isFuture);
-        setShowLockOverlay(isFuture && !adminBypass);
-    }, [wish.unlock.date, adminBypass]);
+        setShowLockOverlay(isFuture && !canBypassTimeLock);
+    }, [wish.unlock.date, canBypassTimeLock]);
 
     return (
         <main style={{ height: "100svh", width: "100vw", overflow: "hidden", background: "#000", position: "relative" }}>
-            {adminBypass && (
+            {activeRole && (
                 <AdminPreviewBanner
+                    role={activeRole}
                     meta={adminMeta}
                     visitorLocked={visitorLocked}
                     unlockDate={wish.unlock.date}

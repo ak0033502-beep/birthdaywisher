@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getWishForVisitor, getWishReadOnly } from "@/lib/db";
 import { isAdmin } from "@/lib/adminAuth";
+import { isCreatorOfWish } from "@/lib/creatorPreview";
 import { migrateV1toV2 } from "@/lib/wish/migrate";
 import { V2WishShell } from "@/components/viewer/V2WishShell";
 import { LockedWishScreen } from "@/components/story/LockedWishScreen";
@@ -24,13 +25,15 @@ export default async function WishV2PreviewPage({ params }: { params: Promise<{ 
     }
 
     const admin = await isAdmin();
-    if (admin) {
+    const creator = !admin && (await isCreatorOfWish(id));
+    if (admin || creator) {
         const ro = await getWishReadOnly(id);
         if (!ro) notFound();
         return (
             <V2WishShell
                 wish={migrateV1toV2(ro.data)}
-                adminBypass
+                adminBypass={admin}
+                previewRole={admin ? "admin" : "creator"}
                 adminMeta={{ openedAt: ro.openedAt, viewCount: ro.viewCount }}
             />
         );

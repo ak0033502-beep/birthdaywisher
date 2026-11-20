@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { InvalidSlugError, saveWish, SlugTakenError } from "@/lib/db";
 import { checkPersistentRateLimit, getTrustedIp, isAllowedMediaUrl, isSameOriginRequest } from "@/lib/security";
+import { appendCreatorWishCookieValue, creatorCookieOptions } from "@/lib/creatorPreview";
 
 const MAX_WISH_JSON_BYTES = 200_000;
 
@@ -87,7 +88,10 @@ export async function POST(req: Request) {
         }
 
         const result = await saveWish(body as unknown as Parameters<typeof saveWish>[0]);
-        return NextResponse.json({ id: result.id, creatorToken: result.creatorToken });
+        const cookieVal = appendCreatorWishCookieValue(req.headers.get("cookie"), result.id);
+        const res = NextResponse.json({ id: result.id, creatorToken: result.creatorToken });
+        res.cookies.set({ ...creatorCookieOptions(), value: cookieVal });
+        return res;
     } catch (error) {
         if (error instanceof SlugTakenError) {
             return NextResponse.json({ error: "This custom link was just taken. Please choose another one." }, { status: 409 });
