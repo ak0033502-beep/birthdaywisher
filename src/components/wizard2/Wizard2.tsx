@@ -22,6 +22,7 @@ import { track } from "@/lib/track";
 import { STYLE_IDS, STYLE_INFO, normalizeStyle, type StyleId } from "@/components/viewer/styles";
 import { prefetchStyleBgm, startBgm, type BgmController } from "@/lib/celebration/bgm";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
+import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
 
 const DRAFT_KEY = "bw-wizard2-draft";
 
@@ -788,10 +789,11 @@ function Finish({ result, d, Name, onAgain, celebrate }: { result: { id: string;
                         <button type="button" className="bw-btn bw-btn-primary bw-btn-sm" onClick={async () => { track("share_copy"); queueReview(2200); try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* clipboard blocked */ } }}>{copied ? "Copied ✓" : "Copy"}</button>
                     </div>
                     <div className="wz2-share">
-                        <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" onClick={() => { track("share_whatsapp"); queueReview(1500); }}>💬 Send on WhatsApp</a>
+                        <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" onClick={() => { track("share_whatsapp"); queueReview(4500); }}>💬 Send on WhatsApp</a>
                         <a className="bw-btn bw-btn-ghost bw-btn-sm" href={link} target="_blank" rel="noopener noreferrer" onClick={() => track("share_preview")}>👀 Preview it first</a>
                         <Link className="bw-btn bw-btn-ghost bw-btn-sm" href={`/dashboard/${result.id}`}>📊 Views dashboard</Link>
                     </div>
+                    <KeepAliveCard wishId={result.id} surface="finish" variant="party" />
                     <div className="wz2-badges">{badges.map((b) => <span key={b} className="wz2-badge">{b}</span>)}</div>
                     <div style={{ marginTop: 24 }}><button type="button" className="wz2-chip" onClick={onAgain}>＋ Make another surprise</button></div>
                 </>

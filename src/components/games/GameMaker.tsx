@@ -15,6 +15,7 @@ import { burst } from "@/components/party/interactions";
 import { newDraft, defaultOrder } from "@/components/wizard2/draft";
 import { GameConfigEditor, GAME_LIBRARY } from "@/components/wizard2/gameEditors";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
+import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
 import { track } from "@/lib/track";
 
 const DEMO: { [K in GameType]: BlockConfigMap[K] } = {
@@ -179,9 +180,10 @@ export function GameMaker({ game, slug }: { game: GameType; slug: string }) {
                             <button type="button" className="bw-btn bw-btn-primary bw-btn-sm" onClick={() => { navigator.clipboard?.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 1800); triggerReview(2000); }}>{copied ? "Copied ✓" : "Copy"}</button>
                         </div>
                         <div className="wz2-share">
-                            <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(share)}`} target="_blank" rel="noopener noreferrer" onClick={() => triggerReview(1500)}>💬 Send on WhatsApp</a>
+                            <a className="bw-btn bw-btn-primary bw-btn-sm" style={{ background: "#25D366", boxShadow: "none" }} href={`https://wa.me/?text=${encodeURIComponent(share)}`} target="_blank" rel="noopener noreferrer" onClick={() => triggerReview(4500)}>💬 Send on WhatsApp</a>
                             <a className="bw-btn bw-btn-ghost bw-btn-sm" href={link} target="_blank" rel="noopener noreferrer">👀 Try it</a>
                         </div>
+                        <KeepAliveCard wishId={createdId} surface="game_finish" variant="party" />
                     </>
                 )}
                 {!open && <p className="wz2-sub">Tap the gift to get your link</p>}

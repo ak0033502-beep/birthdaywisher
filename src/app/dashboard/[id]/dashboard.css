@@ -1,0 +1,210 @@
+/* =========================================================
+   📊 Creator Wish Analytics — Joyful Party Theme (Day + Night)
+   ========================================================= */
+.db-main {
+    padding: 12px 0 72px;
+}
+
+.db-share-bar {
+    margin-top: 22px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.db-link-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 14px;
+    background: var(--p-surface2);
+    border: 1.5px solid var(--p-line);
+    font-family: var(--font-mono, monospace);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--p-text);
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.db-share-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.db-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+    .db-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 440px) {
+    .db-kpis {
+        gap: 12px;
+    }
+}
+
+.db-kpi {
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.db-kpi-ic {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.db-kpi-val {
+    font-family: var(--p-font-display);
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 800;
+    line-height: 1.12;
+    color: var(--p-text);
+    overflow-wrap: anywhere;
+}
+
+.db-kpi-lbl {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--p-muted);
+}
+
+.db-kpi-sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--p-pink);
+}
+
+.db-vault-wrap {
+    margin: 26px 0 30px;
+}
+
+.db-vault-wrap .mv-card {
+    max-width: 640px;
+}
+
+.db-panel {
+    padding: 26px 24px;
+    margin-bottom: 24px;
+}
+
+.db-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.db-panel-head h2 {
+    margin: 0;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.db-rows {
+    display: grid;
+    gap: 14px;
+}
+
+.db-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.db-row-top .is-top {
+    color: var(--p-pink);
+}
+
+.db-row-time {
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--p-muted);
+}
+
+.db-track {
+    height: 11px;
+    border-radius: 999px;
+    background: var(--p-surface2);
+    border: 1px solid var(--p-line);
+    overflow: hidden;
+}
+
+.db-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--p-grape), var(--p-mint));
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.db-fill.is-top {
+    background: linear-gradient(90deg, var(--p-pink), var(--p-orange), var(--p-lemon));
+}
+
+.db-empty {
+    text-align: center;
+    padding: 28px 18px;
+}
+
+.db-empty .em {
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.db-empty h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 6px;
+}
+
+.db-empty p {
+    margin: 0 auto 16px;
+    max-width: 480px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--p-muted);
+    line-height: 1.55;
+}
+
+.db-foot-meta {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--p-muted);
+    margin-top: 8px;
+}
+
+.db-state-box {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 36px 28px;
+    text-align: center;
+}

@@ -1,0 +1,277 @@
+/* =========================================================
+   🔒 Memory Vault — Region-Wise Keep-Alive Card
+   ========================================================= */
+.mv-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 18px auto 0;
+    padding: 20px 20px 18px;
+    border-radius: 24px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.4s ease;
+}
+
+/* Joyful Party theme (Wizard Finish, GameMaker Finish & Creator Dashboard — Day + Night Party aware) */
+.mv-party {
+    background: var(--p-surface, #ffffff);
+    color: var(--p-text, #2b2240);
+    border: 2px solid color-mix(in srgb, var(--p-pink, #ff5c8a) 36%, var(--p-line, rgba(43, 34, 64, 0.12)));
+    box-shadow: var(--p-shadow, 0 10px 30px rgba(255, 92, 138, 0.14));
+    font-family: var(--p-font-body, inherit);
+}
+
+/* Dark glass theme (Recipient Night-Sky Grand Finale) */
+.mv-dark {
+    background: rgba(20, 14, 38, 0.86);
+    color: #ffffff;
+    border: 1px solid rgba(255, 143, 184, 0.34);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+}
+
+.mv-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.mv-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.1px;
+}
+
+.mv-party .mv-live-pill {
+    background: color-mix(in srgb, var(--p-pink, #ff5c8a) 12%, var(--p-surface2, #fff4ea));
+    color: var(--p-pink, #ff5c8a);
+}
+html[data-party="night"] .mv-party .mv-live-pill,
+.mv-dark .mv-live-pill {
+    background: rgba(255, 92, 138, 0.2);
+    color: #ffd1e1;
+}
+
+.mv-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: mv-pulse 1.8s infinite;
+    flex: none;
+}
+
+@keyframes mv-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.mv-spots-num {
+    display: inline-block;
+    margin: 0 3px;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.28s ease;
+}
+
+.mv-spots-num.is-tick {
+    transform: scale(1.18);
+    color: #10b981;
+}
+
+.mv-bar {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.mv-party .mv-bar {
+    background: color-mix(in srgb, var(--p-grape, #7c5cff) 14%, transparent);
+}
+
+.mv-dark .mv-bar {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.mv-bar > i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--p-mint, #2ed8b6), var(--p-pink, #ff5c8a));
+    transition: width 0.45s ease;
+}
+
+.mv-title {
+    margin: 0 0 5px;
+    font-family: var(--p-font-display, inherit);
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.mv-sub {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.48;
+    color: var(--p-muted, inherit);
+}
+.mv-dark .mv-sub {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.mv-plans {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 10px;
+}
+
+@media (max-width: 390px) {
+    .mv-plans {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mv-plan-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 13px 14px;
+    border-radius: 18px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.mv-plan-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.mv-plan-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+
+.mv-plan-btn:not(:disabled):active {
+    transform: scale(0.98);
+}
+
+.mv-party .mv-plan-btn.is-secondary {
+    background: var(--p-surface2, #fff4ea);
+    color: var(--p-text, #2b2240);
+    border: 2px solid var(--p-line, rgba(43, 34, 64, 0.12));
+}
+
+.mv-dark .mv-plan-btn.is-secondary {
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mv-plan-btn.is-primary {
+    background: linear-gradient(135deg, var(--p-pink, #ff5c8a) 0%, var(--p-orange, #ff9f43) 100%);
+    color: #ffffff;
+    border: 0;
+    box-shadow: 0 10px 24px rgba(255, 92, 138, 0.34);
+}
+
+.mv-dark .mv-plan-btn.is-primary {
+    background: linear-gradient(135deg, #ff5c8a 0%, #7c5cff 100%);
+}
+
+.mv-plan-badge {
+    position: absolute;
+    top: -9px;
+    right: 10px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--p-lemon, #ffd93d);
+    color: #2b2240;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.16);
+}
+
+.mv-plan-dur {
+    font-size: 13px;
+    font-weight: 800;
+    opacity: 0.92;
+}
+
+.mv-plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--p-font-display, inherit);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.mv-plan-cta {
+    font-size: 12px;
+    font-weight: 800;
+    opacity: 0.94;
+}
+
+/* Saved / Unlocked state */
+.mv-saved {
+    display: grid;
+    gap: 6px;
+}
+
+.mv-saved-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--p-font-display, inherit);
+    font-size: 17px;
+    font-weight: 800;
+    color: #059669;
+}
+
+html[data-party="night"] .mv-party .mv-saved-head,
+.mv-dark .mv-saved-head {
+    color: #34d399;
+}
+
+.mv-saved-gift {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.mv-saved-meta {
+    margin: 0;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--p-muted, inherit);
+    font-variant-numeric: tabular-nums;
+}
+.mv-dark .mv-saved-meta {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.mv-err {
+    margin: 8px 0 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ef4444;
+}

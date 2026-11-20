@@ -6,6 +6,13 @@ import crypto from 'crypto';
 import { v2 as cloudinary } from "cloudinary";
 import { ledgerWishCreated, ledgerWishDeleted, ledgerWishViewed } from "@/lib/analytics";
 import { safeEqualSecret } from "@/lib/security";
+import {
+    VAULT_FREE_LIMIT,
+    getVaultRegionConfig,
+    type VaultPlanId,
+    type VaultRegion,
+    type VaultSurface,
+} from "@/lib/vaultPricing";
 
 const RESERVED_SLUGS = new Set([
     "admin", "login", "logout", "api", "support", "help", "official", "verify", "security",
@@ -73,6 +80,27 @@ async function setupDb() {
         await sql`ALTER TABLE wishes ADD COLUMN IF NOT EXISTS custom_slug VARCHAR(50) UNIQUE DEFAULT NULL;`;
         await sql`ALTER TABLE wishes ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;`;
         await sql`ALTER TABLE wishes ADD COLUMN IF NOT EXISTS creator_token VARCHAR(64) DEFAULT NULL;`;
+        await sql`ALTER TABLE wishes ADD COLUMN IF NOT EXISTS keep_until TIMESTAMP WITH TIME ZONE DEFAULT NULL;`;
+        await sql`ALTER TABLE wishes ADD COLUMN IF NOT EXISTS vault_plan VARCHAR(16) DEFAULT NULL;`;
+
+        // Persistent Memory Vault launch claims (survives wish cleanup so the 200-spot counter & admin stats stay exact)
+        await sql`
+            CREATE TABLE IF NOT EXISTS vault_claims (
+                id SERIAL PRIMARY KEY,
+                wish_id VARCHAR(10) UNIQUE NOT NULL,
+                plan VARCHAR(16) NOT NULL,
+                region VARCHAR(8) NOT NULL,
+                country VARCHAR(8) DEFAULT NULL,
+                currency VARCHAR(8) NOT NULL,
+                listed_price NUMERIC(10, 2) NOT NULL,
+                surface VARCHAR(24) NOT NULL,
+                who VARCHAR(16) NOT NULL,
+                is_free_spot BOOLEAN DEFAULT TRUE,
+                spot_number INTEGER UNIQUE CHECK (spot_number IS NULL OR (spot_number >= 1 AND spot_number <= 200)),
+                keep_until TIMESTAMP WITH TIME ZONE NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
 
         // Analytics table
         await sql`
@@ -274,28 +302,63 @@ export async function getWishAnalytics(wishId: string, creatorToken: string) {
     await ensureDb();
     try {
         const { rows: wishRows } = await sql`
-            SELECT id, view_count, created_at, opened_at, custom_slug, creator_token
+            SELECT id, data, view_count, created_at, opened_at, custom_slug, creator_token, keep_until, vault_plan
             FROM wishes WHERE id = ${wishId}
         `;
         if (wishRows.length === 0) return null;
         const storedToken = typeof wishRows[0].creator_token === "string" ? wishRows[0].creator_token : "";
         if (!storedToken || !safeEqualSecret(creatorToken, storedToken)) return null;
 
-        // Get section analytics
-        const { rows: events } = await sql`
-            SELECT event_type, section_name, time_spent_ms, created_at
-            FROM wish_analytics
-            WHERE wish_id = ${wishId}
-            ORDER BY created_at ASC
-        `;
+        let recipientName = "";
+        let wishType: "birthday" | "anniversary" = "birthday";
+        try {
+            const { v2 } = normalizeWish(wishRows[0].data);
+            wishType = v2.wishType === "anniversary" ? "anniversary" : "birthday";
+            const rawName = (wishType === "anniversary" ? v2.recipient.coupleName || v2.recipient.name : v2.recipient.name || v2.recipient.nickname) || "";
+            recipientName = rawName.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 40);
+        } catch {
+            // ignore malformed wish payload
+        }
 
-        // Aggregate section times
+        // Get both legacy v1 wish_analytics AND v2 site_events slide dwell times
+        const [legacyRes, v2Res] = await Promise.all([
+            sql`
+                SELECT event_type, section_name, time_spent_ms, created_at
+                FROM wish_analytics
+                WHERE wish_id = ${wishId}
+                ORDER BY created_at ASC
+            `,
+            sql`
+                SELECT name, props->>'block' AS block_key, COALESCE((props->>'ms')::numeric, 0) AS ms
+                FROM site_events
+                WHERE wish_id = ${wishId} AND name IN ('wish_slide', 'wish_finale')
+            `.catch(() => ({ rows: [] as Record<string, unknown>[] })),
+        ]);
+
+        const events = legacyRes.rows;
+
+        // Aggregate section times (cap single-slide idle tab dwell at 5 minutes so background tabs don't skew)
         const sectionTimes: Record<string, number> = {};
         let totalTimeMs = 0;
+        let reachedFinale = false;
+
         for (const event of events) {
             if (event.section_name && event.time_spent_ms) {
-                sectionTimes[event.section_name] = (sectionTimes[event.section_name] || 0) + event.time_spent_ms;
-                totalTimeMs += event.time_spent_ms;
+                const ms = Math.min(300_000, Math.max(0, Number(event.time_spent_ms) || 0));
+                sectionTimes[event.section_name] = (sectionTimes[event.section_name] || 0) + ms;
+                totalTimeMs += ms;
+            }
+        }
+        for (const row of v2Res.rows) {
+            if (row.name === "wish_finale") {
+                reachedFinale = true;
+                continue;
+            }
+            const key = typeof row.block_key === "string" ? row.block_key : "";
+            const rawMs = Math.min(300_000, Math.max(0, Math.round(Number(row.ms) || 0)));
+            if (key && rawMs > 0) {
+                sectionTimes[key] = (sectionTimes[key] || 0) + rawMs;
+                totalTimeMs += rawMs;
             }
         }
 
@@ -311,10 +374,15 @@ export async function getWishAnalytics(wishId: string, creatorToken: string) {
 
         return {
             wishId,
+            recipientName,
+            wishType,
+            reachedFinale,
             viewCount: wishRows[0].view_count,
             createdAt: wishRows[0].created_at,
             openedAt: wishRows[0].opened_at,
             customSlug: wishRows[0].custom_slug,
+            keepUntil: wishRows[0].keep_until || null,
+            vaultPlan: wishRows[0].vault_plan || null,
             totalTimeSpent: totalTimeMs,
             sectionTimes,
             mostLovedSection,
@@ -387,11 +455,14 @@ async function deleteWishMedia(raw: unknown) {
 export async function cleanupExpiredWishes() {
     await ensureDb();
     try {
-        // Find wishes opened > 10 hours ago OR created > 7 days ago (never opened)
+        // Find wishes opened > 10 hours ago OR created > 7 days ago (never opened), excluding active Memory Vault wishes
         const { rows } = await sql`
             SELECT id, data FROM wishes 
-            WHERE (opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '10 hours')
-               OR (created_at < NOW() - INTERVAL '7 days')
+            WHERE (keep_until IS NULL OR keep_until < NOW())
+              AND (
+                (opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '10 hours')
+                OR (created_at < NOW() - INTERVAL '7 days')
+              )
         `;
 
         let deletedCount = 0;
@@ -587,4 +658,140 @@ export async function peekWishPreview(id: string): Promise<{ name: string; kind:
         console.error("Error peeking wish:", error);
         return null;
     }
+}
+
+export interface VaultStatusResult {
+    totalSpots: number;
+    claimedSpots: number;
+    spotsLeft: number;
+    wishSaved: boolean;
+    savedPlan: VaultPlanId | null;
+    keepUntil: string | null;
+    spotNumber: number | null;
+}
+
+export async function getVaultStatus(wishId?: string): Promise<VaultStatusResult> {
+    await ensureDb();
+    const validWishId = wishId && /^[a-f0-9]{6,10}$/.test(wishId) ? wishId : null;
+
+    const [countRes, wishRes] = await Promise.all([
+        sql`SELECT COUNT(*)::int AS c FROM vault_claims WHERE is_free_spot = TRUE`,
+        validWishId
+            ? sql`
+                SELECT vc.plan, vc.keep_until, vc.spot_number, w.keep_until AS w_keep, w.vault_plan AS w_plan
+                FROM wishes w
+                LEFT JOIN vault_claims vc ON vc.wish_id = w.id
+                WHERE w.id = ${validWishId}
+                LIMIT 1
+              `
+            : Promise.resolve({ rows: [] as Record<string, unknown>[] }),
+    ]);
+
+    const claimedSpots = Math.min(VAULT_FREE_LIMIT, Number(countRes.rows[0]?.c ?? 0));
+    const spotsLeft = Math.max(0, VAULT_FREE_LIMIT - claimedSpots);
+    const row = wishRes.rows[0];
+    const keepRaw = row?.keep_until || row?.w_keep || null;
+    const planRaw = (row?.plan || row?.w_plan || null) as VaultPlanId | null;
+    const spotNumber = row?.spot_number ? Number(row.spot_number) : null;
+    const keepIso = keepRaw ? new Date(String(keepRaw)).toISOString() : null;
+    const wishSaved = !!(keepIso && new Date(keepIso).getTime() > Date.now());
+
+    return {
+        totalSpots: VAULT_FREE_LIMIT,
+        claimedSpots,
+        spotsLeft,
+        wishSaved,
+        savedPlan: wishSaved ? planRaw : null,
+        keepUntil: wishSaved ? keepIso : null,
+        spotNumber: wishSaved ? spotNumber : null,
+    };
+}
+
+export async function claimVaultSpot(input: {
+    wishId: string;
+    plan: VaultPlanId;
+    region: VaultRegion;
+    country: string;
+    surface: VaultSurface;
+}): Promise<
+    | ({ status: "claimed" | "already_saved" } & VaultStatusResult)
+    | { status: "sold_out" | "not_found"; totalSpots: number; claimedSpots: number; spotsLeft: number }
+> {
+    await ensureDb();
+    const cfg = getVaultRegionConfig(input.region);
+    const planOffer = cfg.plans.find((p) => p.id === input.plan) ?? cfg.plans[1];
+    const who = input.surface === "finale" ? "recipient" : "creator";
+
+    // Ensure wish exists
+    const wishCheck = await sql`SELECT id FROM wishes WHERE id = ${input.wishId} LIMIT 1`;
+    if (wishCheck.rows.length === 0) {
+        const cur = await getVaultStatus();
+        return { status: "not_found", totalSpots: cur.totalSpots, claimedSpots: cur.claimedSpots, spotsLeft: cur.spotsLeft };
+    }
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+        // 1. Check if this wish already claimed a spot
+        const existing = await sql`
+            SELECT plan, spot_number, keep_until FROM vault_claims WHERE wish_id = ${input.wishId} LIMIT 1
+        `;
+        if (existing.rows.length > 0) {
+            const st = await getVaultStatus(input.wishId);
+            return { status: "already_saved", ...st, wishSaved: true };
+        }
+
+        // 2. Check remaining spots out of 200
+        const cntRes = await sql`SELECT COUNT(*)::int AS c FROM vault_claims WHERE is_free_spot = TRUE`;
+        const currentClaimed = Number(cntRes.rows[0]?.c ?? 0);
+        if (currentClaimed >= VAULT_FREE_LIMIT) {
+            return { status: "sold_out", totalSpots: VAULT_FREE_LIMIT, claimedSpots: VAULT_FREE_LIMIT, spotsLeft: 0 };
+        }
+
+        const nextSpot = currentClaimed + 1;
+        const ins = await sql`
+            INSERT INTO vault_claims (
+                wish_id, plan, region, country, currency, listed_price, surface, who, is_free_spot, spot_number, keep_until
+            )
+            VALUES (
+                ${input.wishId},
+                ${planOffer.id},
+                ${cfg.region},
+                ${input.country.slice(0, 8)},
+                ${planOffer.currency},
+                ${planOffer.price},
+                ${input.surface},
+                ${who},
+                TRUE,
+                ${nextSpot},
+                NOW() + (${planOffer.days}::int * INTERVAL '1 day')
+            )
+            ON CONFLICT DO NOTHING
+            RETURNING plan, spot_number, keep_until
+        `;
+
+        if (ins.rows.length > 0) {
+            const claimedRow = ins.rows[0];
+            await sql`
+                UPDATE wishes
+                SET keep_until = ${claimedRow.keep_until},
+                    vault_plan = ${claimedRow.plan}
+                WHERE id = ${input.wishId}
+            `;
+            const freshCnt = await sql`SELECT COUNT(*)::int AS c FROM vault_claims WHERE is_free_spot = TRUE`;
+            const claimedSpots = Math.min(VAULT_FREE_LIMIT, Number(freshCnt.rows[0]?.c ?? nextSpot));
+            return {
+                status: "claimed",
+                totalSpots: VAULT_FREE_LIMIT,
+                claimedSpots,
+                spotsLeft: Math.max(0, VAULT_FREE_LIMIT - claimedSpots),
+                wishSaved: true,
+                savedPlan: claimedRow.plan as VaultPlanId,
+                keepUntil: new Date(String(claimedRow.keep_until)).toISOString(),
+                spotNumber: Number(claimedRow.spot_number),
+            };
+        }
+    }
+
+    const fallback = await getVaultStatus(input.wishId);
+    if (fallback.wishSaved) return { status: "already_saved", ...fallback };
+    return { status: "sold_out", totalSpots: fallback.totalSpots, claimedSpots: fallback.claimedSpots, spotsLeft: fallback.spotsLeft };
 }

@@ -7,6 +7,8 @@ import { sql } from "@vercel/postgres";
 import { v2 as cloudinary } from "cloudinary";
 import { ensureAnalytics, kvGet, ledgerWishCreated } from "@/lib/analytics";
 import { ensureReviewsTable } from "@/lib/reviews";
+import { ensureDb } from "@/lib/db";
+import { VAULT_FREE_LIMIT } from "@/lib/vaultPricing";
 
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
 
@@ -283,10 +285,10 @@ export async function getReviews() {
 export async function getWishOps(includeUsage = true) {
     const [active, ledger, lastCleanup, recentRows] = await Promise.all([
         safe(() => sql`SELECT COUNT(*) n, COUNT(*) FILTER (WHERE opened_at IS NULL) unopened, COUNT(*) FILTER (WHERE opened_at IS NOT NULL) opened,
-                 COUNT(*) FILTER (WHERE opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '8 hours') expiring2h,
-                 COUNT(*) FILTER (WHERE opened_at IS NULL AND created_at < NOW() - INTERVAL '6 days') expiring_unopened,
-                 COUNT(*) FILTER (WHERE (opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '34 hours') OR (opened_at IS NULL AND created_at < NOW() - INTERVAL '8 days')) overdue,
-                 COUNT(*) FILTER (WHERE opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '10 hours') waiting_cleanup,
+                 COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '8 hours') expiring2h,
+                 COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND opened_at IS NULL AND created_at < NOW() - INTERVAL '6 days') expiring_unopened,
+                 COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND ((opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '34 hours') OR (opened_at IS NULL AND created_at < NOW() - INTERVAL '8 days'))) overdue,
+                 COUNT(*) FILTER (WHERE (keep_until IS NULL OR keep_until < NOW()) AND opened_at IS NOT NULL AND opened_at < NOW() - INTERVAL '10 hours') waiting_cleanup,
                  MIN(created_at) FILTER (WHERE opened_at IS NULL) oldest_unopened,
                  COUNT(*) FILTER (WHERE custom_slug IS NOT NULL) slugs FROM wishes`, { rows: [] as Row[] } as never, "ops.active"),
         safe(() => sql`SELECT COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) deleted, COALESCE(SUM(media_count) FILTER (WHERE deleted_at IS NULL), 0) media FROM wish_ledger`, { rows: [] as Row[] } as never, "ops.ledger"),
@@ -329,5 +331,71 @@ export async function getWishOps(includeUsage = true) {
         active: num(a.n), unopened: num(a.unopened), opened: num(a.opened), expiringSoon: num(a.expiring2h) + num(a.expiring_unopened),
         overdue: num(a.overdue), waitingCleanup: num(a.waiting_cleanup), oldestUnopened: str(a.oldest_unopened), slugs: num(a.slugs),
         deletedTotal: num(l.deleted), activeMedia: num(l.media), lastCleanup, usage, recent,
+    };
+}
+
+/* ======================= 10. Memory Vault Launch Test (200 Free) ======================= */
+export async function getVaultAdminStats(days: number) {
+    await ensureDb().catch(() => {});
+    await ensureAnalytics().catch(() => {});
+
+    const [totals, plans, regions, whoRows, evRows] = await Promise.all([
+        safe(
+            () => sql`
+                SELECT
+                    COUNT(*)::int AS claimed,
+                    COALESCE(SUM(listed_price) FILTER (WHERE currency = 'INR'), 0) AS inr_val,
+                    COALESCE(SUM(listed_price) FILTER (WHERE currency = 'USD'), 0) AS usd_val,
+                    COALESCE(SUM(listed_price) FILTER (WHERE currency = 'GBP'), 0) AS gbp_val
+                FROM vault_claims
+                WHERE is_free_spot = TRUE
+            `,
+            { rows: [] as Row[] } as never,
+            "vault.totals",
+        ),
+        safe(
+            () => sql`SELECT plan AS key, COUNT(*)::int AS n FROM vault_claims GROUP BY 1 ORDER BY 2 DESC`,
+            { rows: [] as Row[] } as never,
+            "vault.plans",
+        ),
+        safe(
+            () => sql`SELECT region || ' (' || currency || ')' AS key, COUNT(*)::int AS n FROM vault_claims GROUP BY 1 ORDER BY 2 DESC`,
+            { rows: [] as Row[] } as never,
+            "vault.regions",
+        ),
+        safe(
+            () => sql`SELECT who || ' (' || surface || ')' AS key, COUNT(*)::int AS n FROM vault_claims GROUP BY 1 ORDER BY 2 DESC`,
+            { rows: [] as Row[] } as never,
+            "vault.who",
+        ),
+        safe(
+            () => sql`
+                SELECT
+                    COUNT(DISTINCT sid) FILTER (WHERE name = 'vault_view')::int AS views,
+                    COUNT(*) FILTER (WHERE name = 'vault_post200_click')::int AS post200
+                FROM site_events
+                WHERE ts > NOW() - (${days}::int * INTERVAL '1 day')
+                  AND name IN ('vault_view', 'vault_post200_click')
+            `,
+            { rows: [] as Row[] } as never,
+            "vault.events",
+        ),
+    ]);
+
+    const t = totals.rows[0] || {};
+    const e = evRows.rows[0] || {};
+    const claimed = Math.min(VAULT_FREE_LIMIT, num(t.claimed));
+    return {
+        totalSpots: VAULT_FREE_LIMIT,
+        claimed,
+        spotsLeft: Math.max(0, VAULT_FREE_LIMIT - claimed),
+        cardViews: num(e.views),
+        post200Clicks: num(e.post200),
+        inrValue: Number(t.inr_val || 0),
+        usdValue: Number(t.usd_val || 0),
+        gbpValue: Number(t.gbp_val || 0),
+        plans: counts(plans.rows),
+        regions: counts(regions.rows),
+        who: counts(whoRows.rows),
     };
 }

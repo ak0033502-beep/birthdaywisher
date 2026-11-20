@@ -22,6 +22,7 @@ import { buzz, createSfx, isMutedPref, prefetchFinaleSamples, setMutedPref, type
 import { detectTier } from "@/components/party/interactions";
 import { track } from "@/lib/track";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
+import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
 
 type Tr = ReturnType<typeof getTranslations>;
 type Phase = "ready" | "countdown" | "show" | "cake" | "barrage" | "after";
@@ -475,6 +476,7 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
                         <button type="button" className="gf-glass" onClick={saveCard}>📸 Save memory card</button>
                         {cardMsg && <p className="gf-hint">{cardMsg}</p>}
                     </div>
+                    {wishId && <KeepAliveCard wishId={wishId} surface="finale" variant="dark" />}
                     <Link className="gf-make" href="/?ref=wish" onClick={() => track("wish_make_own", undefined, wishId)}>🎁 Make a surprise like this for someone</Link>
                     {showReview && <ReviewPrompt who="recipient" wishId={wishId} mode="inline" onClose={() => setShowReview(false)} />}
                 </div>

@@ -11,9 +11,9 @@ import { getSiteTranslations } from "@/lib/siteTranslations";
 import { usePathname } from "next/navigation";
 import { PartyNavbar } from "@/components/party/PartyNavbar";
 
-// Routes that still use the classic (dark) look: the wish viewer, creator dashboard,
+// Routes that still use the classic (dark) look: the wish viewer,
 // classic wizard and dev pages. Every other page uses the "Joyful Party" navbar.
-const CLASSIC_PREFIXES = ["/wish/", "/w/", "/dashboard/", "/create/classic", "/dev/"];
+const CLASSIC_PREFIXES = ["/wish/", "/w/", "/create/classic", "/dev/"];
 const isClassic = (p: string) => CLASSIC_PREFIXES.some((x) => p.startsWith(x));
 // Full-screen experiences with their own top bar
 const NO_NAVBAR_ROUTES = new Set(["/create"]);

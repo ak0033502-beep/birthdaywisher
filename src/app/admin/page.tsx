@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/adminAuth";
-import { backfillLedger, getDevices, getErrors, getFunnel, getOverview, getRecipient, getReviews, getTraffic, getWishOps, getWizard } from "@/lib/adminStats";
+import { backfillLedger, getDevices, getErrors, getFunnel, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
 import { buildInsights, stepLabel } from "@/lib/adminInsights";
 import { Bars, Card, Funnel, Kpi, LineChart, Table, fmt, pct } from "@/components/admin/charts";
 import { CleanupButton, DeleteWishForm, HealthCheck, LogoutButton } from "@/components/admin/AdminClient";
@@ -87,8 +87,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 /* ---------------- 1. Overview + 10. Suggestions ---------------- */
 async function OverviewTab({ days }: { days: number }) {
     await backfillLedger().catch((e) => console.error("[admin] backfill", e));
-    const [overview, reviews, ops] = await Promise.all([
-        getOverview(days), getReviews(), getWishOps(false),
+    const [overview, reviews, ops, vault] = await Promise.all([
+        getOverview(days), getReviews(), getWishOps(false), getVaultAdminStats(days),
     ]);
     const o = overview;
     return (
@@ -101,6 +101,42 @@ async function OverviewTab({ days }: { days: number }) {
                 <Kpi label="Avg views per wish" value={o.avgViews ? o.avgViews.toFixed(1) : "—"} />
                 <Kpi label="Time until opened" value={o.medianOpenSecs ? secs(o.medianOpenSecs) : "—"} hint="median" />
             </div>
+            <Card
+                title={`💰 Memory Vault Willingness-to-Pay Test — ${vault.claimed} / ${vault.totalSpots} Paid-Intent Clicks (${vault.spotsLeft} Free Gifts Left)`}
+                sub="Users see ONLY real prices (₹9 / ₹19 in India · $1.99 / $3.99 Global · £1.49 / £2.99 UK) — FREE surprise appears only AFTER they click to buy!"
+                wide
+            >
+                <div style={{ marginBottom: 14 }}>
+                    <div style={{ height: 10, borderRadius: 999, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+                        <div
+                            style={{
+                                width: `${Math.min(100, Math.round((vault.claimed / vault.totalSpots) * 100))}%`,
+                                height: "100%",
+                                borderRadius: 999,
+                                background: "linear-gradient(90deg, #2ED8B6, #FF5C8A)",
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="adm-grid">
+                    <ul className="adm-facts">
+                        <li><span>Free launch spots left</span><b>{vault.spotsLeft} / {vault.totalSpots}</b></li>
+                        <li><span>Card views ({days}d) → Claims</span><b>{vault.cardViews} views → {vault.claimed} ({vault.cardViews ? pct(vault.claimed / vault.cardViews) : "—"})</b></li>
+                        <li><span>Listed value unlocked</span><b>₹{vault.inrValue.toFixed(0)} · ${vault.usdValue.toFixed(2)} · £{vault.gbpValue.toFixed(2)}</b></li>
+                        <li><span>Post-200 paid clicks</span><b>{fmt(vault.post200Clicks)}</b></li>
+                    </ul>
+                    <div>
+                        {vault.plans.length > 0 ? (
+                            <>
+                                <p style={{ margin: "0 0 6px", fontSize: 12, opacity: 0.7 }}>Chosen Plan &amp; Region Breakdown</p>
+                                <Bars items={[...vault.plans, ...vault.regions, ...vault.who]} />
+                            </>
+                        ) : (
+                            <p className="adm-empty">Waiting for the first user to claim 1 of the 200 free spots.</p>
+                        )}
+                    </div>
+                </div>
+            </Card>
             <Suspense fallback={<Card title="💡 Suggestions" sub="Analysing funnel, wizard, speed & SEO…" wide><p className="adm-empty">Loading recommendations…</p></Card>}>
                 <InsightsCard days={days} overview={overview} reviews={reviews} />
             </Suspense>
