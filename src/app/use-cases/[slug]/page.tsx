@@ -6,264 +6,492 @@ import { notFound } from "next/navigation";
 import { PartyPage, Prose, CtaCard } from "@/components/party/PartyPage";
 import { Bunting } from "@/components/party/Decor";
 
-// Data specific for the high-converting "Use Case" landing pages in the footer
-const getUseCaseData = (slug: string) => {
-    const useCases: Record<string, { title: string, subtitle: string, description: string, benefits: string[], ctaText: string, heroEmoji: string, seoSections: { heading: string, body: string }[] }> = {
-        "unique-birthday-gift-online": {
-            title: "The Most Unique Birthday Gift Online",
-            subtitle: "Why buy a boring physical gift when you can create an unforgettable digital experience?",
-            description: "In a world of Amazon deliveries, the most unique birthday gifts are the ones that evoke real emotion. BirthdayWisher.fun lets you build a personalized, interactive, 20-step gamified story. It’s not just a digital greeting card—it’s an emotional rollercoaster wrapped in an interactive game.",
-            benefits: [
-                "100% Free & instant delivery via link.",
-                "Interactive puzzles (Memory Quiz, Secret Date).",
-                "Heartbeat photo reveal with custom background music.",
-                "Self-destructs after opening for ultimate privacy."
-            ],
-            ctaText: "Create the Ultimate Gift",
-            heroEmoji: "🎁",
-            seoSections: [
-                {
-                    heading: "Why Digital Gifts Are Taking Over",
-                    body: "We live in an era where physical items are often forgotten, but experiences last forever. A unique birthday gift online isn't about the monetary value; it's about the emotional resonance. By creating a gamified journey, you're not just sending a message—you're gifting them your time, your effort, and a beautiful walk down memory lane. This level of personalization is impossible to find in a store-bought item."
-                },
-                {
-                    heading: "The Power of Gamification and Surprise",
-                    body: "Our unique platform forces the birthday boy or girl to truly interact. When was the last time a piece of folded cardboard made someone laugh out loud or tear up? BirthdayWisher.fun combines interactive trivia about your relationship with stunning visual aesthetics, resulting in a 'WOW' moment when the final heartbeat photo fades in alongside your custom voice note."
-                },
-                {
-                    heading: "Instant, Free, and Private",
-                    body: "The most unique birthday gifts shouldn't require shipping delays or expensive subscriptions. Our digital story maker is completely free. Moreover, we prioritize your privacy. The generated wish link is designed to self-destruct after it's opened, ensuring your intimate photos and voice messages remain completely secure and ephemeral."
-                }
-            ]
-        },
-        "digital-story-greeting-card": {
-            title: "Digital Story Greeting Card Maker",
-            subtitle: "Upgrade from WhatsApp text messages to a cinematic story experience.",
-            description: "Send a digital story greeting card that rivals Spotify Wrapped. Add inside jokes, voice notes, personalized visual aesthetics, and custom fireworks. Watch them tap through a beautifully animated journey created entirely by you.",
-            benefits: [
-                "Premium animations powered by Framer Motion.",
-                "Upload audio voice notes and special memories.",
-                "Customize the overarching 'Vibe' (Roast, Romantic, Celebration).",
-                "Looks incredible on mobile devices."
-            ],
-            ctaText: "Start Your Story Card",
-            heroEmoji: "📱",
-            seoSections: [
-                {
-                    heading: "Beyond Traditional E-Cards",
-                    body: "Traditional e-cards are a relic of the early internet. They are flat, uninspired, and usually end up in the spam folder. A Digital Story Greeting Card, however, is a cinematic, web-based applet built specifically for the recipient. It utilizes smooth frame-by-frame animations, interactive components, and layered audiovisuals to create a modern storytelling experience."
-                },
-                {
-                    heading: "Step-by-Step Personalization",
-                    body: "With our Digital Story Greeting Card maker, you act as the director. You choose the soundtrack, you dictate the pacing, and you write the script. From a 'roast' section where you poke fun at their embarrassing moments to the highly emotional climax containing long-form paragraphs of appreciation, every pixel of the story is yours to command."
-                },
-                {
-                    heading: "Optimized for Mobile Viewing",
-                    body: "We know that 90% of birthday wishes are opened on a phone. That's why your digital story is engineered like a premium native mobile application. With haptic feedback (vibrations), swipe gestures, and edge-to-edge media reveals, the Digital Story Greeting Card feels incredibly satisfying to navigate."
-                }
-            ]
-        },
-        "boyfriend-birthday-surprise": {
-            title: "The Ultimate Boyfriend Birthday Surprise",
-            subtitle: "Make him smile, laugh, and maybe even shed a tear.",
-            description: "Looking for the perfect birthday surprise for your boyfriend? Combine an emotional 'Roast vs. Toast', a quiz to see how well he remembers your anniversaries, and a haptic 'Virtual Hug' button that physically vibrates his phone.",
-            benefits: [
-                "Add a 'Future Promise' ticket for your next date.",
-                "Tease him with a fun roasting session before the emotional reveal.",
-                "Upload your favorite couple photos.",
-                "Include a secret time-capsule message."
-            ],
-            ctaText: "Surprise Your Boyfriend",
-            heroEmoji: "💙",
-            seoSections: [
-                {
-                    heading: "How to Surprise Your Boyfriend Online",
-                    body: "Finding the right birthday surprise for a boyfriend can be tough—especially if you're in a long-distance relationship or waiting for the midnight clock to strike. Men often pretend they don't care about aesthetic gifts, but a deeply personalized interactive game centered around your relationship consistently proves otherwise. It's the ultimate digital flex of girlfriend-tier effort."
-                },
-                {
-                    heading: "The 'Roast and Toast' Method",
-                    body: "The best boyfriend birthday surprise balances humor with deep affection. Start your gamified setup by roasting his terrible fashion sense or his obsession with video games. Once his guard is down and he's laughing, hit him with the 'Toast'—a beautiful, heartfelt voice note playing over your favorite polaroid picture together. It creates a massive emotional impact."
-                },
-                {
-                    heading: "The Golden Ticket Feature",
-                    body: "Don't let the surprise end when the link closes. Use our integrated 'Golden Ticket' feature to promise a future activity. Whether it's a homemade dinner, a weekend trip, or simply choosing the movie for the next three nights, the Golden Ticket acts as a digital coupon that extends the boyfriend birthday surprise straight into the real world."
-                }
-            ]
-        },
-        "anniversary-wishes-for-couple": {
-            title: "Wedding Anniversary Wishes for Couple — Interactive & Gamified",
-            subtitle: "Go beyond a boring text. Create an unforgettable interactive anniversary experience.",
-            description: "Celebrate any wedding anniversary with a deeply personal, gamified digital wish. BirthdayWisher.fun lets you build an interactive anniversary story for any couple — from 1st to 50th year. Upload wedding photos, record a heartfelt voice note, and add a 'How Well Do You Know Each Other?' quiz. The perfect wedding anniversary wishes for couple, delivered digitally.",
-            benefits: [
-                "Perfect for any milestone — 1st, 5th, 10th, 25th, or 50th anniversary.",
-                "Upload couple photos & record a heartfelt anniversary voice note.",
-                "Add a 'How Well Do You Know Your Partner?' interactive quiz.",
-                "Self-destructs after opening for complete privacy."
-            ],
-            ctaText: "Create Anniversary Wish",
-            heroEmoji: "💍",
-            seoSections: [
-                {
-                    heading: "Why Digital Anniversary Wishes Are the Future",
-                    body: "In a world where couples have everything, the most meaningful wedding anniversary wish for a couple isn't something you buy — it's something you build. A personalized interactive anniversary story shows more love, effort, and thoughtfulness than any store-bought card ever could. Whether you're creating anniversary wishes for your own partner, your parents, or your favorite couple, the digital experience creates an emotional impact that lasts far beyond the day itself."
-                },
-                {
-                    heading: "Personalized Anniversary Wishes for Every Milestone",
-                    body: "From the excitement of a 1st anniversary to the gravitas of a golden 50th, every milestone deserves unique recognition. Our platform helps you craft wedding anniversary wishes for couple that match the significance of the occasion. Add memories from each year, create inside-joke trivia questions, and let the couple relive their love story through an interactive, tap-through experience that ends with a stunning celebration."
-                },
-                {
-                    heading: "The Perfect Couple Gift: An Interactive Love Story",
-                    body: "Forget the generic 'Happy Anniversary' text. With BirthdayWisher.fun, you create a multi-step interactive journey specifically designed for the couple. It includes a memory quiz where they prove how well they know each other, floating memory bubbles of their best moments, a heartbeat photo reveal of their favorite wedding photo, and a finale complete with confetti and your recorded voice note. It's not just anniversary wishes for couple — it's an experience they'll never forget."
-                }
-            ]
-        },
-        "girlfriend-birthday-surprise": {
-            title: "The Most Romantic Girlfriend Birthday Surprise",
-            subtitle: "Give her the aesthetic, emotional, 'Instagram-worthy' wish she deserves.",
-            description: "Make your girlfriend's birthday unforgettable. Build a stunning digital journey featuring floating 'memory bubbles' of her cute quirks, a heartbeat photo reveal, and a grand finale celebration tailored just for her.",
-            benefits: [
-                "Extremely aesthetic and visually pleasing designs.",
-                "Add a heartfelt, raw audio recording of your voice.",
-                "Surprise her with a personalized 'Golden Ticket'.",
-                "Make her laugh with custom inside jokes."
-            ],
-            ctaText: "Create Her Perfect Surprise",
-            heroEmoji: "💗",
-            seoSections: [
-                {
-                    heading: "Creating a Core Memory",
-                    body: "A truly romantic girlfriend birthday surprise is all about the details. It's not just about saying 'I love you'; it's about proving that you pay attention. When she taps through her custom digital story and sees references to that one specific coffee shop where you met, or the weird nickname only you use for her, it solidifies a core memory she will brag about to all her friends."
-                },
-                {
-                    heading: "The Aesthetics of Romance",
-                    body: "We understand that presentation is everything. Our platform provides premium, silky-smooth animations wrapped in aesthetic, modern typography. Your girlfriend's birthday surprise will look like it was designed by a high-end creative agency. From elegant floating memory bubbles to the rhythmic fade-in of your favorite couple photo, every visual element is engineered for maximum romantic impact."
-                },
-                {
-                    heading: "Unleashing the Voice Note",
-                    body: "Text can easily be misinterpreted, but a voice note carries your exact tone, emotion, and sincerity. The climax of this Girlfriend Birthday Surprise allows your unedited, raw audio to play in the background while fireworks animate on the screen. It's a digital serenity that bridges physical distance and delivers a level of intimacy that physical cards simply cannot match."
-                }
-            ]
-        },
-        "long-distance-birthday-surprise": {
-            title: "Long Distance Birthday Surprise Online",
-            subtitle: "Miles apart, but the love hits close to home.",
-            description: "Being in a long-distance relationship doesn't mean you can't make their birthday magical. Create an interactive, gamified birthday wish that delivers your love instantly — no shipping delays, no timezone headaches. Just pure, personalized emotion delivered via a secret link.",
-            benefits: [
-                "Instant delivery via link — works anywhere in the world.",
-                "Record a voice note so they hear YOUR voice on their birthday.",
-                "Add your best couple photos to a heartbeat photo reveal.",
-                "Self-destructs after 10 hours for intimate, private experience."
-            ],
-            ctaText: "Bridge the Distance Now",
-            heroEmoji: "✈️",
-            seoSections: [
-                {
-                    heading: "Why Long-Distance Birthday Surprises Matter Even More",
-                    body: "When you're in a long-distance relationship, every gesture carries extra weight. A birthday wish isn't just a formality — it's proof that distance hasn't dimmed your love. The effort you invest in creating something personal and interactive shows your partner that you're thinking about them deeply, even when you can't be physically present. That's why BirthdayWisher.fun is the perfect tool for long-distance couples."
-                },
-                {
-                    heading: "The Digital Advantage Over Physical Gifts",
-                    body: "Physical gifts shipped internationally face customs delays, damaged packaging, and unpredictable delivery windows. A digital birthday surprise, however, arrives instantly. The second you share the link, your partner can begin their interactive journey — complete with puzzles about your relationship, your recorded voice, and a stunning visual celebration. No tracking numbers needed."
-                },
-                {
-                    heading: "Making It Feel Like You're Right There",
-                    body: "The voice note feature is a game-changer for long-distance couples. As the final fireworks explode on screen, your actual voice plays — raw, unedited, sincere. It's the closest thing to being there in person. Combined with your photos, inside jokes, and memory quizzes, this creates an experience that transcends physical distance."
-                }
-            ]
-        },
-        "colleague-birthday-wish": {
-            title: "Birthday Wish for Colleague & Coworker",
-            subtitle: "Go beyond the generic Slack message. Make it memorable.",
-            description: "Your colleague deserves more than a 'Happy Birthday' on the team channel. Create a fun, interactive birthday wish featuring work inside jokes, team trivia, and a heartfelt message. It's the most creative office birthday surprise — and it's completely free.",
-            benefits: [
-                "Perfect balance of professional and personal.",
-                "Feature work inside jokes and team memories.",
-                "Easy to share via Slack, Teams, or email link.",
-                "Fun interactive elements that will entertain the whole team."
-            ],
-            ctaText: "Create Colleague's Birthday Wish",
-            heroEmoji: "🎉",
-            seoSections: [
-                {
-                    heading: "Why Personalized Colleague Birthday Wishes Stand Out",
-                    body: "In a typical office, birthdays are celebrated with a mass email or a signed card that people barely glance at. A personalized, interactive birthday wish for a colleague shows genuine care and effort. It features their specific contributions, work style, and the funny moments that make your professional relationship special. It's the kind of gesture that strengthens team bonds."
-                },
-                {
-                    heading: "Perfect for Remote Teams",
-                    body: "If your team works remotely, traditional birthday celebrations are even harder. You can't bring a cake or decorate their desk. But you CAN send a gamified digital wish that the entire team can enjoy. Add trivia questions like 'What's their go-to coffee order?' or 'What's their famous catchphrase in meetings?' — it becomes a fun team activity."
-                },
-                {
-                    heading: "From Casual to Heartfelt",
-                    body: "Whether they're your work bestie or a valued professional connection, BirthdayWisher.fun lets you customize the tone. Set the vibe slider to 'Celebration' for a light, fun experience, or go with 'Pure Romance' for a closer work friend who's practically family. Either way, it beats the standard office birthday email chain."
-                }
-            ]
-        },
-        "parents-birthday-surprise": {
-            title: "Birthday Surprise for Mom & Dad — Digital Love Letter",
-            subtitle: "Give your parents the gratitude they've always deserved.",
-            description: "Your parents gave you everything. Now give them a birthday surprise that captures decades of love, gratitude, and inside jokes. Create an interactive digital love letter featuring family photos, a heartfelt voice recording, and a walk down memory lane they'll never forget.",
-            benefits: [
-                "Upload childhood & family photos for heartbeat photo reveal.",
-                "Record a voice note saying what you've always wanted to say.",
-                "Add family trivia and inside jokes as interactive elements.",
-                "Perfect for parents who live far away."
-            ],
-            ctaText: "Surprise Mom or Dad Now",
-            heroEmoji: "👨‍👩‍👧",
-            seoSections: [
-                {
-                    heading: "Why Parents Deserve the Best Birthday Surprise",
-                    body: "Parents rarely ask for anything on their birthdays. A simple 'Happy Birthday, Mom' or 'Happy Birthday, Dad' text feels inadequate for the people who gave you life, sacrificed their sleep, and loved you unconditionally. An interactive birthday surprise lets you express the depth of your gratitude in a way that words alone cannot capture."
-                },
-                {
-                    heading: "The Family Memory Lane Experience",
-                    body: "Nothing makes parents happier than reliving family memories. BirthdayWisher.fun lets you create a journey through time — upload childhood photos that slowly reveal in a heartbeat animation, add family trivia ('In which year did we take our first family vacation?'), and include the quirky family traditions that only your family understands. It's a digital scrapbook that comes alive."
-                },
-                {
-                    heading: "Perfect for Adult Children Living Far Away",
-                    body: "If you've moved away for work or studies, a physical gift might feel impersonal. But a personalized interactive wish with your actual voice recording? That's pure love delivered digitally. As your mom or dad taps through each section, hearing your voice at the finale, it creates an emotional experience that no Amazon delivery could ever match."
-                }
-            ]
-        }
-    };
-
-    return useCases[slug] || null;
+interface UseCaseEntry {
+    title: string;
+    subtitle: string;
+    description: string;
+    benefits: string[];
+    ctaText: string;
+    heroEmoji: string;
+    seoSections: { heading: string; body: string }[];
+    recommendedGames: { href: string; e: string; name: string; desc: string }[];
+    faq: { q: string; a: string }[];
 }
 
-const USE_CASE_SEO: Record<string, { title: string; description: string }> = {
+const USE_CASES: Record<string, UseCaseEntry> = {
+    "interactive-birthday-wish": {
+        title: "Free Interactive Birthday & Anniversary Wish Maker",
+        subtitle: "Turn any birthday or anniversary message into a playable story link — 100% free, zero login.",
+        description:
+            "Looking for a free interactive wish website? Build a private, tap-through birthday or wedding anniversary surprise packed with 12 playable mini-games, favourite photos, a recorded voice note, gentle music, and a Happy Birthday candle finale — shared as one link on WhatsApp, Instagram, or iMessage.",
+        benefits: [
+            "100% Free forever — no login, no account, no watermark, no paywall.",
+            "12 playable games: Heartbeat Sync, Sky Lanterns, Blow the Candles, Balloons & Quiz.",
+            "Add real photos, inside jokes, a voice note & 6 presentation styles.",
+            "Private self-destructing link (noindex, auto-deletes 10 hours after opening).",
+        ],
+        ctaText: "Create Free Interactive Wish",
+        heroEmoji: "🎮",
+        recommendedGames: [
+            { href: "/games/hold-my-hand", e: "🫶", name: "Hold My Hand (Heartbeat)", desc: "Sync heartbeats on screen across any distance" },
+            { href: "/games/blow-the-candles", e: "🕯️", name: "Blow the Candles", desc: "3-tier cake they blow out using their phone mic" },
+            { href: "/games/balloon-pop", e: "🎈", name: "Love-Note Balloons", desc: "Hide sweet compliments inside floating balloons" },
+        ],
+        seoSections: [
+            {
+                heading: "What Makes an Interactive Wish Better Than an E-Card?",
+                body: "Static greeting cards and plain 'HBD' texts are forgotten in seconds. An interactive wish turns your message into a multi-chapter experience the recipient actively plays and feels — from holding their thumb on the screen to sync heartbeats with yours, to popping pastel balloons filled with compliments, solving inside-joke trivia, and blowing out virtual birthday candles while the Happy Birthday melody plays.",
+            },
+            {
+                heading: "100% Free Interactive Wish Website — Zero Signup or App Install",
+                body: "Many online surprise card platforms lock your finished card behind a paywall at the final step. BirthdayWisher.fun is completely free from start to finish. Neither you nor the birthday star ever needs to create an account, enter an email, or install an app — your link opens smoothly inside WhatsApp, Instagram, iMessage, Telegram, or any phone browser in under a second.",
+            },
+            {
+                heading: "Private by Design: 10-Hour Auto-Delete Protection",
+                body: "Personal photos and voice recordings shouldn't sit on public servers forever. Every interactive wish link generated on BirthdayWisher.fun is hidden from search engines (noindex), free of third-party ads on the recipient's screen, and automatically self-destructs 10 hours after your loved one opens it — permanently deleting uploaded photos and audio.",
+            },
+        ],
+        faq: [
+            {
+                q: "Is BirthdayWisher.fun really 100% free to make an interactive wish?",
+                a: "Yes — creating, customizing, uploading photos or a voice note, adding up to 4 mini-games, and sharing your interactive wish link is 100% free with zero hidden checkout.",
+            },
+            {
+                q: "Does the recipient need to download an app or log in to open the interactive wish?",
+                a: "No! Your interactive wish opens directly in any iPhone, Android, or desktop browser right from WhatsApp, Instagram DMs, or SMS.",
+            },
+            {
+                q: "Which interactive games can I include inside my wish?",
+                a: "You can mix up to 4 games from all 12 playable experiences: Hold My Hand (Heartbeat Sync), Sky Lanterns of Wishes, Love-Note Balloons, Photo Memory Match, Guess the Year, Blow the Candles, Personal Quiz, Prank Link, Spin the Treat Wheel, Catch the Gifts, Treasure Hunt, and The Birthday Gazette.",
+            },
+            {
+                q: "Can I schedule my interactive wish to unlock at midnight?",
+                a: "Yes! Set an optional Time-Capsule unlock date & time — before midnight, the link shows a live countdown screen without revealing any message or photo early.",
+            },
+        ],
+    },
     "unique-birthday-gift-online": {
-        title: "Unique Birthday Gift Online — Interactive Surprise Link",
-        description: "Send a unique online birthday gift: build a personalised interactive story with photos, games, voice notes & fireworks. 100% free on WhatsApp.",
+        title: "The Most Unique Birthday Gift Online",
+        subtitle: "Why buy a generic physical gift when you can build an unforgettable digital experience?",
+        description:
+            "In a world of next-day deliveries, the most unique birthday gifts are the ones that spark genuine emotion. BirthdayWisher.fun lets you craft a personalised, interactive story with photos, playable games, and your real voice — wrapped inside one secret link.",
+        benefits: [
+            "100% Free & instant delivery via WhatsApp or Instagram link.",
+            "12 interactive games (Memory Match, Quiz, Candles, Treasure Hunt).",
+            "Photo gallery & recorded voice note with gentle background music.",
+            "Self-destructs 10 hours after opening for complete privacy.",
+        ],
+        ctaText: "Create the Ultimate Gift",
+        heroEmoji: "🎁",
+        recommendedGames: [
+            { href: "/games/blow-the-candles", e: "🕯️", name: "Blow the Candles", desc: "Virtual 3-tier birthday cake with mic breath meter" },
+            { href: "/games/birthday-treasure-hunt", e: "🗺️", name: "Birthday Treasure Hunt", desc: "Personal riddles that can even reveal a real hidden gift" },
+            { href: "/games/spin-the-wheel", e: "🎡", name: "Spin the Treat Wheel", desc: "Awards an official Birthday Treat Voucher from you" },
+        ],
+        seoSections: [
+            {
+                heading: "Why Personalised Digital Gifts Hit Deeper",
+                body: "Store-bought items are quickly set aside, while emotional experiences become core memories. A unique birthday gift online isn't measured by price tag — it's measured by how well it reflects your shared history, inside jokes, and affection. Taking three minutes to build a custom interactive story shows real thoughtfulness.",
+            },
+            {
+                heading: "Combine Digital Magic With Real-World Treats",
+                body: "Pair your interactive story with Spin the Treat Wheel or a Golden Promise Ticket — letting the birthday star win a coffee drive, dinner date, or movie night on you, or use Birthday Treasure Hunt riddles to lead them to a physical gift hidden in their room!",
+            },
+            {
+                heading: "Instant, Free, and Private Anywhere on Earth",
+                body: "No shipping delays, customs fees, or subscriptions. Your wish link is ready the moment you tap Create, works on any smartphone, and automatically deletes uploaded media 10 hours after opening.",
+            },
+        ],
+        faq: [
+            {
+                q: "What is the best last-minute unique birthday gift online?",
+                a: "A personalised interactive birthday story link — you can add favourite photos, 3 inside-joke quiz questions, a Spin-the-Treat voucher, and a voice note in ~3 minutes and send it at midnight.",
+            },
+            {
+                q: "Can I pair this online surprise with a real gift or gift card?",
+                a: "Yes! Add our Gift Card reveal block or Treasure Hunt game to point them to a real present or digital voucher at the end of the story.",
+            },
+            {
+                q: "How much does creating a birthday surprise cost?",
+                a: "₹0 / $0 — BirthdayWisher.fun is completely free with no login required.",
+            },
+        ],
     },
     "digital-story-greeting-card": {
-        title: "Digital Story Greeting Card Maker | BirthdayWisher.fun",
-        description: "Upgrade from plain texts to an interactive digital story greeting card with photos, music, quizzes, voice notes & fireworks. Free, no login.",
+        title: "Digital Story Greeting Card Maker",
+        subtitle: "Upgrade from plain WhatsApp texts to a cinematic, tap-through story card.",
+        description:
+            "Send a digital story greeting card that feels like a personal mini-film. Choose from 6 visual worlds (Storybook, Cinematic, Chat, Galaxy, Gallery, or Retro Terminal), add photos, music, interactive games, and fireworks.",
+        benefits: [
+            "6 handcrafted presentation styles with custom ambient soundtracks.",
+            "Upload favourite photos and record a heartfelt voice message.",
+            "Interactive chapters that respond to every tap and swipe.",
+            "Designed mobile-first for effortless viewing on any phone.",
+        ],
+        ctaText: "Start Your Story Card",
+        heroEmoji: "📱",
+        recommendedGames: [
+            { href: "/games/memory-match", e: "🃏", name: "Photo Memory Match", desc: "Turns your uploaded wish photos into 3D flip cards" },
+            { href: "/games/balloon-pop", e: "🎈", name: "Love-Note Balloons", desc: "Each popped balloon unfolds a personal note" },
+            { href: "/games/birthday-newspaper", e: "📰", name: "The Birthday Gazette", desc: "Front-page vintage breaking news starring them" },
+        ],
+        seoSections: [
+            {
+                heading: "Six Visual Worlds Instead of Static Templates",
+                body: "Traditional e-cards look dated and generic. Our Digital Story Greeting Card maker lets you match the recipient's personality: warm gilded Storybook pages, dark velvet Cinema, realistic Messenger chat bubbles, Cosmic Galaxy, Minimal Photo Gallery, or a glowing Retro Terminal.",
+            },
+            {
+                heading: "Gentle Soundtracks That Respect Your Words",
+                body: "Every presentation style includes a soft, drum-free instrumental soundtrack that automatically lowers in volume on reading slides and pauses cleanly when your recorded voice note or the Happy Birthday candle finale plays.",
+            },
+            {
+                heading: "Built for Mobile Touch & Zero Friction",
+                body: "Over 85% of digital greeting cards are opened on phones. Every slide supports natural edge-taps, swipe navigation, and instant photo preloading so your story flows seamlessly.",
+            },
+        ],
+        faq: [
+            {
+                q: "How is a digital story greeting card different from a regular e-card?",
+                a: "Instead of a single static image, the recipient taps through interactive chapters — unlocking memories, playing mini-games, listening to your voice note, and blowing out virtual birthday candles.",
+            },
+            {
+                q: "Can I preview my digital greeting card before sharing the link?",
+                a: "Yes! A live phone preview updates as you build, and you can tap 'Play full wish' anytime before creating your link.",
+            },
+            {
+                q: "Does it support multiple languages?",
+                a: "Yes — wish labels support English, Hindi, Spanish, French, German, Portuguese, Arabic, Japanese, Korean, and more.",
+            },
+        ],
     },
     "boyfriend-birthday-surprise": {
-        title: "Boyfriend Birthday Surprise Online — Romantic & Playful",
-        description: "Surprise your boyfriend at midnight with a playful roast-and-toast story, couple quiz, photos, voice note & heartbeat sync. Free WhatsApp link.",
+        title: "The Ultimate Boyfriend Birthday Surprise",
+        subtitle: "Make him laugh with playful banter, then melt his heart at the finale.",
+        description:
+            "Looking for a creative birthday surprise website for your boyfriend? Combine a playful 'Roast vs. Toast' opener, a private couple quiz, Hold My Hand heartbeat sync, your favourite photos together, and a Spin-the-Treat date voucher.",
+        benefits: [
+            "Start with playful teasing before revealing your romantic letter.",
+            "Include Hold My Hand (Heartbeat Sync) & a private couple quiz.",
+            "Award him a Spin-the-Wheel date night or Golden Promise Ticket.",
+            "Lock the link until 12:00 AM for a true midnight surprise.",
+        ],
+        ctaText: "Surprise Your Boyfriend",
+        heroEmoji: "💙",
+        recommendedGames: [
+            { href: "/games/hold-my-hand", e: "🫶", name: "Hold My Hand", desc: "He holds his thumb on screen to feel your heartbeat sync" },
+            { href: "/games/birthday-quiz", e: "🎯", name: "Couple Bond Quiz", desc: "Private quiz on your inside jokes & first-date memories" },
+            { href: "/games/spin-the-wheel", e: "🎡", name: "Date-Night Treat Wheel", desc: "Let him spin for dinner, midnight drive or movie night" },
+        ],
+        seoSections: [
+            {
+                heading: "How to Surprise Your Boyfriend Online (Even When He Says 'I Don't Want Anything')",
+                body: "Every guy who claims he doesn't want a fuss secretly melts when someone puts real effort into celebrating him. A custom interactive story centered around your inside jokes, favourite photos, and future date plans hits harder than any generic store gift.",
+            },
+            {
+                heading: "The 'Roast Then Toast' Formula That Always Works",
+                body: "Open with a harmless Prank Link or a playful Roast Meter teasing his sleepy habits or gaming marathons. Once he's grinning, transition into your favourite couple photos, a Heartbeat Sync touch moment, and your real recorded voice wishing him Happy Birthday.",
+            },
+            {
+                heading: "Turn Your Link Into a Real Date Night",
+                body: "Add Spin the Treat Wheel or a Golden Promise Ticket at the end of his wish so he walks away with a screenshot-ready voucher for his favourite meal, late-night ice cream drive, or weekend plan together.",
+            },
+        ],
+        faq: [
+            {
+                q: "What is the best online birthday surprise for my boyfriend at midnight?",
+                a: "Build a custom story on BirthdayWisher.fun, set the Time-Capsule unlock to 12:00 AM, and send him the link at 11:58 PM — he watches the live countdown hit zero and unlocks your photos, games, and voice note.",
+            },
+            {
+                q: "Which style looks best for a boyfriend birthday surprise?",
+                a: "Cinema (dark gold spotlight), Chat Story (realistic late-night text bubbles), and Galaxy are the top three styles girlfriends pick for boyfriends — or Retro Terminal if he codes or games!",
+            },
+            {
+                q: "Is his birthday link completely private?",
+                a: "100% private — hidden from Google, no public leaderboard, no ads on his wish, and automatically deleted 10 hours after he opens it.",
+            },
+        ],
     },
     "anniversary-wishes-for-couple": {
-        title: "Interactive Wedding Anniversary Wishes for Couples",
-        description: "Create a heartfelt interactive wedding anniversary wish for any couple — from 1st to 50th year — with photos, timeline games, voice notes & fireworks.",
+        title: "Wedding Anniversary Wishes for Couple — Interactive Story",
+        subtitle: "Celebrate 1st, 5th, 10th, 25th or 50th anniversaries with a living digital keepsake.",
+        description:
+            "Create a deeply personal, interactive wedding anniversary surprise for your spouse, parents, or favourite couple. Combine wedding & travel photos, Guess the Year timeline milestones, Sky Lantern blessings, and a heartfelt voice note.",
+        benefits: [
+            "Tailored for 1st, 10th, 25th (Silver) & 50th (Golden) milestones.",
+            "Guess the Year timeline game + Photo Memory Match for couples.",
+            "Elegant Rose Gold, Champagne & Storybook presentation themes.",
+            "Share privately on WhatsApp with family or just the two of you.",
+        ],
+        ctaText: "Create Anniversary Wish",
+        heroEmoji: "💍",
+        recommendedGames: [
+            { href: "/games/guess-the-year", e: "📅", name: "Guess the Year Timeline", desc: "Relive the exact years of your wedding, trips & milestones" },
+            { href: "/games/sky-lanterns", e: "🏮", name: "Sky Lanterns of Blessings", desc: "Float warm anniversary wishes into a starry night sky" },
+            { href: "/games/hold-my-hand", e: "🫶", name: "Hold My Hand", desc: "Two hearts meet along a red thread as they hold the screen" },
+        ],
+        seoSections: [
+            {
+                heading: "More Meaningful Than a Forwarded 'Happy Anniversary' Message",
+                body: "Whether you are surprising your husband or wife, or celebrating your parents' 25th Silver Jubilee, a custom interactive anniversary story turns years of shared memories into a warm 3-minute journey they can experience together on any phone.",
+            },
+            {
+                heading: "Relive Every Chapter With Timeline & Photo Games",
+                body: "Use Guess the Year to walk through the year they met, got married, or took an unforgettable family trip, pair it with Photo Memory Match featuring real couple portraits, and close with glowing Sky Lanterns carrying blessings for the years ahead.",
+            },
+            {
+                heading: "Romantic Skins & Gentle Piano-Strings Music",
+                body: "Choose Rose Gold Elegance, Golden Anniversary, Vintage Love Letter, or Fairy-Tale Storybook — paired with soft instrumental music that lets every word of your anniversary letter shine.",
+            },
+        ],
+        faq: [
+            {
+                q: "Can I make this anniversary surprise for my parents or another couple (like Bhaiya & Bhabhi)?",
+                a: "Yes! In Anniversary mode you can enter the couple's names (e.g. 'Mom & Dad' or 'Aarav & Meera'), add their milestone year, upload family photos, and pack Sky Lantern blessings from everyone.",
+            },
+            {
+                q: "Is the Wedding Anniversary Maker free?",
+                a: "Completely free — no signup, no watermark, and instant sharing on WhatsApp.",
+            },
+            {
+                q: "Where can I also find copy-paste anniversary wishes?",
+                a: "Visit our full 120+ Wedding Anniversary Wishes for Couple guide (/blog/wedding-anniversary-wishes-for-couple) for romantic, funny, milestone, and Hindi/Hinglish wishes.",
+            },
+        ],
     },
     "girlfriend-birthday-surprise": {
-        title: "Romantic Girlfriend Birthday Surprise Link | Free Maker",
-        description: "Make your girlfriend's birthday unforgettable with love-note balloons, aesthetic photo frames, your recorded voice & a grand fireworks finale.",
+        title: "The Most Romantic Girlfriend Birthday Surprise",
+        subtitle: "Give her the dreamy, heart-melting birthday website surprise she deserves.",
+        description:
+            "Looking for a birthday wishing website for your girlfriend? Craft an aesthetic, deeply romantic story with Love-Note Balloons, Storybook or Pastel Dream visuals, her cutest quirks, favourite couple photos, and your real voice.",
+        benefits: [
+            "Dreamy Storybook, Pastel Petals & Rose-Gold presentation themes.",
+            "Hide 6 reasons you adore her inside floating Love-Note Balloons.",
+            "Upload couple Polaroids + record an unedited voice note.",
+            "Ends with a full Happy Birthday piano melody & candle blow.",
+        ],
+        ctaText: "Create Her Perfect Surprise",
+        heroEmoji: "💗",
+        recommendedGames: [
+            { href: "/games/balloon-pop", e: "🎈", name: "Love-Note Balloons", desc: "Every pastel balloon pops open to reveal a sweet note" },
+            { href: "/games/hold-my-hand", e: "🫶", name: "Hold My Hand", desc: "Romantic red-thread heartbeat connection on her phone" },
+            { href: "/games/sky-lanterns", e: "🏮", name: "Sky Lanterns of Wishes", desc: "Warm glowing wishes plus one private wish of her own" },
+        ],
+        seoSections: [
+            {
+                heading: "Proof That You Remember Every Little Detail",
+                body: "The most romantic girlfriend birthday surprise isn't just grand words — it's noticing the little things: her iced-coffee order, the song she replays in the car, and the nickname only you call her. Putting those details into an interactive story creates a keepsake she'll replay with happy tears.",
+            },
+            {
+                heading: "Designed for Dreamy, Screenshot-Worthy Aesthetics",
+                body: "Pick Storybook (illustrated parchment with gold leaf) or Pastel Dream (soft floating petals), add Polaroid-framed couple photos, and let her pop Love-Note Balloons one by one before reading your heartfelt letter.",
+            },
+            {
+                heading: "Your Voice + Happy Birthday Candle Finale",
+                body: "Add a short recorded voice message so she hears your real voice, followed by the 3-tier birthday cake where she blows out the candles to the full Happy Birthday waltz arrangement.",
+            },
+        ],
+        faq: [
+            {
+                q: "How long does it take to build a girlfriend birthday surprise website link?",
+                a: "About 3 minutes in Quick or Romantic Partner template mode — or 5 minutes if you customize multiple games, photos, and a voice note.",
+            },
+            {
+                q: "Can she blow out the birthday candles on her phone?",
+                a: "Yes! Both the Blow the Candles game and the Grand Finale cake let her blow into her phone mic (or tap each candle) while Happy Birthday plays.",
+            },
+            {
+                q: "Will ads appear on my girlfriend's birthday wish link?",
+                a: "Never. Every recipient wish link (/wish/... and /w/...) is 100% ad-free and private.",
+            },
+        ],
     },
     "long-distance-birthday-surprise": {
-        title: "Long-Distance Birthday Surprise Link — Feel Close Online",
-        description: "Bridge the distance in one tap: sync heartbeats on screen, release sky lanterns, add photos & a voice note in a private birthday surprise link.",
+        title: "Long-Distance Birthday Surprise Link Online",
+        subtitle: "Miles apart at midnight, yet right there in the palm of their hand.",
+        description:
+            "Can't be there in person with a cake at 12:00 AM? Send a long-distance birthday surprise link where they hold their thumb on screen to sync heartbeats with yours, blow out virtual candles, release sky lanterns, and hear your real voice.",
+        benefits: [
+            "Hold My Hand syncs a warm heartbeat pulse across any distance.",
+            "Virtual 3-tier birthday cake they blow out on their phone.",
+            "Time-zone friendly midnight countdown lock (zero early spoilers).",
+            "Instant delivery to the US, UK, India, Canada, Australia & anywhere.",
+        ],
+        ctaText: "Bridge the Distance Now",
+        heroEmoji: "✈️",
+        recommendedGames: [
+            { href: "/games/hold-my-hand", e: "🫶", name: "Hold My Hand (Heartbeat)", desc: "Built specifically for long-distance partners & besties" },
+            { href: "/games/blow-the-candles", e: "🕯️", name: "Blow the Candles", desc: "Send a midnight birthday cake across time zones" },
+            { href: "/games/sky-lanterns", e: "🏮", name: "Sky Lanterns", desc: "Light glowing blessings together under one night sky" },
+        ],
+        seoSections: [
+            {
+                heading: "Feel Physically Connected Even Across Continents",
+                body: "Shipping boxes across borders risks late deliveries and customs fees, while a plain text feels miles away. With Hold My Hand (Heartbeat Sync), your partner, best friend, or family member places their thumb on the glowing heart and feels a gentle heartbeat pulse as two hearts travel along a red thread until they meet.",
+            },
+            {
+                heading: "Midnight Cake + Real Voice Note Across Time Zones",
+                body: "Schedule your wish link to unlock at 12:00 AM in their local time zone. Right at midnight, the countdown opens into your photo memories, your recorded voice saying Happy Birthday, and a virtual cake they blow out into their phone microphone.",
+            },
+            {
+                heading: "Works for Long-Distance Couples, Best Friends & Family Abroad",
+                body: "Whether your partner is studying in the US/UK, your bestie moved to another city for work, or your parents are back home, one WhatsApp link bridges thousands of miles in seconds.",
+            },
+        ],
+        faq: [
+            {
+                q: "How does Hold My Hand work for a long-distance birthday?",
+                a: "When your loved one presses and holds the glowing heart on their phone screen, warm heartbeat audio (and gentle haptic vibration on supported phones) pulses as two hearts move together to 100% sync — unlocking your secret note.",
+            },
+            {
+                q: "Can I schedule the surprise for midnight in another country's time zone?",
+                a: "Yes — pick the exact unlock date & time in the Link step; before that moment, the server shows only a live countdown without leaking any wish content.",
+            },
+            {
+                q: "Does it work internationally on WhatsApp, iMessage, and Instagram?",
+                a: "Yes, everywhere in the world with zero app download or login.",
+            },
+        ],
     },
     "colleague-birthday-wish": {
-        title: "Creative Birthday Wish for Colleague & Coworker | Free",
-        description: "Go beyond a generic Slack message: make a fun, workplace-friendly interactive birthday card with team trivia, breaking news & warm wishes.",
+        title: "Birthday Wish for Colleague & Coworker Online",
+        subtitle: "Upgrade the office Slack thread with a fun, workplace-safe interactive card.",
+        description:
+            "Celebrate a teammate, work bestie, or manager with a cheerful interactive birthday card! Put them on the front page of The Birthday Gazette, add light team trivia or a coffee Spin-the-Wheel treat, and share one link in Slack, Teams, or WhatsApp.",
+        benefits: [
+            "100% workplace-appropriate, warm, and genuinely fun.",
+            "Put them on page one of The Birthday Gazette breaking news.",
+            "One link drops cleanly into Slack, Microsoft Teams, or WhatsApp.",
+            "Great for remote, hybrid, and in-office teams alike.",
+        ],
+        ctaText: "Create Colleague's Wish",
+        heroEmoji: "💼",
+        recommendedGames: [
+            { href: "/games/birthday-newspaper", e: "📰", name: "The Birthday Gazette", desc: "Front-page vintage breaking news celebrating your coworker" },
+            { href: "/games/spin-the-wheel", e: "🎡", name: "Coffee / Lunch Wheel", desc: "Let them spin for coffee, dessert, or a zero-meeting pass" },
+            { href: "/games/birthday-quiz", e: "🎯", name: "Fun Team Trivia", desc: "Lighthearted questions on their go-to coffee or catchphrase" },
+        ],
+        seoSections: [
+            {
+                heading: "Stand Out From 30 Identical 'HBD!' Slack Replies",
+                body: "Office chat threads fill up fast with copy-pasted 'Happy Birthday!' messages. Dropping a custom Birthday Gazette front page or a 3-question team quiz takes 60 seconds and instantly gets the whole team smiling.",
+            },
+            {
+                heading: "Made for Remote & Hybrid Teams",
+                body: "When teammates work across cities or time zones, you can't gather around an office desk with a cake — so send a virtual Blow-the-Candles cake + Birthday Newspaper link they can open right between meetings.",
+            },
+            {
+                heading: "Need Ready-to-Paste Office Wishes Too?",
+                body: "Pair your interactive card with a polished message from our 80+ Birthday Wishes for Colleague, Coworker & Boss guide (/blog/birthday-wishes-for-colleague), covering Slack one-liners, LinkedIn greetings, remote teammates, and Hinglish office groups.",
+            },
+        ],
+        faq: [
+            {
+                q: "Is BirthdayWisher.fun safe and appropriate for workplace / boss birthdays?",
+                a: "Yes! Choose the Celebration or Gratitude vibe and clean Gallery or Storybook style for a warm, respectful card suitable for colleagues, managers, and clients.",
+            },
+            {
+                q: "Can our whole Slack or Microsoft Teams channel open the same colleague birthday link?",
+                a: "Yes — everyone on the team can open and enjoy the link during the 10-hour celebration window.",
+            },
+            {
+                q: "Does my coworker need to sign in to view their card?",
+                a: "No login or account needed — it opens right in their desktop or mobile browser.",
+            },
+        ],
     },
     "parents-birthday-surprise": {
         title: "Birthday Surprise for Mom & Dad — Digital Gratitude Card",
-        description: "Thank Mom or Dad with a warm digital birthday story featuring family photos, glowing sky lantern blessings & a heartfelt voice note. 100% free.",
+        subtitle: "Give Mom or Dad an emotional family keepsake filled with blessings, photos & your real voice.",
+        description:
+            "Plain text messages feel too small for the people who raised you. Build a warm, easy-to-open birthday surprise for Mom or Dad with childhood & family photos, glowing Sky Lantern blessings, a family Guess-the-Year timeline, and your recorded voice.",
+        benefits: [
+            "Simple, large-text tap navigation that's effortless for parents.",
+            "Release glowing Sky Lanterns carrying blessings for their health & joy.",
+            "Add family photos + record your real voice saying 'Happy Birthday'.",
+            "Available in English, Hindi & 10+ languages — 100% free & ad-free.",
+        ],
+        ctaText: "Surprise Mom or Dad Now",
+        heroEmoji: "👨‍👩‍👧",
+        recommendedGames: [
+            { href: "/games/sky-lanterns", e: "🏮", name: "Sky Lanterns of Blessings", desc: "Peaceful glowing lanterns carrying your wishes for Mom/Dad" },
+            { href: "/games/guess-the-year", e: "📅", name: "Family Timeline Game", desc: "Relive favourite family vacations & milestones together" },
+            { href: "/games/blow-the-candles", e: "🕯️", name: "Virtual Birthday Cake", desc: "A warm 3-tier cake with the full Happy Birthday tune" },
+        ],
+        seoSections: [
+            {
+                heading: "Why Parents Cherish Personal Effort Over Expensive Store Gifts",
+                body: "Mom and Dad rarely ask for anything for themselves — what touches them most is knowing their children took time to remember shared moments and express gratitude. Combining old family photos, a heartfelt thank-you letter, and glowing Sky Lanterns creates happy tears every single time.",
+            },
+            {
+                heading: "Effortless for Every Parent to Open on WhatsApp",
+                body: "There are zero confusing menus, zero logins, and zero ads on your parent's wish link. They simply tap your WhatsApp link, hold the gift cover to open, and tap Next at their own comfortable pace while gentle piano-and-strings music plays.",
+            },
+            {
+                heading: "Living Away From Home? Let Them Hear Your Voice",
+                body: "If studies or work keep you in another city or country on Mom or Dad's birthday, recording a 20-second voice note inside your wish lets them hear your real voice right before blowing out the birthday candles.",
+            },
+        ],
+        faq: [
+            {
+                q: "Is it easy for Mom or Dad to open if they aren't tech-savvy?",
+                a: "Very easy! It opens directly from WhatsApp with one tap, uses clear large buttons, has zero ads, and even auto-advances gentle games if needed so parents never get stuck.",
+            },
+            {
+                q: "Can I create the birthday wish for Mom or Dad in Hindi?",
+                a: "Yes! You can select Hindi (or English/Hinglish) in the Look & Language step and write your messages in Hindi or Hinglish.",
+            },
+            {
+                q: "Which game is best for a parent's birthday?",
+                a: "Sky Lanterns of Wishes (/games/sky-lanterns) and Guess the Year (/games/guess-the-year) are peaceful, nostalgic favourites for both Mom and Dad.",
+            },
+        ],
     },
 };
+
+const getUseCaseData = (slug: string): UseCaseEntry | null => USE_CASES[slug] || null;
+
+const USE_CASE_SEO: Record<string, { title: string; description: string }> = {
+    "interactive-birthday-wish": {
+        title: "Free Interactive Wish Maker — Birthday & Anniversary Link",
+        description: "Create a 100% free interactive birthday or anniversary wish link in 3 minutes — with 12 playable games, photos, voice notes & fireworks. Zero login!",
+    },
+    "unique-birthday-gift-online": {
+        title: "Unique Birthday Gift Online — Free Interactive Surprise",
+        description: "Send a unique online birthday gift in 3 minutes: build a personalised interactive story with photos, 12 games, voice notes & fireworks. 100% free.",
+    },
+    "digital-story-greeting-card": {
+        title: "Free Digital Story Greeting Card Maker | BirthdayWisher",
+        description: "Upgrade from plain texts to an interactive digital story greeting card with 6 visual styles, photos, music, games & voice notes. Free, no login.",
+    },
+    "boyfriend-birthday-surprise": {
+        title: "Boyfriend Birthday Surprise Website — Free Midnight Link",
+        description: "Surprise your boyfriend at midnight with a playful roast-and-toast story, couple quiz, heartbeat sync, photos & date voucher. 100% free on WhatsApp.",
+    },
+    "anniversary-wishes-for-couple": {
+        title: "Interactive Wedding Anniversary Wishes for Couple (Free)",
+        description: "Create a heartfelt interactive wedding anniversary surprise for any couple (1st to 50th year) with photos, timeline games, sky lanterns & voice notes.",
+    },
+    "girlfriend-birthday-surprise": {
+        title: "Romantic Girlfriend Birthday Surprise Website (Free Link)",
+        description: "Make your girlfriend's birthday unforgettable with love-note balloons, dreamy photo frames, heartbeat sync, your voice note & fireworks. 100% free.",
+    },
+    "long-distance-birthday-surprise": {
+        title: "Long-Distance Birthday Surprise Link — Heartbeat & Cake",
+        description: "Miles apart at midnight? Send a free long-distance birthday surprise link with on-screen heartbeat sync, sky lanterns, virtual cake & your voice note.",
+    },
+    "colleague-birthday-wish": {
+        title: "Creative Birthday Wish for Colleague & Coworker (Free)",
+        description: "Skip generic Slack texts: make a fun, workplace-safe interactive birthday card with The Birthday Gazette newspaper, team trivia & treat wheel.",
+    },
+    "parents-birthday-surprise": {
+        title: "Birthday Surprise for Mom & Dad — Free Family Photo Card",
+        description: "Make Mom or Dad smile with an easy-to-open digital birthday surprise featuring family photos, glowing sky lantern blessings & your real voice note.",
+    },
+};
+
+export function generateStaticParams() {
+    return Object.keys(USE_CASES).map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
@@ -282,19 +510,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title: seo.title,
             description: seo.description,
             url: `/use-cases/${resolvedParams.slug}`,
-            images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "BirthdayWisher.fun - Turn your birthday wish into a game" }],
+            images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "BirthdayWisher.fun - Free Interactive Birthday & Anniversary Wish Maker" }],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: seo.title,
+            description: seo.description,
+            images: ["/twitter-image.png"],
         },
     };
 }
 
 const USE_CASE_LINKS: { slug: string; e: string; name: string }[] = [
+    { slug: "interactive-birthday-wish", e: "🎮", name: "Free Interactive Wish Maker" },
     { slug: "unique-birthday-gift-online", e: "🎁", name: "Unique Birthday Gift Online" },
     { slug: "digital-story-greeting-card", e: "📱", name: "Digital Story Greeting Card" },
     { slug: "boyfriend-birthday-surprise", e: "💙", name: "Boyfriend Birthday Surprise" },
     { slug: "girlfriend-birthday-surprise", e: "💗", name: "Girlfriend Birthday Surprise" },
     { slug: "anniversary-wishes-for-couple", e: "💍", name: "Anniversary Wishes for Couple" },
     { slug: "long-distance-birthday-surprise", e: "✈️", name: "Long Distance Birthday Surprise" },
-    { slug: "colleague-birthday-wish", e: "🎉", name: "Colleague Birthday Wish" },
+    { slug: "colleague-birthday-wish", e: "💼", name: "Colleague Birthday Wish" },
     { slug: "parents-birthday-surprise", e: "👨‍👩‍👧", name: "Parents Birthday Surprise" },
 ];
 
@@ -313,10 +548,21 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
 
     return (
         <PartyPage>
-            <JsonLd data={[
-                { "@context": "https://schema.org", "@type": "WebPage", name: data.title, description: data.description, url: absUrl(`/use-cases/${slug}`) },
-                breadcrumbLd([{ name: "Home", path: "/" }, { name: data.title, path: `/use-cases/${slug}` }]),
-            ]} />
+            <JsonLd
+                data={[
+                    { "@context": "https://schema.org", "@type": "WebPage", name: data.title, description: data.description, url: absUrl(`/use-cases/${slug}`) },
+                    breadcrumbLd([{ name: "Home", path: "/" }, { name: data.title, path: `/use-cases/${slug}` }]),
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "FAQPage",
+                        mainEntity: data.faq.map((f) => ({
+                            "@type": "Question",
+                            name: f.q,
+                            acceptedAnswer: { "@type": "Answer", text: f.a },
+                        })),
+                    },
+                ]}
+            />
 
             <header className="bw-hero bw-page-hero">
                 <Bunting />
@@ -341,12 +587,12 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
                         <div className="bw-uc-visual" aria-hidden="true">
                             <div className="bw-card bw-uc-card">
                                 <div className="bw-uc-gift">{isAnniversary ? "💝" : "🎁"}</div>
-                                <h3>See the surprise</h3>
-                                <p>Takes exactly 3 minutes to build a customized wish they will never forget.</p>
+                                <h3>100% Free · No Login</h3>
+                                <p>Ready in ~3 minutes — opens on WhatsApp, Instagram or iMessage with zero ads on their wish.</p>
                                 <ol className="bw-uc-steps">
-                                    <li><span style={{ ["--c" as string]: "var(--p-pink)" }}>1</span> Add photos, jokes &amp; a voice note</li>
-                                    <li><span style={{ ["--c" as string]: "var(--p-grape)" }}>2</span> Pick the vibe &amp; the music</li>
-                                    <li><span style={{ ["--c" as string]: "var(--p-mint)" }}>3</span> Send the secret link 🎈</li>
+                                    <li><span style={{ ["--c" as string]: "var(--p-pink)" }}>1</span> Add photos, games &amp; a voice note</li>
+                                    <li><span style={{ ["--c" as string]: "var(--p-grape)" }}>2</span> Pick your style &amp; gentle music</li>
+                                    <li><span style={{ ["--c" as string]: "var(--p-mint)" }}>3</span> Share the private link 🎈</li>
                                 </ol>
                                 <div className="bw-uc-bar"><i /></div>
                             </div>
@@ -355,18 +601,49 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
                 </div>
             </header>
 
+            {/* Recommended Playable Games for This Person */}
+            <section className="bw-section" style={{ paddingTop: 28, paddingBottom: 12 }}>
+                <div className="bw-container">
+                    <div className="bw-section-title"><h2>Best playable games to include 🎮</h2></div>
+                    <div className="bw-guide-grid">
+                        {data.recommendedGames.map((g) => (
+                            <Link key={g.href} href={g.href} className="bw-card bw-guide">
+                                <span className="e" aria-hidden="true">{g.e}</span>
+                                <span>
+                                    {g.name}
+                                    <small style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--p-muted)", marginTop: 2 }}>{g.desc}</small>
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Long Form SEO Content Section */}
-            <section className="bw-section" style={{ paddingTop: 30 }}>
+            <section className="bw-section" style={{ paddingTop: 24 }}>
                 <div className="bw-container">
                     <div className="bw-card bw-paper" style={{ maxWidth: 860, margin: "0 auto" }}>
                         <Prose>
-                            {data.seoSections?.map((section, idx) => (
+                            {data.seoSections.map((section, idx) => (
                                 <div key={idx}>
                                     <h2>{section.heading}</h2>
                                     <p>{section.body}</p>
                                 </div>
                             ))}
                         </Prose>
+                    </div>
+
+                    {/* Visible FAQ Accordion matching FAQPage JSON-LD */}
+                    <div style={{ maxWidth: 860, margin: "44px auto 0" }}>
+                        <h2 className="bw-section-title" style={{ fontSize: "clamp(24px, 3.6vw, 32px)" }}>Frequently Asked Questions 🤔</h2>
+                        <div className="bw-faq">
+                            {data.faq.map((f, i) => (
+                                <details key={f.q} open={i === 0}>
+                                    <summary>{f.q}</summary>
+                                    <p>{f.a}</p>
+                                </details>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -382,12 +659,12 @@ export default async function UseCasePage({ params }: { params: Promise<{ slug: 
                             </Link>
                         ))}
                         <Link href="/birthday-wishes-game" className="bw-card bw-guide">
-                            <span className="e" aria-hidden="true">🎮</span>Birthday Wishes Games
+                            <span className="e" aria-hidden="true">🎮</span>All 12 Birthday Wishes Games
                         </Link>
                     </div>
                     <CtaCard
                         title={isAnniversary ? "Make their anniversary unforgettable" : "Ready to make their day unforgettable?"}
-                        text="Free, private and ready in about 3 minutes — no app, no sign-up."
+                        text="100% free, ad-free for your recipient, and ready in about 3 minutes — no app, no sign-up."
                         href={createHref}
                         cta={`${data.heroEmoji} ${data.ctaText}`}
                         emoji={isAnniversary ? "🥂" : "🎂"}

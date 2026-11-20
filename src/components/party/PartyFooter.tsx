@@ -37,6 +37,7 @@ export function PartyFooter() {
                     <div>
                         <h4>{h.footerUseCases}</h4>
                         <ul>
+                            <li><Link href="/use-cases/interactive-birthday-wish">Free Interactive Wish Maker</Link></li>
                             <li><Link href="/use-cases/unique-birthday-gift-online">Unique Birthday Gift Online</Link></li>
                             <li><Link href="/use-cases/digital-story-greeting-card">Digital Story Greeting Card</Link></li>
                             <li><Link href="/use-cases/boyfriend-birthday-surprise">Boyfriend Birthday Surprise</Link></li>

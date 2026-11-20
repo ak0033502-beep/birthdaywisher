@@ -3,10 +3,17 @@ import { JsonLd, articleLd, breadcrumbLd } from "@/components/seo/JsonLd";
 import Link from "next/link";
 import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPage";
 
+const ROMANTIC_FAQ = [
+    { q: "What is the most romantic way to say Happy Birthday to my partner?", a: "Pair a specific memory only the two of you share with an interactive surprise link — such as Hold My Hand (heartbeat sync), Love-Note Balloons, and a short voice note of your real voice." },
+    { q: "How can I send a romantic midnight birthday surprise online for free?", a: "Build a free interactive wish on BirthdayWisher.fun, schedule the Time-Capsule lock for 12:00 AM, and share the private link on WhatsApp or iMessage right before midnight." },
+    { q: "What should I write in a long birthday paragraph for my boyfriend or girlfriend?", a: "Start with how your life changed after meeting them, mention two small habits of theirs you adore, and close with a promise for the year ahead." },
+    { q: "Are photos and voice notes inside a romantic birthday wish private?", a: "Yes — every wish link is hidden from search engines, completely ad-free for your partner, and permanently self-destructs 10 hours after opening." },
+];
+
 export const metadata: Metadata = {
     alternates: { canonical: "/blog/romantic-wishes" },
-    title: "Romantic Birthday Wishes for Boyfriend, Girlfriend & Partner",
-    description: "Heart-touching romantic birthday wishes, love quotes & interactive surprise ideas for your boyfriend, girlfriend, husband or wife.",
+    title: "Romantic Birthday Wishes for Boyfriend, Girlfriend & Wife",
+    description: "Copy 100+ romantic birthday wishes, midnight paragraphs & love quotes for your boyfriend, girlfriend, husband or wife — plus a free surprise link!",
     keywords: "romantic birthday wishes, birthday wishes for boyfriend, birthday wishes for girlfriend, romantic birthday quotes, birthday surprise for husband, birthday surprise for wife, love birthday messages, happy birthday my love, romantic birthday text messages, heart touching birthday wishes for lover, birthday gift ideas for partner, digital birthday surprise, long distance birthday wish for boyfriend, midnight birthday surprise ideas, wedding anniversary wishes for couple, anniversary wishes for couple, romantic anniversary messages",
 };
 
@@ -14,8 +21,9 @@ export default function RomanticWishesPage() {
     return (
         <PartyPage>
             <JsonLd data={[
-                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/romantic-wishes", datePublished: "Oct 22, 2024" }),
+                articleLd({ title: String(metadata.title), description: String(metadata.description), path: "/blog/romantic-wishes", datePublished: "Oct 22, 2024", dateModified: "Nov 20, 2026" }),
                 breadcrumbLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: String(metadata.title), path: "/blog/romantic-wishes" }]),
+                { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: ROMANTIC_FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
             ]} />
             <PageHero
                 crumbs={[{ name: "Home", href: "/" }, { name: "Blog", href: "/blog" }, { name: "The Ultimate Guide to Romantic Birthday Wishes & Surprises for Your Partner" }]}
@@ -144,9 +152,19 @@ export default function RomanticWishesPage() {
                             Long-distance relationships make birthdays harder, but also make the effort even more meaningful. If you can't be there physically, be there digitally in the most impactful way possible. The best <strong>long distance birthday surprise for boyfriend</strong> or <strong>girlfriend</strong> combines genuine emotion with creative digital tools.
                         </p>
                         <p className="mb-8 text-foreground/70">
-                            Build a fully personalized interactive love story using BirthdayWisher. Add your favorite photos, record a voice note that plays at the climax, and set up a "How Well Do You Know Me?" quiz that they need to pass before unlocking your heartfelt message. It bridges the physical distance in a way that FaceTime simply can't.
+                            Build a fully personalized <Link href="/use-cases/interactive-birthday-wish" className="text-primary hover:text-secondary">free interactive birthday wish</Link> using BirthdayWisher. Let them feel your heartbeat with <Link href="/games/hold-my-hand" className="text-primary hover:text-secondary">Hold My Hand</Link>, pop 6 compliments in <Link href="/games/balloon-pop" className="text-primary hover:text-secondary">Love-Note Balloons</Link>, and hear your real voice right before the fireworks finale.
                         </p>
                         </Prose>
+                    </div>
+
+                    <h2 className="bw-section-title" style={{ marginTop: 48, fontSize: "clamp(24px, 3.6vw, 32px)" }}>Frequently Asked Questions 🤔</h2>
+                    <div className="bw-faq">
+                        {ROMANTIC_FAQ.map((f, i) => (
+                            <details key={f.q} open={i === 0}>
+                                <summary>{f.q}</summary>
+                                <p>{f.a}</p>
+                            </details>
+                        ))}
                     </div>
 
                     {/* Internal Linking Section */}

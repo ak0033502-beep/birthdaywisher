@@ -8,7 +8,7 @@ export const revalidate = 120;
 export const metadata: Metadata = {
     title: "Birthday Wishes Game – Free Interactive Birthday Surprise Link",
     description:
-        "Create a free birthday wishes game link with photos, quizzes, voice notes and surprises. Share it on WhatsApp, no login needed. Anniversary wishes for couples too.",
+        "Free interactive wish maker & birthday wishes game link! Add 12 mini-games, photos, quiz & voice notes. Share on WhatsApp with no login — anniversaries too.",
     alternates: { canonical: "/" },
     openGraph: {
         title: "Birthday Wishes Game – Free Interactive Birthday Surprise",

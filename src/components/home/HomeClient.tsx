@@ -95,11 +95,11 @@ const FEATURES: Array<{ e: string; t: keyof SiteStrings; d: keyof SiteStrings; b
 ];
 
 const GUIDES = [
+  { e: "🎮", t: "Free interactive wish maker", href: "/use-cases/interactive-birthday-wish" },
   { e: "❤️", t: "Boyfriend birthday surprise", href: "/use-cases/boyfriend-birthday-surprise" },
   { e: "✈️", t: "Long-distance birthday ideas", href: "/blog/long-distance-birthday-ideas" },
   { e: "👯", t: "Best friend birthday quotes", href: "/blog/best-friend-quotes" },
   { e: "👩", t: "Birthday surprise for Mom & Dad", href: "/use-cases/parents-birthday-surprise" },
-  { e: "💼", t: "Birthday wishes for colleague", href: "/blog/birthday-wishes-for-colleague" },
   { e: "💍", t: "Wedding anniversary wishes for couple", href: "/blog/wedding-anniversary-wishes-for-couple" },
 ];
 

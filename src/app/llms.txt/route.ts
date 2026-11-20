@@ -70,6 +70,7 @@ export async function GET() {
         ``,
         quotesBlock,
         `## Popular Use Cases`,
+        `- [Free Interactive Birthday & Anniversary Wish Maker](${SITE_URL}/use-cases/interactive-birthday-wish)`,
         `- [Boyfriend Birthday Surprise](${SITE_URL}/use-cases/boyfriend-birthday-surprise)`,
         `- [Girlfriend Birthday Surprise](${SITE_URL}/use-cases/girlfriend-birthday-surprise)`,
         `- [Long-Distance Birthday Surprise](${SITE_URL}/use-cases/long-distance-birthday-surprise)`,
