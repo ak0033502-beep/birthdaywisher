@@ -54,7 +54,7 @@ const pages: Array<{ path: string; lastModified: string; changeFrequency: 'weekl
     // Company / legal
     { path: '/about', lastModified: '2026-03-07', changeFrequency: 'yearly', priority: 0.5 },
     { path: '/contact', lastModified: '2026-03-07', changeFrequency: 'yearly', priority: 0.4 },
-    { path: '/privacy', lastModified: '2024-10-01', changeFrequency: 'yearly', priority: 0.3 },
+    { path: '/privacy', lastModified: '2026-11-20', changeFrequency: 'yearly', priority: 0.3 },
     { path: '/terms', lastModified: '2024-10-01', changeFrequency: 'yearly', priority: 0.3 },
     { path: '/disclaimer', lastModified: '2026-07-01', changeFrequency: 'yearly', priority: 0.3 },
     { path: '/dmca', lastModified: '2026-07-01', changeFrequency: 'yearly', priority: 0.3 },

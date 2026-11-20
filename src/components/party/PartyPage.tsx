@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Bunting } from "./Decor";
 import { PartyFooter } from "./PartyFooter";
+import { AdUnit } from "@/components/seo/AdUnit";
 
 /**
  * Shared shell for content pages in the "Joyful Party" design
@@ -55,11 +56,14 @@ export function CtaCard({ title, text, href = "/create", cta = "🎁 Create a bi
     title: string; text?: string; href?: string; cta?: string; emoji?: string;
 }) {
     return (
-        <div className="bw-card bw-cta-card">
-            <div className="e" aria-hidden="true">{emoji}</div>
-            <h2>{title}</h2>
-            {text && <p>{text}</p>}
-            <Link href={href} className="bw-btn bw-btn-primary">{cta}</Link>
-        </div>
+        <>
+            <AdUnit layout="in-article" />
+            <div className="bw-card bw-cta-card">
+                <div className="e" aria-hidden="true">{emoji}</div>
+                <h2>{title}</h2>
+                {text && <p>{text}</p>}
+                <Link href={href} className="bw-btn bw-btn-primary">{cta}</Link>
+            </div>
+        </>
     );
 }

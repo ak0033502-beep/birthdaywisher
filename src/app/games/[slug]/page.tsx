@@ -7,6 +7,7 @@ import { GAME_PAGES, getGamePage } from "@/components/games/gamePages";
 import { GameDemoBox, GameMaker, OtherGames } from "@/components/games/GameMaker";
 import { Bunting } from "@/components/party/Decor";
 import { PartyFooter } from "@/components/party/PartyFooter";
+import { AdUnit } from "@/components/seo/AdUnit";
 
 export function generateStaticParams() {
     return GAME_PAGES.map((g) => ({ slug: g.slug }));
@@ -82,6 +83,7 @@ export default async function GamePageRoute({ params }: { params: Promise<{ slug
 
             <section className="bw-section">
                 <div className="bw-container">
+                    <AdUnit layout="in-article" />
                     <div className="bw-section-title"><h2>Questions? 🤔</h2></div>
                     <div className="bw-faq">
                         {page.faq.map((f, i) => <details key={f.q} open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}

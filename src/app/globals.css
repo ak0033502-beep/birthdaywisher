@@ -157,3 +157,23 @@ body {
     /* Prevent iOS zoom on focus */
   }
 }
+
+/* Keep Google AdSense Auto-Ads neatly inside mobile containers without horizontal overflow */
+ins.adsbygoogle,
+.google-auto-placed {
+  max-width: 100% !important;
+  overflow-x: hidden;
+}
+
+/* Hard guarantee: NEVER display any Google Auto-Ads banner/anchor/vignette on /create or /wish/* */
+html[data-ad-free="1"] ins.adsbygoogle,
+html[data-ad-free="1"] .google-auto-placed,
+html[data-ad-free="1"] ins[class*="adsbygoogle"],
+html[data-ad-free="1"] div[id^="google-anno-"] {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
