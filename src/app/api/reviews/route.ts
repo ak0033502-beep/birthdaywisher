@@ -2,18 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { sql } from "@vercel/postgres";
 import { ensureReviewsTable, getPublicReviews } from "@/lib/reviews";
-
-/**
- * Reviews come from 3 places:
- *  - "site"      : the "Leave a review" button on the homepage
- *  - "creator"   : popup right after someone creates a wish
- *  - "recipient" : asked at the very end of a wish (after the Grand Finale)
- *
- * Positive reviews (4–5) show automatically on the homepage:
- *  - Written reviews render as full quote cards (and Review JSON-LD)
- *  - Quick 1-tap emoji ratings render in the live Recent Ratings strip
- *  - All non-spam reviews count honestly in AggregateRating & total count.
- */
+import { checkPersistentRateLimit, getTrustedIp, isSameOriginRequest } from "@/lib/security";
 
 const SOURCES = new Set(["site", "creator", "recipient"]);
 const DEFAULT_NAME: Record<string, string> = {
@@ -21,6 +10,13 @@ const DEFAULT_NAME: Record<string, string> = {
     creator: "A happy creator",
     recipient: "A birthday star",
 };
+
+// Strip angle brackets & non-printable control characters to prevent script/HTML injection
+const cleanText = (v: unknown, maxLen: number): string =>
+    (typeof v === "string" ? v : "")
+        .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f<>]/g, "")
+        .trim()
+        .slice(0, maxLen);
 
 // GET - Fetch approved reviews + quick ratings + aggregate stats (homepage)
 export async function GET() {
@@ -32,33 +28,43 @@ export async function GET() {
 
 // POST - Submit a new review
 export async function POST(req: Request) {
+    if (!isSameOriginRequest(req)) {
+        return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
+    }
+    const ip = getTrustedIp(req);
+    const rl = await checkPersistentRateLimit("review_post", ip, 5, 10 * 60 * 1000);
+    if (!rl.allowed) {
+        return NextResponse.json(
+            { error: "Too many reviews submitted recently. Please try again later." },
+            { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+        );
+    }
+
     try {
         await ensureReviewsTable();
-        const body = await req.json().catch(() => ({}));
+        const raw = await req.text();
+        if (raw.length > 4096) {
+            return NextResponse.json({ error: "Review payload too large" }, { status: 413 });
+        }
+        const body = JSON.parse(raw) as Record<string, unknown>;
         const source = typeof body.source === "string" && SOURCES.has(body.source) ? body.source : "site";
         const rating = Math.round(Number(body.rating));
-        const name = (typeof body.name === "string" ? body.name : "").trim().slice(0, 100) || DEFAULT_NAME[source];
-        const message = (typeof body.message === "string" ? body.message : "").trim();
-        const relationship =
-            (typeof body.relationship === "string" ? body.relationship : "").trim().slice(0, 50) ||
-            (source === "recipient" ? "Recipient" : "Friend");
+        const rawName = cleanText(body.name, 100);
+        const name = rawName || DEFAULT_NAME[source];
+        const message = cleanText(body.message, 500);
+        const relationship = cleanText(body.relationship, 50) || (source === "recipient" ? "Recipient" : "Friend");
         const wishId = typeof body.wishId === "string" && /^[a-f0-9]{6,10}$/.test(body.wishId) ? body.wishId : null;
 
         if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
             return NextResponse.json({ error: "Please pick a rating" }, { status: 400 });
         }
-        // The homepage form requires a name + message
-        if (source === "site" && (!body.name || !message)) {
+        if (source === "site" && (!rawName || !message)) {
             return NextResponse.json({ error: "Name, rating, and message are required" }, { status: 400 });
-        }
-        if (message.length > 500) {
-            return NextResponse.json({ error: "Message too long" }, { status: 400 });
         }
         if (/https?:\/\/|www\./i.test(message + " " + name)) {
             return NextResponse.json({ error: "Links are not allowed in reviews" }, { status: 400 });
         }
 
-        // Auto-show all genuine 4–5 ratings (both written cards and 1-tap ratings); admin can hide spam anytime
         const approved = rating >= 4;
 
         await sql`

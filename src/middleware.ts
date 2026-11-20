@@ -1,23 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// In-memory rate limiter (per-process; works well for serverless cold starts)
+// In-memory rate limiter (first line of defense per edge/node instance; bounded map size)
 const rateLimitMap = new Map<string, { count: number; expiresAt: number }>();
 
 const WINDOW_MS = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 60; // 60 requests per minute per IP
+const MAX_TRACKED_IPS = 5000;
 
 function getClientIp(req: NextRequest): string {
-    return (
-        req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-        req.headers.get("x-real-ip") ||
-        "unknown"
-    );
+    const realIp = req.headers.get("x-real-ip")?.trim();
+    if (realIp) return realIp;
+    const xff = req.headers.get("x-forwarded-for");
+    if (xff) {
+        const parts = xff.split(",").map((s) => s.trim()).filter(Boolean);
+        if (parts.length > 0) return parts[parts.length - 1] || parts[0];
+    }
+    return "unknown";
 }
 
 function isRateLimited(ip: string): boolean {
     const now = Date.now();
-    const entry = rateLimitMap.get(ip);
+    if (rateLimitMap.size > MAX_TRACKED_IPS) {
+        for (const [key, value] of rateLimitMap) {
+            if (now > value.expiresAt) rateLimitMap.delete(key);
+        }
+        if (rateLimitMap.size > MAX_TRACKED_IPS) rateLimitMap.clear();
+    }
 
+    const entry = rateLimitMap.get(ip);
     if (!entry || now > entry.expiresAt) {
         rateLimitMap.set(ip, { count: 1, expiresAt: now + WINDOW_MS });
         return false;
@@ -27,19 +37,9 @@ function isRateLimited(ip: string): boolean {
     return entry.count > MAX_REQUESTS;
 }
 
-// Periodic cleanup of expired entries
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, value] of rateLimitMap) {
-        if (now > value.expiresAt) rateLimitMap.delete(key);
-    }
-}, 5 * 60 * 1000); // Cleanup every 5 minutes
-
 export function middleware(req: NextRequest) {
-    // Only rate-limit API routes
     if (req.nextUrl.pathname.startsWith("/api")) {
         const ip = getClientIp(req);
-
         if (isRateLimited(ip)) {
             return NextResponse.json(
                 { error: "Too many requests. Please try again later." },
@@ -48,7 +48,6 @@ export function middleware(req: NextRequest) {
         }
     }
 
-    // Add security headers to all responses
     const response = NextResponse.next();
 
     response.headers.set("X-Content-Type-Options", "nosniff");
@@ -63,7 +62,6 @@ export function middleware(req: NextRequest) {
 
 export const config = {
     matcher: [
-        // Match all routes except static files and _next
         "/((?!_next/static|_next/image|favicon.ico).*)",
     ],
 };

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
+import { safeJsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/blog" },
@@ -148,9 +149,10 @@ export default function BlogIndex() {
     return (
         <PartyPage>
             <script
+                suppressHydrationWarning
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
+                    __html: safeJsonLd({
                         "@context": "https://schema.org",
                         "@type": "CollectionPage",
                         "name": "Birthday & Anniversary Wishes Ideas, Quotes & Inspiration",

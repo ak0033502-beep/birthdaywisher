@@ -42,7 +42,10 @@ export default function DashboardPage({ params }: { params: Promise<{ id: string
                 return;
             }
 
-            fetch(`/api/analytics?wishId=${resolved.id}&token=${token}`)
+            fetch(`/api/analytics?wishId=${encodeURIComponent(resolved.id)}`, {
+                headers: { "x-creator-token": token },
+                cache: "no-store",
+            })
                 .then((res) => {
                     if (!res.ok) throw new Error("Unauthorized");
                     return res.json();
@@ -87,7 +90,7 @@ export default function DashboardPage({ params }: { params: Promise<{ id: string
         { label: "Total Views", value: analytics.viewCount.toString(), icon: <Eye className="w-5 h-5" />, color: "text-blue-400" },
         { label: "Time Spent", value: formatDuration(analytics.totalTimeSpent), icon: <Clock className="w-5 h-5" />, color: "text-green-400" },
         { label: "Most Loved", value: analytics.mostLovedSection || "—", icon: <Heart className="w-5 h-5" />, color: "text-pink-500" },
-        { label: "Status", value: analytics.openedAt ? "Opened ✨" : "Not opened yet", icon: <CalendarDays className="w-5 h-5" />, color: "text-amber-400" },
+        { label: "Status", value: analytics.openedAt ? "Opened 🎉" : "Not opened yet", icon: <CalendarDays className="w-5 h-5" />, color: "text-amber-400" },
     ];
 
     const sortedSections = Object.entries(analytics.sectionTimes).sort(([, a], [, b]) => b - a);

@@ -5,6 +5,34 @@ import { normalizeWish } from '@/lib/wish/migrate';
 import crypto from 'crypto';
 import { v2 as cloudinary } from "cloudinary";
 import { ledgerWishCreated, ledgerWishDeleted, ledgerWishViewed } from "@/lib/analytics";
+import { safeEqualSecret } from "@/lib/security";
+
+const RESERVED_SLUGS = new Set([
+    "admin", "login", "logout", "api", "support", "help", "official", "verify", "security",
+    "billing", "payment", "privacy", "terms", "dmca", "disclaimer", "contact", "about",
+    "create", "anniversary", "blog", "games", "dashboard", "wish", "w", "dev", "null", "undefined",
+]);
+
+export class InvalidSlugError extends Error {
+    constructor(message = "Custom link must be 3–40 letters/numbers and cannot use reserved words.") {
+        super(message);
+        this.name = "InvalidSlugError";
+    }
+}
+
+export function sanitizeCustomSlug(raw: unknown): string | null {
+    if (raw === undefined || raw === null) return null;
+    const str = String(raw).trim();
+    if (!str) return null;
+    const clean = str.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-");
+    if (clean.length < 3 || clean.length > 40) {
+        throw new InvalidSlugError("Custom link must be between 3 and 40 characters.");
+    }
+    if (RESERVED_SLUGS.has(clean)) {
+        throw new InvalidSlugError("This custom link name is reserved. Please pick another one.");
+    }
+    return clean;
+}
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -63,13 +91,15 @@ async function setupDb() {
 export async function saveWish(data: WishData & { customSlug?: string }): Promise<{ id: string; creatorToken: string }> {
     await ensureDb();
 
-    // Generate a short 6-character random ID (retry on the rare collision instead of failing)
-    let id = crypto.randomBytes(3).toString('hex');
+    // Generate a 10-hex-character (40-bit = 1.1 trillion possibilities) random ID; existing 6-char IDs remain supported
+    let id = crypto.randomBytes(5).toString('hex');
     const creatorToken = crypto.randomBytes(32).toString('hex');
-    const customSlug = data.customSlug?.trim().toLowerCase().replace(/[^a-z0-9-]/g, '') || null;
+    const customSlug = sanitizeCustomSlug(data.customSlug);
 
     // Remove customSlug from data before storing (it's in a separate column)
-    const { customSlug: _removed, ...wishData } = data;
+    const wishCopy = { ...data };
+    delete wishCopy.customSlug;
+    const wishData = wishCopy;
 
     try {
         for (let attempt = 0; ; attempt++) {
@@ -81,7 +111,7 @@ export async function saveWish(data: WishData & { customSlug?: string }): Promis
                 break;
             } catch (e) {
                 const msg = String((e as { message?: string })?.message || e);
-                if (attempt < 4 && /duplicate key/i.test(msg) && /pkey/i.test(msg)) { id = crypto.randomBytes(3).toString('hex'); continue; }
+                if (attempt < 4 && /duplicate key/i.test(msg) && /pkey/i.test(msg)) { id = crypto.randomBytes(5).toString('hex'); continue; }
                 if (/duplicate key/i.test(msg) && /custom_slug/i.test(msg)) throw new SlugTakenError();
                 throw e;
             }
@@ -90,7 +120,7 @@ export async function saveWish(data: WishData & { customSlug?: string }): Promis
         await ledgerWishCreated(id, wishData, !!customSlug);
         return { id, creatorToken };
     } catch (error) {
-        if (error instanceof SlugTakenError) throw error;
+        if (error instanceof SlugTakenError || error instanceof InvalidSlugError) throw error;
         console.error("Error saving wish:", error);
         throw new Error("Failed to save wish");
     }
@@ -137,36 +167,57 @@ export async function getWishReadOnly(id: string): Promise<{ data: WishData; ope
     }
 }
 
-export async function getWish(id: string): Promise<WishData | null> {
+export type VisitorWishResult =
+    | { status: "missing" }
+    | { status: "locked"; unlockDate: string; targetName: string; wishType: "birthday" | "anniversary" }
+    | { status: "ok"; data: WishData };
+
+/**
+ * Safe visitor fetch: validates ID format and NEVER returns private wish content
+ * (messages, photos, voice notes, quiz answers) while a scheduled time-capsule lock is active.
+ */
+export async function getWishForVisitor(id: string): Promise<VisitorWishResult> {
+    if (!/^[a-f0-9]{6,10}$/.test(id)) return { status: "missing" };
     await ensureDb();
 
     try {
         const { rows } = await sql`
             SELECT data, opened_at FROM wishes WHERE id = ${id}
         `;
-        if (rows.length === 0) return null;
+        if (rows.length === 0) return { status: "missing" };
 
         const wishData = rows[0].data as WishData;
         const unlockMs = getScheduledUnlockTime(wishData);
         const stillLocked = unlockMs !== null && unlockMs > Date.now();
 
-        // Only start the 10-hour self-destruct timer & count views once the countdown lock (if any) has passed
-        if (!stillLocked) {
-            const firstOpen = !rows[0].opened_at;
-            await sql`
-                UPDATE wishes
-                SET opened_at = COALESCE(opened_at, CURRENT_TIMESTAMP),
-                    view_count = COALESCE(view_count, 0) + 1
-                WHERE id = ${id}
-            `;
-            await ledgerWishViewed(id, firstOpen);
+        if (stillLocked) {
+            const { v2 } = normalizeWish(wishData);
+            const wishType = v2.wishType === "anniversary" ? "anniversary" : "birthday";
+            const rawName = (wishType === "anniversary" ? v2.recipient.coupleName || v2.recipient.name : v2.recipient.name || v2.recipient.nickname) || "Friend";
+            const targetName = rawName.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 60) || "Friend";
+            const unlockDate = new Date(unlockMs).toISOString();
+            return { status: "locked", unlockDate, targetName, wishType };
         }
 
-        return wishData;
+        const firstOpen = !rows[0].opened_at;
+        await sql`
+            UPDATE wishes
+            SET opened_at = COALESCE(opened_at, CURRENT_TIMESTAMP),
+                view_count = COALESCE(view_count, 0) + 1
+            WHERE id = ${id}
+        `;
+        await ledgerWishViewed(id, firstOpen);
+
+        return { status: "ok", data: wishData };
     } catch (error) {
-        console.error("Error getting wish:", error);
-        return null;
+        console.error("Error getting wish for visitor:", error);
+        return { status: "missing" };
     }
+}
+
+export async function getWish(id: string): Promise<WishData | null> {
+    const res = await getWishForVisitor(id);
+    return res.status === "ok" ? res.data : null;
 }
 
 // Get wish by custom slug
@@ -201,28 +252,34 @@ export async function isSlugAvailable(slug: string): Promise<boolean> {
     }
 }
 
-// Save analytics event
+// Save analytics event (capped at 300 rows per wish to prevent table bloat)
 export async function saveAnalyticsEvent(wishId: string, eventType: string, sectionName?: string, timeSpentMs?: number) {
+    if (!/^[a-f0-9]{6,10}$/.test(wishId)) return;
     try {
+        const { rows } = await sql`SELECT COUNT(*)::int AS n FROM wish_analytics WHERE wish_id = ${wishId}`;
+        if ((rows[0]?.n ?? 0) >= 300) return;
         await sql`
             INSERT INTO wish_analytics (wish_id, event_type, section_name, time_spent_ms)
-            VALUES (${wishId}, ${eventType}, ${sectionName || null}, ${timeSpentMs || 0})
+            SELECT ${wishId}, ${eventType.slice(0, 40)}, ${sectionName ? sectionName.slice(0, 80) : null}, ${timeSpentMs || 0}
+            WHERE EXISTS (SELECT 1 FROM wishes WHERE id = ${wishId})
         `;
     } catch (error) {
         console.error("Error saving analytics:", error);
     }
 }
 
-// Get analytics for a wish (creator dashboard)
+// Get analytics for a wish (creator dashboard; constant-time token comparison)
 export async function getWishAnalytics(wishId: string, creatorToken: string) {
+    if (!/^[a-f0-9]{6,10}$/.test(wishId) || !creatorToken) return null;
     await ensureDb();
     try {
-        // Verify creator token
         const { rows: wishRows } = await sql`
-            SELECT id, view_count, created_at, opened_at, custom_slug
-            FROM wishes WHERE id = ${wishId} AND creator_token = ${creatorToken}
+            SELECT id, view_count, created_at, opened_at, custom_slug, creator_token
+            FROM wishes WHERE id = ${wishId}
         `;
         if (wishRows.length === 0) return null;
+        const storedToken = typeof wishRows[0].creator_token === "string" ? wishRows[0].creator_token : "";
+        if (!storedToken || !safeEqualSecret(creatorToken, storedToken)) return null;
 
         // Get section analytics
         const { rows: events } = await sql`

@@ -1,9 +1,9 @@
 import crypto from "crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 /**
  * Admin auth: one password from the ADMIN_PASSWORD env variable.
- * Session = signed, httpOnly cookie "bw_admin" (expiry + HMAC), valid 7 days.
+ * Session = signed, httpOnly, SameSite=Strict cookie "bw_admin" (expiry + HMAC), valid 7 days.
  * If ADMIN_PASSWORD is not set, the admin area stays locked.
  */
 export const ADMIN_COOKIE = "bw_admin";
@@ -43,13 +43,29 @@ export const sessionCookie = (value: string, maxAge = MAX_AGE) => ({
     value,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    sameSite: "strict" as const,
     path: "/",
     maxAge,
 });
 
-/** For server components / actions / route handlers. */
+/** For server components / route handlers. */
 export async function isAdmin(): Promise<boolean> {
     const jar = await cookies();
     return verifySessionToken(jar.get(ADMIN_COOKIE)?.value);
+}
+
+/** For mutating Server Actions: verifies both Admin session AND same-origin Origin/Host header. */
+export async function isSameOriginAdmin(): Promise<boolean> {
+    if (!(await isAdmin())) return false;
+    if (process.env.NODE_ENV === "development") return true;
+    const h = await headers();
+    const host = (h.get("x-forwarded-host") || h.get("host") || "").toLowerCase().replace(/^www\./, "");
+    const origin = h.get("origin");
+    if (!host || !origin) return false;
+    try {
+        const oh = new URL(origin).host.toLowerCase().replace(/^www\./, "");
+        return oh === host;
+    } catch {
+        return false;
+    }
 }

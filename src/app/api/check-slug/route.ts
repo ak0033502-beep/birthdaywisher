@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isSlugAvailable } from "@/lib/db";
+import { InvalidSlugError, isSlugAvailable, sanitizeCustomSlug } from "@/lib/db";
 
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
@@ -9,12 +9,17 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Slug is required" }, { status: 400 });
     }
 
-    // Validate slug format
-    const cleanSlug = slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
-    if (cleanSlug.length < 3 || cleanSlug.length > 40) {
-        return NextResponse.json({ available: false, error: "Slug must be 3-40 characters" });
+    try {
+        const cleanSlug = sanitizeCustomSlug(slug);
+        if (!cleanSlug) {
+            return NextResponse.json({ available: false, error: "Slug must be 3-40 characters" });
+        }
+        const available = await isSlugAvailable(cleanSlug);
+        return NextResponse.json({ available, slug: cleanSlug });
+    } catch (e) {
+        if (e instanceof InvalidSlugError) {
+            return NextResponse.json({ available: false, error: e.message });
+        }
+        return NextResponse.json({ available: false, error: "Could not check link availability" }, { status: 500 });
     }
-
-    const available = await isSlugAvailable(cleanSlug);
-    return NextResponse.json({ available, slug: cleanSlug });
 }

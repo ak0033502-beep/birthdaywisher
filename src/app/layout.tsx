@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SiteLanguageProvider } from "@/lib/SiteLanguageContext";
 import { SITE_NAME, SITE_URL, absUrl } from "@/lib/site";
+import { safeJsonLd } from "@/components/seo/JsonLd";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
 import { SiteTracker } from "@/components/seo/SiteTracker";
 import { AdSenseLoader } from "@/components/seo/AdSenseLoader";
@@ -76,7 +77,7 @@ export default function RootLayout({
           suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "BirthdayWisher.fun",

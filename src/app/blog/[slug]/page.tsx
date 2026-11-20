@@ -4,6 +4,7 @@ import { Heart, Zap } from "lucide-react";
 import { PartyPage, PageHero, Prose, CtaCard } from "@/components/party/PartyPage";
 import { notFound } from "next/navigation";
 import { SITE_URL, toIsoDate } from "@/lib/site";
+import { safeJsonLd } from "@/components/seo/JsonLd";
 
 // Placeholder data - In production this would come from a CMS or MDX
 const getPostData = (slug: string) => {
@@ -817,7 +818,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 suppressHydrationWarning
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
+                    __html: safeJsonLd({
                         "@context": "https://schema.org",
                         "@type": "Article",
                         "headline": post.title,
@@ -844,7 +845,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 suppressHydrationWarning
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
+                    __html: safeJsonLd({
                         "@context": "https://schema.org",
                         "@type": "BreadcrumbList",
                         "itemListElement": [
@@ -875,7 +876,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     suppressHydrationWarning
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
+                        __html: safeJsonLd({
                             "@context": "https://schema.org",
                             "@type": "FAQPage",
                             "mainEntity": post.faq.map((f) => ({

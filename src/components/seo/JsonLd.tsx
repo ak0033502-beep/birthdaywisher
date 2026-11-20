@@ -2,12 +2,27 @@ import { SITE_NAME, SITE_URL, absUrl, toIsoDate } from "@/lib/site";
 
 type JsonLdObject = Record<string, unknown>;
 
+/**
+ * Serializes JSON-LD safely for inline <script type="application/ld+json"> tags,
+ * escaping `<`, `>`, `&`, and line separators so user-supplied strings (such as reviews)
+ * can NEVER break out of `</script>`.
+ */
+export function safeJsonLd(data: unknown): string {
+    return JSON.stringify(data)
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026")
+        .replace(/\u2028/g, "\\u2028")
+        .replace(/\u2029/g, "\\u2029");
+}
+
 /** Renders one or more schema.org objects as a JSON-LD script tag. */
 export function JsonLd({ data }: { data: JsonLdObject | JsonLdObject[] }) {
     return (
         <script
+            suppressHydrationWarning
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
         />
     );
 }
