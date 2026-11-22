@@ -62,6 +62,7 @@ export function PartyFooter() {
                             <li><Link href="/create">Create Birthday Wish</Link></li>
                             <li><Link href="/anniversary">Create Anniversary Wish</Link></li>
                             <li><Link href="/birthday-wishes-game">Birthday Wishes Games</Link></li>
+                            <li><Link href="/blog/best-free-online-birthday-surprise-websites">Best Free Birthday Surprise Sites</Link></li>
                             <li><Link href="/blog">Birthday Wish Ideas (Blog)</Link></li>
                             <li><Link href="/blog/best-friend-quotes">For Best Friends</Link></li>
                             <li><Link href="/blog/romantic-wishes">For Partner / Boyfriend / Girlfriend</Link></li>

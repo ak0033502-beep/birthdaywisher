@@ -3,6 +3,7 @@ import { cleanupExpiredWishes, cleanupOrphanCloudinaryMedia } from "@/lib/db";
 import { kvGet, kvSet, rollupAndPrune } from "@/lib/analytics";
 import { isAdmin } from "@/lib/adminAuth";
 import { safeEqualSecret } from "@/lib/security";
+import { submitAllToIndexNow } from "@/lib/indexNow";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,22 @@ export async function GET(request: Request) {
         // Analytics retention: raw events older than 12 months -> daily totals
         let prunedEvents = 0;
         try { prunedEvents = await rollupAndPrune(); } catch (e) { console.error("Analytics rollup failed:", e); }
+
+        // Weekly automatic IndexNow refresh so Bing / ChatGPT Search / Copilot stay up to date
+        try {
+            const lastIdx = await kvGet<{ at?: string }>("last_indexnow").catch(() => null);
+            const lastIdxMs = lastIdx?.v?.at ? Date.parse(lastIdx.v.at) : 0;
+            if (!Number.isFinite(lastIdxMs) || Date.now() - lastIdxMs > 7 * 24 * 3600 * 1000) {
+                const idxRes = await submitAllToIndexNow();
+                await kvSet("last_indexnow", {
+                    ok: idxRes.ok,
+                    status: idxRes.status,
+                    count: idxRes.submittedCount,
+                    msg: idxRes.message,
+                    at: new Date().toISOString(),
+                });
+            }
+        } catch (e) { console.error("Weekly IndexNow refresh failed:", e); }
 
         // Shown in the admin dashboard ("last cleanup")
         await kvSet("last_cleanup", { deleted: deletedCount, orphanMedia, freedMb, prunedEvents, at: new Date().toISOString() }).catch(console.error);

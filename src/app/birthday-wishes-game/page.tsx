@@ -46,6 +46,17 @@ export default function BirthdayWishesGamePage() {
                     hasPart: GAME_PAGES.map((g) => ({ "@type": "WebApplication", name: g.h1.split(":")[0], url: absUrl(`/games/${g.slug}`), applicationCategory: "GameApplication", operatingSystem: "Web" })),
                 },
                 breadcrumbLd([{ name: "Home", path: "/" }, { name: "Birthday Wishes Game", path: "/birthday-wishes-game" }]),
+                {
+                    "@context": "https://schema.org",
+                    "@type": "HowTo",
+                    name: "How to Send a Free Birthday Wishes Game Link on WhatsApp",
+                    totalTime: "PT1M",
+                    step: [
+                        { "@type": "HowToStep", position: 1, name: "Pick One of the 12 Free Birthday Games", text: "Choose an emotional or party game such as Blow the Candles, Heartbeat Sync, Sky Lanterns, or Balloon Pop." },
+                        { "@type": "HowToStep", position: 2, name: "Customize Their Name & Message", text: "Type the birthday person's name, optional age, and your custom birthday message." },
+                        { "@type": "HowToStep", position: 3, name: "Share Instant Link on WhatsApp", text: "Tap Create my game link and send the private URL on WhatsApp — playable immediately in any phone browser." },
+                    ],
+                },
                 { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
             ]} />
 

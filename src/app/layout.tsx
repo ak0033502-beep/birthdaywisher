@@ -97,6 +97,8 @@ gtag('js', new Date());`,
           }}
         />
         <meta name="google-adsense-account" content="ca-pub-6302942607473891" />
+        <link rel="alternate" type="text/markdown" title="BirthdayWisher.fun AI Overview" href="/llms.txt" />
+        <link rel="alternate" type="text/markdown" title="BirthdayWisher.fun Complete AI Reference" href="/llms-full.txt" />
         <script
           suppressHydrationWarning
           type="application/ld+json"

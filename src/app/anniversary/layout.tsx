@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { JsonLd, breadcrumbLd } from "@/components/seo/JsonLd";
+import { absUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/anniversary" },
@@ -12,5 +14,63 @@ export default function AnniversaryLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <>{children}</>;
+    return (
+        <>
+            <JsonLd
+                data={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "WebApplication",
+                        name: "BirthdayWisher.fun Wedding Anniversary Surprise Maker",
+                        url: absUrl("/anniversary"),
+                        applicationCategory: "EntertainmentApplication",
+                        operatingSystem: "Any (Mobile & Desktop Web Browser)",
+                        isAccessibleForFree: true,
+                        offers: {
+                            "@type": "Offer",
+                            price: "0",
+                            priceCurrency: "USD",
+                        },
+                        featureList: [
+                            "Interactive wedding anniversary story for couples, wife, husband & parents",
+                            "Couple trivia quiz, Guess the Year photo timeline & Heartbeat Sync",
+                            "Wedding photo memories, recorded voice note & Future Promise ticket",
+                            "Midnight anniversary countdown lock & 10-hour auto-delete privacy",
+                        ],
+                    },
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "HowTo",
+                        name: "How to Create an Interactive Wedding Anniversary Surprise Link",
+                        totalTime: "PT3M",
+                        step: [
+                            {
+                                "@type": "HowToStep",
+                                position: 1,
+                                name: "Personalize Your Love Story",
+                                text: "Open the Anniversary Creator, enter your partner's or couple's names, upload favourite photos, and record a voice note.",
+                            },
+                            {
+                                "@type": "HowToStep",
+                                position: 2,
+                                name: "Add Couple Games & Aesthetics",
+                                text: "Choose romantic themes, gentle music, couple quiz questions, or Heartbeat Sync.",
+                            },
+                            {
+                                "@type": "HowToStep",
+                                position: 3,
+                                name: "Send Your Private Anniversary Link",
+                                text: "Copy the generated private URL and share it on WhatsApp or Instagram with zero login required.",
+                            },
+                        ],
+                    },
+                    breadcrumbLd([
+                        { name: "Home", path: "/" },
+                        { name: "Wedding Anniversary Surprise Maker", path: "/anniversary" },
+                    ]),
+                ]}
+            />
+            {children}
+        </>
+    );
 }

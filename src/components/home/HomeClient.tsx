@@ -96,6 +96,7 @@ const FEATURES: Array<{ e: string; t: keyof SiteStrings; d: keyof SiteStrings; b
 
 const GUIDES = [
   { e: "🎮", t: "Free interactive wish maker", href: "/use-cases/interactive-birthday-wish" },
+  { e: "🏆", t: "Best free birthday surprise websites", href: "/blog/best-free-online-birthday-surprise-websites" },
   { e: "❤️", t: "Boyfriend birthday surprise", href: "/use-cases/boyfriend-birthday-surprise" },
   { e: "✈️", t: "Long-distance birthday ideas", href: "/blog/long-distance-birthday-ideas" },
   { e: "👯", t: "Best friend birthday quotes", href: "/blog/best-friend-quotes" },

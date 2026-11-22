@@ -204,7 +204,7 @@ export async function getRecipient(days: number) {
 
 /* ======================= 5. Traffic & content ======================= */
 export async function getTraffic(days: number) {
-    const [pages, sources, landing, ctas, gamesRows, blog] = await Promise.all([
+    const [pages, sources, landing, ctas, gamesRows, blog, lastIndexNow] = await Promise.all([
         safe(() => sql`SELECT path key, COUNT(*) n, COUNT(DISTINCT sid) u FROM site_events WHERE name = 'page_view' AND ts > NOW() - (${days}::int * INTERVAL '1 day')
                  AND path NOT LIKE '/wish/%' AND path NOT LIKE '/w/%' GROUP BY 1 ORDER BY 2 DESC LIMIT 20`, { rows: [] as Row[] } as never, "traffic.pages"),
         safe(() => sql`SELECT src key, COUNT(DISTINCT sid) n FROM site_events WHERE ts > NOW() - (${days}::int * INTERVAL '1 day') AND src <> 'internal' GROUP BY 1 ORDER BY 2 DESC LIMIT 15`, { rows: [] as Row[] } as never, "traffic.sources"),
@@ -219,6 +219,7 @@ export async function getTraffic(days: number) {
         safe(() => sql`WITH v AS (SELECT path, COUNT(*) n, COUNT(DISTINCT sid) u FROM site_events WHERE name = 'page_view' AND path LIKE '/blog%' AND ts > NOW() - (${days}::int * INTERVAL '1 day') GROUP BY 1),
                  k AS (SELECT path, COUNT(*) n FROM site_events WHERE name = 'cta_click' AND path LIKE '/blog%' AND ts > NOW() - (${days}::int * INTERVAL '1 day') GROUP BY 1)
                  SELECT v.path key, v.n, v.u, COALESCE(k.n, 0) clicks FROM v LEFT JOIN k ON k.path = v.path ORDER BY v.n DESC LIMIT 20`, { rows: [] as Row[] } as never, "traffic.blog"),
+        safe(() => kvGet<{ ok?: boolean; status?: number; count?: number; msg?: string; at?: string }>("last_indexnow"), null, "traffic.indexnow"),
     ]);
     return {
         pages: pages.rows.map((r) => ({ key: str(r.key), n: num(r.n), u: num(r.u) })),
@@ -227,6 +228,7 @@ export async function getTraffic(days: number) {
         ctas: counts(ctas.rows),
         games: gamesRows.rows.map((r) => ({ key: str(r.game), plays: num(r.plays), makes: num(r.makes) })),
         blog: blog.rows.map((r) => ({ key: str(r.key), n: num(r.n), u: num(r.u), clicks: num(r.clicks) })),
+        lastIndexNow,
     };
 }
 

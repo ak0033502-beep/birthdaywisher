@@ -24,6 +24,14 @@ const CAT_STYLE: Record<string, { e: string; c: string }> = {
 
 const blogPosts = [
     {
+        slug: "best-free-online-birthday-surprise-websites",
+        title: "Best Free Online Birthday Surprise Websites (2026 Comparison Guide)",
+        excerpt: "Compare the best free interactive birthday & anniversary surprise websites without login — playable mini-games, mic candles, voice notes & private WhatsApp links.",
+        date: "Nov 22, 2026",
+        author: "BirthdayWisher.fun Editorial",
+        category: "Guides"
+    },
+    {
         slug: "top-50-heart-touching-birthday-wishes-for-best-friend",
         title: "Top 50 Heart-Touching Birthday Wishes for a Best Friend",
         excerpt: "Struggling to find the right words? Here are 50 unique, emotional, and funny birthday wishes guaranteed to make your bestie smile or cry (happy tears!).",

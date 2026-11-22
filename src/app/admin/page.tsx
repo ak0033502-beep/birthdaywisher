@@ -5,7 +5,7 @@ import { isAdmin } from "@/lib/adminAuth";
 import { backfillLedger, getDevices, getErrors, getFunnel, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
 import { buildInsights, stepLabel } from "@/lib/adminInsights";
 import { Bars, Card, Funnel, Kpi, LineChart, Table, fmt, pct } from "@/components/admin/charts";
-import { CleanupButton, DeleteWishForm, HealthCheck, LogoutButton } from "@/components/admin/AdminClient";
+import { CleanupButton, DeleteWishForm, HealthCheck, IndexNowButton, LogoutButton } from "@/components/admin/AdminClient";
 import { toggleReviewAction } from "./actions";
 import { BLOCKS } from "@/blocks/registry";
 
@@ -318,6 +318,18 @@ async function TrafficTab({ days }: { days: number }) {
             </Card>
             <Card title="Blog performance" sub="Readers and how many clicked a Create button." wide>
                 <Table head={["Post", "Views", "Readers", "Create clicks"]} rows={t.blog.map((b) => [b.key, fmt(b.n), fmt(b.u), fmt(b.clicks)])} empty="No blog visits tracked yet" />
+            </Card>
+            <Card
+                title="🤖 AI Bots &amp; IndexNow Instant Ping"
+                sub="Submits all public pages + /llms.txt + /llms-full.txt directly to IndexNow (Bing → ChatGPT Search, Microsoft Copilot, DuckDuckGo AI). Also auto-refreshes weekly."
+                wide
+            >
+                <ul className="adm-facts" style={{ marginBottom: 12 }}>
+                    <li><span>Last IndexNow ping</span><b>{t.lastIndexNow ? when(t.lastIndexNow.v?.at || t.lastIndexNow.updated_at) : "not sent yet"}</b></li>
+                    <li><span>Last status</span><b>{t.lastIndexNow?.v?.msg || "Click below once live to notify Bing & AI search engines"}</b></li>
+                    <li><span>AI reference endpoints</span><b><a href="/llms.txt" target="_blank" rel="noopener noreferrer">/llms.txt</a> · <a href="/llms-full.txt" target="_blank" rel="noopener noreferrer">/llms-full.txt</a></b></li>
+                </ul>
+                <IndexNowButton />
             </Card>
             <Card title="🩺 Site health check" sub="Checks every page in the sitemap: status, speed, title, description, canonical, H1, og:image, noindex." wide>
                 <HealthCheck />

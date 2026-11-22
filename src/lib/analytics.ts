@@ -165,6 +165,11 @@ export function sourceOf(referrer: string, utm: string, ownHost: string): string
     let host = "";
     try { host = new URL(referrer).hostname.replace(/^www\./, ""); } catch { return "direct"; }
     if (!host || host === ownHost.replace(/^www\./, "")) return "internal";
+    if (/chatgpt\.com|openai\.com/.test(host)) return "chatgpt";
+    if (/perplexity\.ai/.test(host)) return "perplexity";
+    if (/gemini\.google\.com|bard\.google\.com/.test(host)) return "gemini";
+    if (/claude\.ai/.test(host)) return "claude";
+    if (/copilot\.microsoft\.com/.test(host)) return "copilot";
     if (/google\./.test(host)) return "google";
     if (/bing\.|duckduckgo|yahoo|yandex|ecosia/.test(host)) return "search-other";
     if (/whatsapp|wa\.me/.test(host)) return "whatsapp";

@@ -5,6 +5,7 @@ import { sql } from "@vercel/postgres";
 import { isSameOriginAdmin } from "@/lib/adminAuth";
 import { cleanupExpiredWishes, cleanupOrphanCloudinaryMedia, deleteWishNow } from "@/lib/db";
 import { kvSet, rollupAndPrune } from "@/lib/analytics";
+import { submitAllToIndexNow } from "@/lib/indexNow";
 
 export type ActionResult = { ok: boolean; msg: string };
 
@@ -50,5 +51,23 @@ export async function runCleanupAction(): Promise<ActionResult> {
         };
     } catch (e) {
         return { ok: false, msg: `Cleanup failed: ${String(e).slice(0, 120)}` };
+    }
+}
+
+export async function pingIndexNowAction(): Promise<ActionResult> {
+    if (!(await isSameOriginAdmin())) return { ok: false, msg: "Not authorized" };
+    try {
+        const res = await submitAllToIndexNow();
+        await kvSet("last_indexnow", {
+            ok: res.ok,
+            status: res.status,
+            count: res.submittedCount,
+            msg: res.message,
+            at: new Date().toISOString(),
+        });
+        revalidatePath("/admin");
+        return { ok: res.ok, msg: res.message };
+    } catch (e) {
+        return { ok: false, msg: `IndexNow ping failed: ${String(e).slice(0, 120)}` };
     }
 }

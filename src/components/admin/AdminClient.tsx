@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { optOutOfTracking } from "@/lib/track";
-import { deleteWishAction, runCleanupAction, type ActionResult } from "@/app/admin/actions";
+import { deleteWishAction, pingIndexNowAction, runCleanupAction, type ActionResult } from "@/app/admin/actions";
 
 export function LoginForm({ configured }: { configured: boolean }) {
     const [pw, setPw] = useState("");
@@ -77,6 +77,18 @@ export function CleanupButton() {
     return (
         <form action={action} className="adm-form">
             <button type="submit" className="adm-btn ghost" disabled={pending}>{pending ? "Running…" : "Run cleanup now"}</button>
+            {state && <p className={state.ok ? "adm-ok" : "adm-err"}>{state.msg}</p>}
+        </form>
+    );
+}
+
+export function IndexNowButton() {
+    const [state, action, pending] = useActionState<ActionResult | null>(pingIndexNowAction, null);
+    return (
+        <form action={action} className="adm-form">
+            <button type="submit" className="adm-btn" disabled={pending}>
+                {pending ? "Submitting to IndexNow…" : "🚀 Ping AI & IndexNow (All Pages)"}
+            </button>
             {state && <p className={state.ok ? "adm-ok" : "adm-err"}>{state.msg}</p>}
         </form>
     );

@@ -1,10 +1,13 @@
 import { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/site'
+import { INDEXNOW_KEY } from '@/lib/indexNow'
 
 const PRIVATE_PATHS = ['/api/', '/admin', '/wish/', '/w/', '/dashboard/']
 const PUBLIC_ALLOW = [
     '/',
     '/llms.txt',
+    '/llms-full.txt',
+    `/${INDEXNOW_KEY}.txt`,
     '/favicon.ico',
     '/favicon-48x48.png',
     '/favicon-96x96.png',
@@ -36,8 +39,16 @@ export default function robots(): MetadataRoute.Robots {
                     'ChatGPT-User',
                     'GPTBot',
                     'PerplexityBot',
+                    'Perplexity-User',
                     'ClaudeBot',
+                    'Claude-Web',
+                    'anthropic-ai',
+                    'Applebot',
                     'Applebot-Extended',
+                    'DuckAssistBot',
+                    'Meta-ExternalAgent',
+                    'YouBot',
+                    'cohere-ai',
                 ],
                 allow: PUBLIC_ALLOW,
                 disallow: PRIVATE_PATHS,
