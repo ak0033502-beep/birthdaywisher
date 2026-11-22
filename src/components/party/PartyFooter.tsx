@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
 import { getHomeStrings } from "@/components/home/homeStrings";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/site";
 import { BrandMark } from "./BrandLogo";
 
 /** Site footer in the "Joyful Party" design. Must be rendered inside a `.party` scope. */
@@ -18,6 +19,42 @@ export function PartyFooter() {
                     <div>
                         <div className="bw-logo" style={{ marginBottom: 12 }}><BrandMark size={30} /><span>BirthdayWisher<b>.fun</b></span></div>
                         <p>{s.footerDesc}</p>
+                        <div style={{ marginTop: 14 }}>
+                            <a
+                                href={INSTAGRAM_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Follow BirthdayWisher.fun on Instagram"
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    padding: "8px 14px",
+                                    borderRadius: 999,
+                                    background: "var(--p-surface)",
+                                    border: "1.5px solid var(--p-line)",
+                                    boxShadow: "var(--p-shadow)",
+                                    color: "var(--p-text)",
+                                    fontWeight: 800,
+                                    fontSize: 13,
+                                    textDecoration: "none",
+                                }}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <defs>
+                                        <linearGradient id="ig-grad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stopColor="#FF9F43" />
+                                            <stop offset="50%" stopColor="#FF5C8A" />
+                                            <stop offset="100%" stopColor="#7C5CFF" />
+                                        </linearGradient>
+                                    </defs>
+                                    <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="url(#ig-grad)" strokeWidth="2.2" />
+                                    <circle cx="12" cy="12" r="4.3" stroke="url(#ig-grad)" strokeWidth="2.2" />
+                                    <circle cx="17.4" cy="6.6" r="1.3" fill="#FF5C8A" />
+                                </svg>
+                                <span>{INSTAGRAM_HANDLE}</span>
+                            </a>
+                        </div>
                     </div>
                     <div>
                         <h4>{h.footerCreate}</h4>
@@ -53,6 +90,7 @@ export function PartyFooter() {
                         <ul>
                             <li><Link href="/about">About Us</Link></li>
                             <li><Link href="/contact">Contact</Link></li>
+                            <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">Instagram</a></li>
                             <li><Link href="/privacy">Privacy Policy</Link></li>
                             <li><Link href="/terms">Terms &amp; Conditions</Link></li>
                             <li><Link href="/disclaimer">Disclaimer</Link></li>

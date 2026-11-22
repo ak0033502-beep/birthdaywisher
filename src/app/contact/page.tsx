@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/contact" },
@@ -35,6 +36,16 @@ export default function ContactPage() {
                     </p>
                     <p className="text-foreground/60 text-sm">We typically respond within 24–48 hours.</p>
 
+                    <h2 className="text-2xl font-bold mt-12 mb-4">📸 Connect on Instagram</h2>
+                    <p className="text-foreground/70 leading-relaxed">
+                        Want quick updates, surprise ideas, or want to message us directly on social media? Follow &amp; DM us on our official Instagram:
+                    </p>
+                    <p className="text-foreground/90 leading-relaxed">
+                        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-semibold">
+                            {INSTAGRAM_HANDLE}
+                        </a>
+                    </p>
+
                     <h2 className="text-2xl font-bold mt-12 mb-4">💬 What Can We Help With?</h2>
                     <ul className="text-foreground/70 leading-relaxed space-y-2">
                         <li>🎂 <strong>Birthday Wish Support:</strong> Issues creating or sharing birthday wishes</li>
@@ -54,6 +65,7 @@ export default function ContactPage() {
                     <div className="text-foreground/70 leading-relaxed">
                         <p><strong>Website:</strong> <a href="https://www.birthdaywisher.fun" className="text-primary hover:underline">birthdaywisher.fun</a></p>
                         <p><strong>Email:</strong> <a href="mailto:akalloverservices@gmail.com" className="text-primary hover:underline">akalloverservices@gmail.com</a></p>
+                        <p><strong>Instagram:</strong> <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{INSTAGRAM_HANDLE}</a></p>
                         <p><strong>Country:</strong> India</p>
                     </div>
 

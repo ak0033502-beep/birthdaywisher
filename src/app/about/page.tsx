@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { PartyPage, PageHero, CtaCard } from "@/components/party/PartyPage";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
     alternates: { canonical: "/about" },
@@ -45,6 +46,15 @@ export default function AboutPage() {
                         <li><strong>Privacy First:</strong> The memories you share are sacred. Our unique self-destruct mechanism ensures your photos and voice notes don't live on the internet forever.</li>
                         <li><strong>Unforgettable Design:</strong> We are obsessed with creating the "WOW" factor. Every animation, confetti burst, and haptic feedback is designed to delight.</li>
                     </ul>
+
+                    <h2 className="text-3xl font-bold mt-12 mb-6">Follow Our Journey</h2>
+                    <p>
+                        Follow us on Instagram at{" "}
+                        <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">
+                            {INSTAGRAM_HANDLE}
+                        </a>{" "}
+                        for fresh birthday &amp; anniversary surprise ideas, new interactive games, and behind-the-scenes updates.
+                    </p>
                 </div>
                     </div>
                     <CtaCard title="Ready to make someone smile?" text="Build an interactive birthday surprise in 3 minutes. Free, private, no app." />

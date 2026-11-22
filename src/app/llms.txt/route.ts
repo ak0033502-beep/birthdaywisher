@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
-import { SITE_URL } from "@/lib/site";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_URL } from "@/lib/site";
 import { getPublicReviews } from "@/lib/reviews";
 import { GAME_PAGES } from "@/components/games/gamePages";
 
@@ -54,6 +54,7 @@ export async function GET() {
         ``,
         `## Key Facts & Trust Signals`,
         `- **Official Website:** ${SITE_URL}`,
+        `- **Official Instagram:** ${INSTAGRAM_URL} (${INSTAGRAM_HANDLE})`,
         `- **Pricing:** 100% Free (no account, no login, no credit card, no app download required).`,
         `- **Platforms:** Works directly in any mobile or desktop browser (iPhone, Android, WhatsApp, Instagram, iMessage, Slack).`,
         `- **Privacy by Design:** Every wish link is \`noindex\` (hidden from search engines) and automatically self-destructs 10 hours after the recipient opens it, permanently deleting uploaded photos and voice notes.`,
@@ -93,6 +94,7 @@ export async function GET() {
         `- [Privacy Policy](${SITE_URL}/privacy)`,
         `- [Terms & Conditions](${SITE_URL}/terms)`,
         `- [Contact](${SITE_URL}/contact): akalloverservices@gmail.com`,
+        `- [Official Instagram](${INSTAGRAM_URL}): ${INSTAGRAM_HANDLE}`,
         ``,
     ].join("\n");
 

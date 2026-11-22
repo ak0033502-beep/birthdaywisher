@@ -5,7 +5,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { SiteLanguageProvider } from "@/lib/SiteLanguageContext";
-import { SITE_NAME, SITE_URL, absUrl } from "@/lib/site";
+import { INSTAGRAM_URL, SITE_NAME, SITE_URL, absUrl } from "@/lib/site";
 import { safeJsonLd } from "@/components/seo/JsonLd";
 import { GoogleAnalytics } from "@/components/seo/GoogleAnalytics";
 import { SiteTracker } from "@/components/seo/SiteTracker";
@@ -129,7 +129,7 @@ gtag('js', new Date());`,
                     "email": "akalloverservices@gmail.com",
                     "contactType": "customer service"
                   },
-                  "sameAs": []
+                  "sameAs": [INSTAGRAM_URL]
                 }
               ]
             })
