@@ -55,29 +55,54 @@ export function CandlesSlide({ config, ctx }: GameSlideProps<"candles">) {
     }, []);
 
     const startMic = async () => {
+        if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+            setMic("denied");
+            return;
+        }
         setMic("asking");
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } });
             const W = window as Window & { webkitAudioContext?: typeof AudioContext };
-            const ac = new (window.AudioContext || W.webkitAudioContext!)();
+            const Ctor = window.AudioContext || W.webkitAudioContext;
+            if (!Ctor) {
+                stream.getTracks().forEach((t) => t.stop());
+                setMic("denied");
+                return;
+            }
+            const ac = new Ctor();
+            if (ac.state === "suspended") await ac.resume().catch(() => {});
             const an = ac.createAnalyser();
             an.fftSize = 512;
-            ac.createMediaStreamSource(stream).connect(an);
+            const src = ac.createMediaStreamSource(stream);
+            src.connect(an);
             const buf = new Uint8Array(an.fftSize);
-            let raf = 0, loud = 0, cooldown = 0, uiTick = 0;
-            const tick = () => {
-                an.getByteTimeDomainData(buf);
-                let sum = 0;
-                for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
-                const rms = Math.sqrt(sum / buf.length);
-                if (++uiTick % 3 === 0) setBreath(Math.min(100, Math.round((rms / 0.22) * 100)));
-                loud = rms > 0.16 ? loud + 1 : Math.max(0, loud - 1);
-                if (cooldown > 0) cooldown--;
-                if (loud > 5 && cooldown === 0) { blowAt(); cooldown = 11; loud = 0; }
-                raf = requestAnimationFrame(tick);
+            let raf = 0, loud = 0, cooldown = 0, uiTick = 0, stopped = false;
+            const stop = () => {
+                if (stopped) return;
+                stopped = true;
+                cancelAnimationFrame(raf);
+                try { src.disconnect(); } catch { /* already disconnected */ }
+                try { stream.getTracks().forEach((t) => t.stop()); } catch { /* ignore */ }
+                ac.close().catch(() => {});
             };
+            const tick = () => {
+                if (stopped) return;
+                try {
+                    an.getByteTimeDomainData(buf);
+                    let sum = 0;
+                    for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+                    const rms = Math.sqrt(sum / buf.length);
+                    if (++uiTick % 3 === 0) setBreath(Math.min(100, Math.round((rms / 0.22) * 100)));
+                    loud = rms > 0.16 ? loud + 1 : Math.max(0, loud - 1);
+                    if (cooldown > 0) cooldown--;
+                    if (loud > 5 && cooldown === 0) { blowAt(); cooldown = 11; loud = 0; }
+                    if (!stopped) raf = requestAnimationFrame(tick);
+                } catch {
+                    stop();
+                }
+            };
+            stopRef.current = stop;
             tick();
-            stopRef.current = () => { cancelAnimationFrame(raf); stream.getTracks().forEach((t) => t.stop()); ac.close().catch(() => {}); };
             setMic("on");
         } catch {
             setMic("denied");

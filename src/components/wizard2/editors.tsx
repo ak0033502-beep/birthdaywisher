@@ -83,7 +83,8 @@ function PhotosEditor({ value, onChange, env }: EditorProps<"photos">) {
         if (!list?.length) return;
         const ok: File[] = []; let p = nPhotos, v = nVideos; const skipped: string[] = [];
         for (const f of Array.from(list)) {
-            const isVideo = f.type.startsWith("video/");
+            const isVideo = f.type.startsWith("video/") || /\.(mp4|mov|webm|m4v|3gp)$/i.test(f.name);
+            if (f.size === 0) { skipped.push(`${f.name} (0 bytes — save from iCloud/Photos first)`); continue; }
             if (f.size > LIMITS.maxBytes) { skipped.push(`${f.name} (over 25 MB)`); continue; }
             if (isVideo ? v >= LIMITS.maxVideos : p >= LIMITS.maxPhotos) { skipped.push(`${f.name} (limit reached)`); continue; }
             ok.push(f); if (isVideo) v++; else p++;
@@ -343,8 +344,7 @@ function GiftCardEditor({ value, onChange, env }: EditorProps<"giftCard">) {
     const up = useUpload();
     const onFile = async (f?: File) => {
         if (!f) return;
-        if (f.size > LIMITS.maxBytes) return;
-        const res = await up.run((signal, onPct) => uploadFiles([f], (p) => onPct(p.percent), { signal }));
+        const res = await up.run((signal, onPct) => uploadFiles([f], (p) => onPct(p.percent), { signal, allowPdf: true }));
         if (res?.[0]) { onChange({ ...value, url: res[0].url }); env.react(); }
     };
     return (

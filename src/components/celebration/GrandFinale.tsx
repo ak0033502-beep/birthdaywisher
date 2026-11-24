@@ -308,26 +308,50 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
     };
 
     const startMic = async () => {
+        if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+            setMic("denied");
+            return;
+        }
         setMic("asking");
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false } });
             const W = window as Window & { webkitAudioContext?: typeof AudioContext };
-            const own = !sfxRef.current;
-            const ac = sfxRef.current?.ctx || new (window.AudioContext || W.webkitAudioContext!)();
+            const Ctor = window.AudioContext || W.webkitAudioContext;
+            const own = !sfxRef.current?.ctx;
+            if (own && !Ctor) {
+                stream.getTracks().forEach((t) => t.stop());
+                setMic("denied");
+                return;
+            }
+            const ac = sfxRef.current?.ctx || new Ctor!();
+            if (ac.state === "suspended") await ac.resume().catch(() => {});
             const an = ac.createAnalyser(); an.fftSize = 512;
             const src = ac.createMediaStreamSource(stream); src.connect(an);
             const buf = new Uint8Array(an.fftSize);
-            let raf = 0, loud = 0;
-            const tick = () => {
-                an.getByteTimeDomainData(buf);
-                let sum = 0;
-                for (let k = 0; k < buf.length; k++) { const v = (buf[k] - 128) / 128; sum += v * v; }
-                loud = Math.sqrt(sum / buf.length) > 0.18 ? loud + 1 : Math.max(0, loud - 1);
-                if (loud > 6) { blow("mic"); return; }
-                raf = requestAnimationFrame(tick);
+            let raf = 0, loud = 0, stopped = false;
+            const stop = () => {
+                if (stopped) return;
+                stopped = true;
+                cancelAnimationFrame(raf);
+                try { src.disconnect(); } catch { /* already disconnected */ }
+                try { stream.getTracks().forEach((t) => t.stop()); } catch { /* ignore */ }
+                if (own) ac.close().catch(() => {});
             };
+            const tick = () => {
+                if (stopped) return;
+                try {
+                    an.getByteTimeDomainData(buf);
+                    let sum = 0;
+                    for (let k = 0; k < buf.length; k++) { const v = (buf[k] - 128) / 128; sum += v * v; }
+                    loud = Math.sqrt(sum / buf.length) > 0.18 ? loud + 1 : Math.max(0, loud - 1);
+                    if (loud > 6) { blow("mic"); return; }
+                    if (!stopped) raf = requestAnimationFrame(tick);
+                } catch {
+                    stop();
+                }
+            };
+            micStop.current = stop;
             tick();
-            micStop.current = () => { cancelAnimationFrame(raf); src.disconnect(); stream.getTracks().forEach((t) => t.stop()); if (own) ac.close().catch(() => {}); };
             setMic("on");
         } catch {
             setMic("denied");
