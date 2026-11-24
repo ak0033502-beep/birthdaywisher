@@ -4,7 +4,7 @@ import { WishData } from '@/lib/WishContext';
 import { normalizeWish } from '@/lib/wish/migrate';
 import crypto from 'crypto';
 import { v2 as cloudinary } from "cloudinary";
-import { ledgerWishCreated, ledgerWishDeleted, ledgerWishViewed } from "@/lib/analytics";
+import { ensureAnalytics, ledgerWishCreated, ledgerWishDeleted, ledgerWishViewed } from "@/lib/analytics";
 import { safeEqualSecret } from "@/lib/security";
 import {
     VAULT_FREE_LIMIT,
@@ -196,8 +196,40 @@ export async function getWishReadOnly(id: string): Promise<{ data: WishData; ope
     }
 }
 
+export interface ExpiredWishInfo {
+    wishType: "birthday" | "anniversary";
+    style: string;
+    gamesCount: number;
+    views: number;
+}
+
+/**
+ * Looks up anonymous wish_ledger metadata when a wish has already self-destructed
+ * so visitors get a helpful FOMO screen instead of a dead 404.
+ */
+export async function getExpiredWishInfo(id: string): Promise<ExpiredWishInfo | null> {
+    if (!/^[a-f0-9]{6,10}$/.test(id)) return null;
+    try {
+        await ensureAnalytics();
+        const { rows } = await sql`
+            SELECT wish_type, style, COALESCE(CARDINALITY(games), 0) AS games_count, COALESCE(views, 0) AS views
+            FROM wish_ledger WHERE wish_id = ${id}
+        `;
+        if (rows.length === 0) return null;
+        return {
+            wishType: rows[0].wish_type === "anniversary" ? "anniversary" : "birthday",
+            style: typeof rows[0].style === "string" && rows[0].style ? rows[0].style : "cinematic",
+            gamesCount: Number(rows[0].games_count || 0),
+            views: Number(rows[0].views || 0),
+        };
+    } catch {
+        return null;
+    }
+}
+
 export type VisitorWishResult =
     | { status: "missing" }
+    | { status: "expired"; wishType: "birthday" | "anniversary"; style: string; gamesCount: number; views: number }
     | { status: "locked"; unlockDate: string; targetName: string; wishType: "birthday" | "anniversary" }
     | { status: "ok"; data: WishData };
 
@@ -211,9 +243,13 @@ export async function getWishForVisitor(id: string): Promise<VisitorWishResult> 
 
     try {
         const { rows } = await sql`
-            SELECT data, created_at, opened_at, keep_until FROM wishes WHERE id = ${id}
+            SELECT data, created_at, opened_at, keep_until, COALESCE(view_count, 0) AS view_count FROM wishes WHERE id = ${id}
         `;
-        if (rows.length === 0) return { status: "missing" };
+        if (rows.length === 0) {
+            const exp = await getExpiredWishInfo(id);
+            if (exp) return { status: "expired", ...exp };
+            return { status: "missing" };
+        }
 
         const wishData = rows[0].data as WishData;
         if (shouldDestroyWishNow({
@@ -222,8 +258,15 @@ export async function getWishForVisitor(id: string): Promise<VisitorWishResult> 
             openedAt: rows[0].opened_at,
             keepUntil: rows[0].keep_until,
         })) {
+            const { v2 } = normalizeWish(wishData);
             void destroySingleWish(id, wishData);
-            return { status: "missing" };
+            return {
+                status: "expired",
+                wishType: v2.wishType === "anniversary" ? "anniversary" : "birthday",
+                style: v2.look.presentationStyle || "cinematic",
+                gamesCount: v2.blocks.filter((b) => ["candles", "balloons", "heartbeat", "lanterns", "prank", "trivia", "catchGifts", "guessYear", "memoryMatch", "newspaper", "treasure", "wheel"].includes(b.type)).length,
+                views: Number(rows[0].view_count || 0),
+            };
         }
 
         const unlockMs = getScheduledUnlockTime(wishData);

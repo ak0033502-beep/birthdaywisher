@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import type { BlockType, WishDataV2 } from "@/lib/wish/schema";
 import { BLOCKS } from "@/blocks/registry";
@@ -7,6 +8,7 @@ import type { Tr } from "@/blocks/slides";
 import type { StyleId } from "./styles";
 import { HoldToOpen } from "./HoldToOpen";
 import { playUi } from "@/lib/celebration/uiSound";
+import { track } from "@/lib/track";
 
 const label = (t: BlockType) => BLOCKS[t]?.label ?? "Surprise";
 const slug = (t: BlockType) => label(t).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
@@ -271,7 +273,7 @@ export function SlideFrame({ style, idx, type, embed = false, children }: { styl
 }
 
 /** Cover screen (before the wish opens), one per style. Opening = press & hold (see HoldToOpen), or passive in embed preview. */
-export function StyleCover({ style, wish, i, vars, onOpen, embed = false }: { style: StyleId; wish: WishDataV2; i: Tr; vars: CSSProperties; onOpen: () => void; embed?: boolean }) {
+export function StyleCover({ style, wish, i, vars, onOpen, embed = false, wishId }: { style: StyleId; wish: WishDataV2; i: Tr; vars: CSSProperties; onOpen: () => void; embed?: boolean; wishId?: string }) {
     const name = recipientName(wish);
     const clock = useClock();
     const [hold, setHold] = useState({ p: 0, on: false });
@@ -353,6 +355,20 @@ export function StyleCover({ style, wish, i, vars, onOpen, embed = false }: { st
         <div className={cls} style={{ ...vars, ...(embed ? { position: "absolute" } : {}), ["--hold" as string]: hold.p.toFixed(3) }} data-style={style} data-skin={wish.look.theme}>
             <StyleDecor style={style} theme={wish.look.theme} />
             {body}
+            {!embed && (
+                <Link
+                    href={`/create?${wish.wishType === "anniversary" ? "type=anniversary&" : ""}ref=wish&via=cover`}
+                    className="bvs-cover-credit"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        track("wish_make_own", { from: "cover" }, wishId);
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                >
+                    <span>🎂 Made free on <b>BirthdayWisher.fun</b></span>
+                    <span className="bvs-cover-credit-cta">Make yours →</span>
+                </Link>
+            )}
         </div>
     );
 }

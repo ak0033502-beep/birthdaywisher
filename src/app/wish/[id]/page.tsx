@@ -1,9 +1,10 @@
 import { WishTimeCapsuleWrapper } from "@/components/story/WishTimeCapsuleWrapper";
 import { LockedWishScreen } from "@/components/story/LockedWishScreen";
+import { ExpiredWishScreen } from "@/components/story/ExpiredWishScreen";
 import { AnalyticsTracker } from "@/components/story/AnalyticsTracker";
 import { V2WishShell } from "@/components/viewer/V2WishShell";
 import type { Metadata } from "next";
-import { getWishForVisitor, getWishReadOnly, peekWishPreview } from "@/lib/db";
+import { getExpiredWishInfo, getWishForVisitor, getWishReadOnly, peekWishPreview } from "@/lib/db";
 import { isAdmin } from "@/lib/adminAuth";
 import { isCreatorOfWish } from "@/lib/creatorPreview";
 import { headers } from "next/headers";
@@ -19,7 +20,21 @@ const PREVIEW_BOT = /WhatsApp|facebookexternalhit|Facebot|Twitterbot|TelegramBot
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
     const peek = await peekWishPreview(id);
-    if (!peek) return { title: { absolute: "Wish not found | BirthdayWisher.fun" }, robots: ROBOTS };
+    if (!peek) {
+        const exp = await getExpiredWishInfo(id);
+        if (exp) {
+            const expTitle = "⏳ This 10-Hour Secret Surprise Self-Destructed! | BirthdayWisher.fun";
+            const expDesc = "Every surprise on BirthdayWisher.fun vanishes 10 hours after opening. Make your own free birthday or anniversary surprise in 60 seconds!";
+            return {
+                title: { absolute: expTitle },
+                description: expDesc,
+                robots: ROBOTS,
+                openGraph: { title: expTitle, description: expDesc, type: "website", siteName: "BirthdayWisher.fun" },
+                twitter: { card: "summary_large_image", title: expTitle, description: expDesc },
+            };
+        }
+        return { title: { absolute: "Wish not found | BirthdayWisher.fun" }, robots: ROBOTS };
+    }
     const anniversary = peek?.kind === "anniversary";
     const title = peek?.name
         ? `🎁 ${peek.name}, you've got ${anniversary ? "an anniversary" : "a birthday"} surprise!`
@@ -52,6 +67,20 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
         const ro = await getWishReadOnly(resolvedParams.id);
         raw = ro?.data ?? null;
         if (ro) adminMeta = { openedAt: ro.openedAt, viewCount: ro.viewCount };
+        if (!raw) {
+            const exp = await getExpiredWishInfo(resolvedParams.id);
+            if (exp) {
+                return (
+                    <ExpiredWishScreen
+                        wishId={resolvedParams.id}
+                        wishType={exp.wishType}
+                        style={exp.style}
+                        gamesCount={exp.gamesCount}
+                        views={exp.views}
+                    />
+                );
+            }
+        }
     } else {
         const res = await getWishForVisitor(resolvedParams.id);
         if (res.status === "locked") {
@@ -60,6 +89,17 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
                     unlockDate={res.unlockDate}
                     targetName={res.targetName}
                     wishType={res.wishType}
+                />
+            );
+        }
+        if (res.status === "expired") {
+            return (
+                <ExpiredWishScreen
+                    wishId={resolvedParams.id}
+                    wishType={res.wishType}
+                    style={res.style}
+                    gamesCount={res.gamesCount}
+                    views={res.views}
                 />
             );
         }

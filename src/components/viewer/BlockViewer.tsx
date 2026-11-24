@@ -191,6 +191,7 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
                 wish={wish}
                 i={i}
                 vars={style}
+                wishId={wishId}
                 onOpen={() => {
                     setOpened(true);
                     setIntro(true);

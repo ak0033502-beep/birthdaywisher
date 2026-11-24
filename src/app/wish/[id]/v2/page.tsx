@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { getWishForVisitor, getWishReadOnly } from "@/lib/db";
+import { getExpiredWishInfo, getWishForVisitor, getWishReadOnly } from "@/lib/db";
 import { isAdmin } from "@/lib/adminAuth";
 import { isCreatorOfWish } from "@/lib/creatorPreview";
 import { migrateV1toV2 } from "@/lib/wish/migrate";
 import { V2WishShell } from "@/components/viewer/V2WishShell";
 import { LockedWishScreen } from "@/components/story/LockedWishScreen";
+import { ExpiredWishScreen } from "@/components/story/ExpiredWishScreen";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,11 @@ export default async function WishV2PreviewPage({ params }: { params: Promise<{ 
     const creator = !admin && (await isCreatorOfWish(id));
     if (admin || creator) {
         const ro = await getWishReadOnly(id);
-        if (!ro) notFound();
+        if (!ro) {
+            const exp = await getExpiredWishInfo(id);
+            if (exp) return <ExpiredWishScreen wishId={id} wishType={exp.wishType} style={exp.style} gamesCount={exp.gamesCount} views={exp.views} />;
+            notFound();
+        }
         return (
             <V2WishShell
                 wish={migrateV1toV2(ro.data)}
@@ -46,6 +51,17 @@ export default async function WishV2PreviewPage({ params }: { params: Promise<{ 
                 unlockDate={res.unlockDate}
                 targetName={res.targetName}
                 wishType={res.wishType}
+            />
+        );
+    }
+    if (res.status === "expired") {
+        return (
+            <ExpiredWishScreen
+                wishId={id}
+                wishType={res.wishType}
+                style={res.style}
+                gamesCount={res.gamesCount}
+                views={res.views}
             />
         );
     }

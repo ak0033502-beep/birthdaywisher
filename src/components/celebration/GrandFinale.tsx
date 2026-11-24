@@ -368,11 +368,12 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
 
     const saveCard = async () => {
         if (wishId) track("finale_action", { action: "card" }, wishId);
-        const W = 1080, H = 1350;
+        // 9:16 Story / Status aspect ratio (fills WhatsApp Status & Instagram Stories edge-to-edge)
+        const W = 1080, H = 1920;
         const c = document.createElement("canvas"); c.width = W; c.height = H;
         const g = c.getContext("2d")!;
         const bg = g.createLinearGradient(0, 0, 0, H);
-        bg.addColorStop(0, "#120a2a"); bg.addColorStop(0.6, "#0a0618"); bg.addColorStop(1, "#1d0f24");
+        bg.addColorStop(0, "#160b33"); bg.addColorStop(0.55, "#0a0618"); bg.addColorStop(1, "#210f29");
         g.fillStyle = bg; g.fillRect(0, 0, W, H);
         const fw = fwRef.current;
         if (fw) {
@@ -380,30 +381,66 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
             const sc = Math.max(W / snap.width, H / snap.height);
             g.drawImage(snap, (W - snap.width * sc) / 2, (H - snap.height * sc) / 2, snap.width * sc, snap.height * sc);
         }
+        // Subtle celebratory bokeh circles (clean geometric dots)
+        const dots: Array<[number, number, number, string]> = [
+            [140, 250, 14, "rgba(255,92,138,.45)"], [930, 310, 18, "rgba(255,209,102,.42)"],
+            [190, 1460, 16, "rgba(46,216,182,.38)"], [890, 1410, 12, "rgba(167,139,250,.45)"],
+            [540, 210, 10, "rgba(255,231,163,.4)"], [820, 620, 11, "rgba(255,159,67,.38)"],
+        ];
+        for (const [dx, dy, dr, col] of dots) {
+            g.beginPath(); g.arc(dx, dy, dr, 0, Math.PI * 2); g.fillStyle = col; g.fill();
+        }
+
         g.textAlign = "center"; g.textBaseline = "middle";
-        g.shadowColor = "rgba(255,190,90,.8)"; g.shadowBlur = 40;
-        g.fillStyle = "#ffe7a3"; g.font = `800 76px ${fontFamily}`;
-        g.fillText(skyLineUpper, W / 2, H * 0.4, W * 0.9);
-        let fs = 190; g.font = `800 ${fs}px ${fontFamily}`;
-        while (g.measureText(skyName).width > W * 0.88 && fs > 60) { fs -= 8; g.font = `800 ${fs}px ${fontFamily}`; }
-        g.fillStyle = "#ffffff"; g.fillText(skyName, W / 2, H * 0.52);
+        g.shadowColor = "rgba(255,190,90,.8)"; g.shadowBlur = 42;
+        g.fillStyle = "#ffe7a3"; g.font = `800 78px ${fontFamily}`;
+        g.fillText(skyLineUpper, W / 2, H * 0.40, W * 0.88);
+        let fs = 196; g.font = `800 ${fs}px ${fontFamily}`;
+        while (g.measureText(skyName).width > W * 0.88 && fs > 64) { fs -= 8; g.font = `800 ${fs}px ${fontFamily}`; }
+        g.fillStyle = "#ffffff"; g.fillText(skyName, W / 2, H * 0.51);
         g.shadowBlur = 0;
-        g.fillStyle = "rgba(255,255,255,.85)"; g.font = `700 44px ${fontFamily}`;
-        g.fillText(`${i.withAllMyLove.replace(/[\s,.;:!]+$/, "")} ❤️`, W / 2, H * 0.64, W * 0.9);
-        g.fillStyle = "rgba(255,255,255,.55)"; g.font = `700 30px ${fontFamily}`;
-        g.fillText("🎂 birthdaywisher.fun", W / 2, H - 70);
+        g.fillStyle = "rgba(255,255,255,.9)"; g.font = `700 46px ${fontFamily}`;
+        g.fillText(`${i.withAllMyLove.replace(/[\s,.;:!]+$/, "")} ❤️`, W / 2, H * 0.62, W * 0.88);
+
+        // Branded Story pill badge at bottom so friends seeing the Story discover the site
+        const pillW = 780, pillH = 136, pillX = (W - pillW) / 2, pillY = H - 236, pillR = 68;
+        g.save();
+        g.beginPath();
+        g.roundRect(pillX, pillY, pillW, pillH, pillR);
+        g.fillStyle = "rgba(22, 12, 40, 0.84)";
+        g.fill();
+        g.lineWidth = 3;
+        g.strokeStyle = "rgba(255, 214, 120, 0.55)";
+        g.stroke();
+        g.restore();
+
+        g.fillStyle = "#ffe7a3"; g.font = `800 34px system-ui, sans-serif`;
+        g.fillText("🎂 Made free on birthdaywisher.fun", W / 2, pillY + 48);
+        g.fillStyle = "rgba(255,255,255,.86)"; g.font = `700 25px system-ui, sans-serif`;
+        g.fillText("@birthdaywisher.fun · Make a surprise in 60s", W / 2, pillY + 94);
+
         const blob: Blob | null = await new Promise((r) => c.toBlob(r, "image/png"));
         if (!blob) return;
-        const fileName = `${anniversary ? "happy-anniversary" : "happy-birthday"}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "memory"}.png`;
+        const fileName = `${anniversary ? "happy-anniversary" : "happy-birthday"}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "story"}.png`;
         const file = new File([blob], fileName, { type: "image/png" });
+        const shareCaption = anniversary
+            ? "Got the sweetest anniversary surprise ❤️ Make a free one in 60s on https://www.birthdaywisher.fun"
+            : "Got the sweetest birthday surprise ❤️ Make a free one in 60s on https://www.birthdaywisher.fun";
         const nav = navigator as Navigator & { canShare?: (d: ShareData) => boolean };
         if (nav.canShare?.({ files: [file] })) {
-            try { await nav.share({ files: [file], title: skyLine }); setCardMsg("Saved ❤️"); return; } catch { /* cancelled: fall back to download */ }
+            try {
+                const payload: ShareData = nav.canShare({ files: [file], text: shareCaption })
+                    ? { files: [file], title: skyLine, text: shareCaption }
+                    : { files: [file], title: skyLine };
+                await nav.share(payload);
+                setCardMsg("Shared Story card ❤️");
+                return;
+            } catch { /* cancelled: fall back to download */ }
         }
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a"); a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 2000);
-        setCardMsg("Saved to your downloads ❤️");
+        setCardMsg("Story card saved — share on WhatsApp Status or Insta Story ❤️");
     };
 
     const rise = variant === "hearts" ? ["💗", "❤️", "💕", "🎈"] : variant === "lanterns" ? ["🏮", "🏮", "🪔", "🎈"] : ["🎈", "🎈", "🎁", "🎉"];
@@ -497,11 +534,20 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
                     <div className="gf-actions">
                         <button type="button" className="gf-glass" onClick={replay}>🔁 Watch the celebration again</button>
                         <button type="button" className="gf-glass" onClick={thanks}>💌 Send a thank-you</button>
-                        <button type="button" className="gf-glass" onClick={saveCard}>📸 Save memory card</button>
+                        <button type="button" className="gf-glass" onClick={saveCard}>📸 Save Story / Status card</button>
                         {cardMsg && <p className="gf-hint">{cardMsg}</p>}
                     </div>
+                    <Link
+                        className="gf-viral-cta"
+                        href={`/create?${anniversary ? "type=anniversary&" : ""}ref=wish&via=finale`}
+                        onClick={() => track("wish_make_own", { from: "finale" }, wishId)}
+                    >
+                        <span className="gf-viral-badge">100% FREE · 60 SEC</span>
+                        <span className="gf-viral-main">
+                            🎁 {anniversary ? "Create an anniversary surprise like this →" : "Friend's birthday soon? Make one like this →"}
+                        </span>
+                    </Link>
                     {wishId && <KeepAliveCard wishId={wishId} surface="finale" variant="dark" />}
-                    <Link className="gf-make" href="/?ref=wish" onClick={() => track("wish_make_own", undefined, wishId)}>🎁 Make a surprise like this for someone</Link>
                     {showReview && <ReviewPrompt who="recipient" wishId={wishId} mode="inline" onClose={() => setShowReview(false)} />}
                 </div>
             )}
