@@ -20,7 +20,7 @@ import { Cuppy, PowerMeter, RELATIONS, VIBES, popSound, useWizardSettings } from
 import { FullPreview, PreviewPhone, type PreviewScene } from "./PreviewPhone";
 import { track } from "@/lib/track";
 import { STYLE_IDS, STYLE_INFO, normalizeStyle, type StyleId } from "@/components/viewer/styles";
-import { prefetchStyleBgm, startBgm, type BgmController } from "@/lib/celebration/bgm";
+import { SOUNDTRACK_OPTIONS, normalizeSoundtrack, prefetchStyleBgm, startBgm, type BgmController, type SoundtrackMode } from "@/lib/celebration/bgm";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
 import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
 
@@ -531,14 +531,33 @@ export function Wizard2() {
         if (step.id === "look") {
             const skins = d.wishType === "anniversary" ? ANNIVERSARY_SKINS : BIRTHDAY_SKINS;
             const curStyle = normalizeStyle(d.look.presentationStyle);
+            const curTrack = normalizeSoundtrack(d.look.soundtrack);
             const bestSkin = d.wishType === "anniversary"
                 ? (curStyle === "gallery" ? "golden-anniversary" : curStyle === "storybook" ? "vintage-love" : "rosegold-elegance")
                 : STYLE_INFO[curStyle].bestSkin;
             const pickStyleId = (id: StyleId) => {
                 patch({ look: { ...d.look, presentationStyle: id } });
                 if (lookScene === "finale") setLookScene("slide");
-                void prefetchStyleBgm(id);
-                wizBgmRef.current?.setStyle(id);
+                void prefetchStyleBgm(id, curTrack);
+                wizBgmRef.current?.setTrack(id, curTrack);
+            };
+            const pickSoundtrack = (mode: SoundtrackMode) => {
+                patch({ look: { ...d.look, soundtrack: mode } });
+                if (mode === "none") {
+                    if (wizBgmRef.current) {
+                        wizBgmRef.current.stop();
+                        wizBgmRef.current = null;
+                    }
+                    setHearingMusic(false);
+                    return;
+                }
+                void prefetchStyleBgm(curStyle, mode);
+                if (wizBgmRef.current) {
+                    wizBgmRef.current.setTrack(curStyle, mode);
+                } else {
+                    wizBgmRef.current = startBgm(curStyle, true, mode);
+                    setHearingMusic(true);
+                }
             };
             const toggleMusic = () => {
                 if (wizBgmRef.current) {
@@ -546,7 +565,9 @@ export function Wizard2() {
                     wizBgmRef.current = null;
                     setHearingMusic(false);
                 } else {
-                    wizBgmRef.current = startBgm(curStyle, true);
+                    const playMode = curTrack === "none" ? "instrumental" : curTrack;
+                    if (curTrack === "none") patch({ look: { ...d.look, soundtrack: playMode } });
+                    wizBgmRef.current = startBgm(curStyle, true, playMode);
                     setHearingMusic(true);
                 }
             };
@@ -556,8 +577,8 @@ export function Wizard2() {
                 const pickSkin = skins[Math.floor(Math.random() * skins.length)];
                 patch({ look: { ...d.look, presentationStyle: pickStyle.id, theme: pickSkin.id } });
                 setLookScene("slide");
-                void prefetchStyleBgm(pickStyle.id);
-                wizBgmRef.current?.setStyle(pickStyle.id);
+                void prefetchStyleBgm(pickStyle.id, curTrack);
+                wizBgmRef.current?.setTrack(pickStyle.id, curTrack);
                 celebrate(el, 45);
             };
             return (
@@ -566,17 +587,17 @@ export function Wizard2() {
                     <div className="wz2-look-head">
                         <div>
                             <h1 className="wz2-title" style={{ marginBottom: 4 }}>Choose the world 🎨</h1>
-                            <p className="wz2-sub" style={{ marginBottom: 0 }}>Each style comes with its own soundtrack, intro, frame &amp; fireworks.</p>
+                            <p className="wz2-sub" style={{ marginBottom: 0 }}>Pick a presentation style, soundtrack (instrumental or full song), colour mood &amp; finale.</p>
                         </div>
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <button type="button" className={`bw-btn ${hearingMusic ? "bw-btn-primary" : "bw-btn-ghost"} bw-btn-sm`} onClick={toggleMusic}>
-                                {hearingMusic ? "🔊 Stop music" : "🎵 Hear style music"}
+                                {hearingMusic ? "🔊 Stop music" : "🎵 Preview music"}
                             </button>
                             <button type="button" className="bw-btn bw-btn-ghost bw-btn-sm" onClick={(e) => surpriseMe(e.currentTarget)}>🎲 Surprise me</button>
                         </div>
                     </div>
 
-                    <span className="wz2-label">1. Presentation style (each has its own music)</span>
+                    <span className="wz2-label">1. Presentation style</span>
                     <div className="wz2-grid" style={{ ["--cols" as string]: 3 }}>
                         {STYLES.map((s) => (
                             <button
@@ -594,7 +615,27 @@ export function Wizard2() {
                         ))}
                     </div>
 
-                    <span className="wz2-label">2. Colour mood</span>
+                    <span className="wz2-label">2. Soundtrack (tap any track to listen live)</span>
+                    <div className="wz2-themes">
+                        {SOUNDTRACK_OPTIONS.map((tr) => (
+                            <button
+                                key={tr.id}
+                                type="button"
+                                className={`wz2-theme ${curTrack === tr.id ? "is-on" : ""}`}
+                                onClick={() => pickSoundtrack(tr.id)}
+                            >
+                                <div className="sw" style={{ background: curTrack === tr.id ? "linear-gradient(135deg,var(--p-pink),var(--p-orange))" : "color-mix(in srgb, var(--p-pink) 14%, var(--p-card))" }} aria-hidden="true">
+                                    {tr.icon}
+                                </div>
+                                <div className="nm">
+                                    <div>{tr.label}{hearingMusic && curTrack === tr.id && tr.id !== "none" ? " · Playing" : ""}</div>
+                                    <small className="wz2-theme-sub">{tr.sub}</small>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+
+                    <span className="wz2-label">3. Colour mood</span>
                     <div className="wz2-themes">
                         {skins.map((s) => (
                             <button
@@ -613,7 +654,7 @@ export function Wizard2() {
                         ))}
                     </div>
 
-                    <span className="wz2-label">3. Grand Finale celebration</span>
+                    <span className="wz2-label">4. Grand Finale celebration</span>
                     <div className="wz2-chips">
                         {FINALES.map((f) => {
                             const raw = getConfig(d, "finale").effect;
@@ -631,7 +672,7 @@ export function Wizard2() {
                         })}
                     </div>
 
-                    <span className="wz2-label">4. Language &amp; opening time</span>
+                    <span className="wz2-label">5. Language &amp; opening time</span>
                     <select className="wz2-field" style={{ fontSize: 16 }} value={d.look.language} onChange={(e) => patch({ look: { ...d.look, language: e.target.value } })} aria-label="Language of the wish">
                         {languages.map((l) => <option key={l.code} value={l.code}>{l.nativeName} ({l.name})</option>)}
                     </select>

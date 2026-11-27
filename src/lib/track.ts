@@ -62,8 +62,8 @@ export function track(name: string, props?: Props, wishId?: string) {
     }
     const clean: Props | undefined = props ? Object.fromEntries(Object.entries(props).filter(([, v]) => v !== undefined)) : undefined;
     queue.push({ name, path: location.pathname, wishId, props: clean });
-    if (queue.length >= 10) flush();
-    else if (!timer) timer = setTimeout(flush, 2500);
+    if (queue.length >= 12) flush();
+    else if (!timer) timer = setTimeout(flush, 9000);
 }
 
 /** Opt this browser out (used after admin login so the owner's visits aren't counted). */

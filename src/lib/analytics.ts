@@ -18,6 +18,14 @@ const g = globalThis as unknown as { __bwAnalyticsReady?: Promise<void> | null }
 export function ensureAnalytics(): Promise<void> {
     if (!g.__bwAnalyticsReady) {
         g.__bwAnalyticsReady = (async () => {
+            // Fast probe avoids firing 7 CREATE TABLE / CREATE INDEX DDL statements on every cold lambda
+            const probe = await sql`
+                SELECT to_regclass('public.site_events') AS se,
+                       to_regclass('public.wish_ledger') AS wl,
+                       to_regclass('public.admin_kv') AS kv
+            `;
+            if (probe.rows[0]?.se && probe.rows[0]?.wl && probe.rows[0]?.kv) return;
+
             await Promise.all([
                 sql`
                     CREATE TABLE IF NOT EXISTS site_events (
@@ -117,21 +125,33 @@ function cleanProps(p: unknown): Record<string, string | number | boolean> | nul
 
 export async function recordEvents(events: IncomingEvent[], meta: RequestMeta): Promise<number> {
     await ensureAnalytics();
-    let saved = 0;
+    const rows: Array<{
+        name: string;
+        path: string | null;
+        sid: string | null;
+        wish_id: string | null;
+        props: Record<string, string | number | boolean> | null;
+    }> = [];
+
     for (const e of events.slice(0, 25)) {
         if (!e || !EVENT_NAMES.has(e.name)) continue;
         const path = clip(e.path, 200)?.split("?")[0] ?? null;
         if (path && (path.startsWith("/admin") || path.startsWith("/api"))) continue;
-        const wishId = typeof e.wishId === "string" && /^[a-f0-9]{6,10}$/.test(e.wishId) ? e.wishId : null;
+        const wish_id = typeof e.wishId === "string" && /^[a-f0-9]{6,10}$/.test(e.wishId) ? e.wishId : null;
         const sid = typeof e.sid === "string" && /^[a-z0-9]{6,20}$/i.test(e.sid) ? e.sid : null;
         const props = cleanProps(e.props);
-        await sql`
-            INSERT INTO site_events (name, path, src, device, browser, country, sid, wish_id, props)
-            VALUES (${e.name}, ${path}, ${meta.src}, ${meta.device}, ${meta.browser}, ${meta.country}, ${sid}, ${wishId}, ${props ? JSON.stringify(props) : null}::jsonb)
-        `;
-        saved++;
+        rows.push({ name: e.name, path, sid, wish_id, props });
     }
-    return saved;
+    if (!rows.length) return 0;
+
+    // Single atomic multi-row INSERT instead of N sequential round-trips per beacon batch
+    await sql`
+        INSERT INTO site_events (name, path, src, device, browser, country, sid, wish_id, props)
+        SELECT r.name, r.path, ${meta.src}, ${meta.device}, ${meta.browser}, ${meta.country}, r.sid, r.wish_id, r.props
+        FROM jsonb_to_recordset(${JSON.stringify(rows)}::jsonb)
+             AS r(name VARCHAR(40), path VARCHAR(200), sid VARCHAR(20), wish_id VARCHAR(10), props JSONB)
+    `;
+    return rows.length;
 }
 
 /* ---------------- request metadata (no IP stored) ---------------- */

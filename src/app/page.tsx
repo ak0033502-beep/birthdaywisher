@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { HomeClient } from "@/components/home/HomeClient";
 import { getPublicReviews } from "@/lib/reviews";
 
-// Revalidate SSR reviews & AggregateRating JSON-LD every 2 minutes (and immediately on POST /api/reviews)
-export const revalidate = 120;
+// Revalidate SSR reviews & AggregateRating JSON-LD hourly (and immediately via revalidatePath on POST /api/reviews)
+// Keeping this at 1h lets Neon serverless Postgres scale-to-zero cleanly during quiet periods.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
     title: "Birthday Wishes Game – Free Interactive Birthday Surprise Link",

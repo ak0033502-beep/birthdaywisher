@@ -63,6 +63,13 @@ export function ensureDb(): Promise<void> {
 
 async function setupDb() {
     {
+        // Fast probe avoids running 9 CREATE/ALTER DDL locks on every serverless cold start
+        const probe = await sql`
+            SELECT to_regclass('public.vault_claims') AS vc,
+                   to_regclass('public.wish_analytics') AS wa
+        `;
+        if (probe.rows[0]?.vc && probe.rows[0]?.wa) return;
+
         await sql`
             CREATE TABLE IF NOT EXISTS wishes (
                 id VARCHAR(10) PRIMARY KEY,

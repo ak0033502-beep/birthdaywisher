@@ -20,12 +20,13 @@ const DEMO_GAMES = [
     { id: "candles-1", type: "candles", config: { candles: 5, message: "Make a wish!", placement: "finale" } },
 ] as unknown as BlockInstance[];
 
-export default async function ViewerV2Demo({ searchParams }: { searchParams: Promise<{ demo?: string; theme?: string; style?: string }> }) {
+export default async function ViewerV2Demo({ searchParams }: { searchParams: Promise<{ demo?: string; theme?: string; style?: string; soundtrack?: string }> }) {
     if (process.env.NODE_ENV === "production") notFound();
-    const { demo, theme, style } = await searchParams;
+    const { demo, theme, style, soundtrack } = await searchParams;
     const base = demo === "anniversary" ? DEMO_ANNIVERSARY : DEMO_BIRTHDAY;
     const wish = migrateV1toV2(theme ? { ...base, theme } : base);
     if (style) wish.look.presentationStyle = style;
+    if (soundtrack) wish.look.soundtrack = soundtrack;
     if (demo === "games") {
         const [prank, trivia, candles] = DEMO_GAMES;
         const b = wish.blocks;

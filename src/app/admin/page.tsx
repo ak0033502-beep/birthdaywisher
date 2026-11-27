@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/adminAuth";
-import { backfillLedger, getDevices, getErrors, getFunnel, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
+import { backfillLedger, getDevices, getErrors, getFunnel, getLastAdminDbError, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
 import { buildInsights, stepLabel } from "@/lib/adminInsights";
 import { Bars, Card, Funnel, Kpi, LineChart, Table, fmt, pct } from "@/components/admin/charts";
 import { CleanupButton, DeleteWishForm, HealthCheck, IndexNowButton, LogoutButton } from "@/components/admin/AdminClient";
@@ -96,6 +96,17 @@ async function OverviewTab({ days }: { days: number }) {
     const o = overview;
     return (
         <>
+            {getLastAdminDbError() && (
+                <Card
+                    title="⚠️ Database Connection / Quota Paused (Your Data Is 100% Safe)"
+                    sub="Neon returned a quota or connection error, so metrics temporarily display 0 until Neon compute resumes."
+                    wide
+                >
+                    <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "#fca5a5", fontWeight: 700 }}>
+                        {getLastAdminDbError()}
+                    </p>
+                </Card>
+            )}
             <div className="adm-kpis">
                 <Kpi label="Wishes created" value={o.created} prev={o.createdPrev} hint={`vs previous ${days} days`} />
                 <Kpi label="Opened by recipient" value={pct(o.openRate)} hint={`${o.opened} of ${o.created}`} />
@@ -253,6 +264,17 @@ async function WizardTab({ days }: { days: number }) {
     const first = w.steps[0]?.n || 0;
     return (
         <>
+            {getLastAdminDbError() && (
+                <Card
+                    title="⚠️ Database Connection / Quota Paused (Your Data Is 100% Safe)"
+                    sub="Neon returned a quota or connection error, so metrics temporarily display 0 until Neon compute resumes."
+                    wide
+                >
+                    <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "#fca5a5", fontWeight: 700 }}>
+                        {getLastAdminDbError()}
+                    </p>
+                </Card>
+            )}
             <div className="adm-kpis">
                 <Kpi label="Wishes (ledger)" value={w.wishes} />
                 <Kpi label="Time to create" value={w.medianSecs ? secs(w.medianSecs) : "—"} hint="median" />
@@ -383,6 +405,17 @@ async function ReviewsTab() {
     const r = await getReviews();
     return (
         <>
+            {getLastAdminDbError() && (
+                <Card
+                    title="⚠️ Database Connection / Quota Paused (Your Data Is 100% Safe)"
+                    sub="Neon returned a quota or connection error, so metrics temporarily display 0 until Neon compute resumes."
+                    wide
+                >
+                    <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "#fca5a5", fontWeight: 700 }}>
+                        {getLastAdminDbError()}
+                    </p>
+                </Card>
+            )}
             <div className="adm-kpis">
                 <Kpi label="Reviews" value={r.total} />
                 <Kpi label="Average rating" value={r.total ? `${r.avg.toFixed(1)} / 5` : "—"} />
@@ -412,6 +445,17 @@ async function WishesTab() {
     const lc = w.lastCleanup?.v;
     return (
         <>
+            {getLastAdminDbError() && (
+                <Card
+                    title="⚠️ Database Connection / Quota Paused (Your Data Is 100% Safe)"
+                    sub="Neon returned a quota or connection error, so metrics temporarily display 0 until Neon compute resumes."
+                    wide
+                >
+                    <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "#fca5a5", fontWeight: 700 }}>
+                        {getLastAdminDbError()}
+                    </p>
+                </Card>
+            )}
             <div className="adm-kpis">
                 <Kpi label="Active wishes" value={w.active} />
                 <Kpi label="Not opened yet" value={w.unopened} />

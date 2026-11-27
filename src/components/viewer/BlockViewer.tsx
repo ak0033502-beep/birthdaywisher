@@ -60,7 +60,7 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
         let cancelled = false;
         const runPreload = () => {
             if (cancelled) return;
-            void prefetchStyleBgm(styleId);
+            void prefetchStyleBgm(styleId, wish.look.soundtrack);
             prefetchUi(["page", "msg", "swoosh", "ping"]);
             for (const b of wish.blocks) {
                 if (b.type === "photos") {
@@ -87,7 +87,7 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
             cancelled = true;
             clearTimeout(timer);
         };
-    }, [styleId, wish.blocks]);
+    }, [styleId, wish.blocks, wish.look.soundtrack]);
 
     // Cleanup BGM on unmount
     useEffect(() => () => { bgmRef.current?.stop(); bgmRef.current = null; }, []);
@@ -96,11 +96,11 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
     useEffect(() => {
         const bgm = bgmRef.current;
         if (!bgm || !current) return;
-        bgm.setStyle(styleId);
+        bgm.setTrack(styleId, wish.look.soundtrack);
         if (current.type === "finale") bgm.setIntensity(0);
         else if (current.type === "message" || current.type === "memory" || current.type === "gratitude" || current.type === "promise") bgm.setIntensity(0.76);
         else bgm.setIntensity(0.95);
-    }, [current, styleId]);
+    }, [current, styleId, wish.look.soundtrack]);
 
     // Anonymous recipient analytics (only for real links, never in previews)
     const slideStart = useRef(Date.now());
@@ -195,7 +195,7 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
                 onOpen={() => {
                     setOpened(true);
                     setIntro(true);
-                    if (!bgmRef.current) bgmRef.current = startBgm(styleId);
+                    if (!bgmRef.current) bgmRef.current = startBgm(styleId, false, wish.look.soundtrack);
                     if (wishId) track("wish_open", { style: styleId, theme: wish.look.theme, slides: slides.length, type: wish.wishType }, wishId);
                 }}
             />

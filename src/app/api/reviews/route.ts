@@ -22,7 +22,7 @@ const cleanText = (v: unknown, maxLen: number): string =>
 export async function GET() {
     const summary = await getPublicReviews();
     return NextResponse.json(summary, {
-        headers: { "Cache-Control": "public, s-maxage=15, stale-while-revalidate=60" },
+        headers: { "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=7200" },
     });
 }
 

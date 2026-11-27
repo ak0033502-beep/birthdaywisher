@@ -21,6 +21,14 @@ const str = (v: unknown) => (v === null || v === undefined ? "" : String(v));
    and retry once on a connection error. */
 let active = 0;
 const waiting: Array<() => void> = [];
+let lastDbErrorMsg = "";
+let lastDbErrorAt = 0;
+
+export function getLastAdminDbError(): string | null {
+    if (!lastDbErrorMsg || Date.now() - lastDbErrorAt > 60_000) return null;
+    return lastDbErrorMsg;
+}
+
 async function limited<T>(fn: () => Promise<T>): Promise<T> {
     if (active >= 6) await new Promise<void>((r) => waiting.push(r));
     active++;
@@ -28,10 +36,17 @@ async function limited<T>(fn: () => Promise<T>): Promise<T> {
 }
 async function safe<T>(fn: () => Promise<T>, fallback: T, label: string): Promise<T> {
     for (let attempt = 0; attempt < 2; attempt++) {
-        try { return await limited(fn); } catch (e) {
-            const conn = /fetch failed|connect|timeout/i.test(String((e as Error)?.message || e));
+        try {
+            const res = await limited(fn);
+            if (lastDbErrorMsg && Date.now() - lastDbErrorAt > 5_000) lastDbErrorMsg = "";
+            return res;
+        } catch (e) {
+            const msg = String((e as Error)?.message || e);
+            const conn = /fetch failed|connect|timeout/i.test(msg);
             if (attempt === 0 && conn) continue;
-            console.error(`[admin] ${label} failed:`, (e as Error)?.message || e);
+            lastDbErrorMsg = msg.slice(0, 260);
+            lastDbErrorAt = Date.now();
+            console.error(`[admin] ${label} failed:`, msg);
             return fallback;
         }
     }

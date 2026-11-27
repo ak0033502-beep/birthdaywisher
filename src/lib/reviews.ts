@@ -34,6 +34,14 @@ const g = globalThis as unknown as { __bwReviewsReadyV2?: Promise<void> | null }
 export function ensureReviewsTable(): Promise<void> {
     if (!g.__bwReviewsReadyV2) {
         g.__bwReviewsReadyV2 = (async () => {
+            // Fast 0.5ms probe skips DDL table locks on every cold start when schema already exists
+            const probe = await sql`
+                SELECT 1 FROM information_schema.columns
+                WHERE table_schema = 'public' AND table_name = 'reviews' AND column_name = 'hidden_by_admin'
+                LIMIT 1
+            `;
+            if (probe.rows.length > 0) return;
+
             await sql`
                 CREATE TABLE IF NOT EXISTS reviews (
                     id SERIAL PRIMARY KEY,

@@ -47,6 +47,20 @@ function tryRecoverChunkError(msg: string, rawSrc = ""): boolean {
     }
 }
 
+function shouldSampleVitals(): boolean {
+    if (typeof window === "undefined") return false;
+    try {
+        let flag = sessionStorage.getItem("bw-vitals-s");
+        if (!flag) {
+            flag = Math.random() < 0.2 ? "1" : "0"; // 20% session sample cuts CWV DB writes by 80%
+            sessionStorage.setItem("bw-vitals-s", flag);
+        }
+        return flag === "1";
+    } catch {
+        return false;
+    }
+}
+
 /** Page views, Core Web Vitals and JS errors for the admin dashboard (first-party, anonymous). */
 export function SiteTracker() {
     const pathname = usePathname();
@@ -60,7 +74,7 @@ export function SiteTracker() {
     }, [pathname]);
 
     useReportWebVitals((m) => {
-        if (location.pathname.startsWith("/admin")) return;
+        if (location.pathname.startsWith("/admin") || !shouldSampleVitals()) return;
         if (!["LCP", "CLS", "INP", "FCP", "TTFB"].includes(m.name)) return;
         if (seenVitals.current.has(m.id)) return;
         seenVitals.current.add(m.id);
