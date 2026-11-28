@@ -494,10 +494,10 @@ export async function getCuppyAdminStats(days: number) {
                     COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'hasHint' = 'true')::int AS with_hint,
                     COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'hasMemory' = 'true')::int AS with_memory,
                     COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'tone' = 'polish')::int AS polish_uses,
-                    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY (props->>'ms')::float)
-                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p50_ms,
-                    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY (props->>'ms')::float)
-                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p75_ms
+                    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY (CASE WHEN (props->>'ms') ~ '^[0-9]+(\.[0-9]+)?$' THEN (props->>'ms')::float END))
+                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms') ~ '^[0-9]+(\.[0-9]+)?$' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p50_ms,
+                    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY (CASE WHEN (props->>'ms') ~ '^[0-9]+(\.[0-9]+)?$' THEN (props->>'ms')::float END))
+                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms') ~ '^[0-9]+(\.[0-9]+)?$' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p75_ms
                 FROM site_events
                 WHERE ts > NOW() - (${days}::int * INTERVAL '1 day')
                   AND name LIKE 'cuppy_%'

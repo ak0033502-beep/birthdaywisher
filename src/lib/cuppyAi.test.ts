@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { EVENT_NAMES } from "@/lib/analytics";
 import { applyAutoBuild, buildStoryMemory, newDraft } from "@/components/wizard2/draft";
 import { normalizeCuppyConfig, resolvePauseMessage } from "./cuppyConfig";
 import {
@@ -10,6 +11,19 @@ import {
 } from "./cuppyAi";
 
 describe("cuppyAi", () => {
+    it("registers all Cuppy AI telemetry events in EVENT_NAMES so /api/t never drops them", () => {
+        for (const ev of [
+            "cuppy_ai_gen",
+            "cuppy_ai_ask",
+            "cuppy_ai_pick",
+            "cuppy_ai_429",
+            "cuppy_autobuild_start",
+            "cuppy_autobuild_ok",
+            "cuppy_review_submit",
+        ]) {
+            expect(EVENT_NAMES.has(ev)).toBe(true);
+        }
+    });
     it("normalizes Cuppy Admin config and resolves Cozy Pause presets without banned emojis", () => {
         const kitchen = normalizeCuppyConfig({ enabled: false, pausePreset: "kitchen" });
         expect(kitchen.enabled).toBe(false);

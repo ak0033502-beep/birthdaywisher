@@ -95,6 +95,8 @@ export const EVENT_NAMES = new Set([
     "game_demo_play", "game_maker_create", "game_candles",
     "review_submit",
     "vault_view", "vault_claim", "vault_post200_click",
+    "cuppy_ai_gen", "cuppy_ai_ask", "cuppy_ai_pick", "cuppy_ai_429",
+    "cuppy_autobuild_start", "cuppy_autobuild_ok", "cuppy_review_submit",
     "vitals", "js_error", "api_error",
 ]);
 
