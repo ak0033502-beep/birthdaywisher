@@ -25,8 +25,17 @@ function buildStructuredData(reviews?: PublicReviewsSummary) {
     applicationCategory: "EntertainmentApplication",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    featureList: [
+      "12 playable birthday & wedding anniversary mini-games",
+      "Cuppy AI birthday wish writer & 10-second full surprise auto-builder (English, Hinglish & Hindi)",
+      "Blow out virtual cake candles using phone microphone",
+      "Long-distance Hold My Hand heartbeat touch sync",
+      "Personal voice notes, photo memories & studio vocal soundtracks",
+      "Midnight 12:00 AM time-capsule countdown lock",
+      "Privacy-first auto-deleting surprise links with no login required",
+    ],
     description:
-      "Create a free birthday wishes game: an interactive birthday or wedding anniversary surprise with heartbeat sync, sky lanterns, quizzes, photos, voice notes and confetti, shared as one private WhatsApp link.",
+      "Create a free birthday wishes game: an interactive birthday or wedding anniversary surprise with Cuppy AI writing (English, Hinglish, Hindi), heartbeat sync, sky lanterns, quizzes, photos, voice notes and confetti, shared as one private WhatsApp link.",
   };
 
   if (hasRating && reviews) {
