@@ -29,6 +29,7 @@ export function PartyNavbar() {
                 <nav className="bw-nav-links" aria-label="Main">
                     <Link href="/birthday-wishes-game">Games</Link>
                     <Link href="/anniversary">{s.anniversary}</Link>
+                    <Link href="/giveaway" style={{ color: "var(--p-pink)", fontWeight: 800, whiteSpace: "nowrap" }}>🎁 ReelFest</Link>
                     <Link href="/blog">{s.blog}</Link>
                     <Link href="/about">{s.about}</Link>
                 </nav>

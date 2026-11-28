@@ -7,6 +7,7 @@ import { Bunting } from "@/components/party/Decor";
 import { PartyFooter } from "@/components/party/PartyFooter";
 import { BLOCKS } from "@/blocks/registry";
 import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
+import { GiveawayCreatorCard } from "@/components/giveaway/GiveawayPromoCard";
 
 interface AnalyticsData {
     wishId: string;
@@ -284,6 +285,7 @@ export default function DashboardPage({ params }: { params: Promise<{ id: string
                                 setAnalytics((prev) => (prev ? { ...prev, keepUntil, vaultPlan: plan } : prev))
                             }
                         />
+                        <GiveawayCreatorCard surface="dashboard" />
                     </div>
 
                     {/* Slide-by-Slide Attention Breakdown */}

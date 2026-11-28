@@ -12,6 +12,7 @@ import { Bunting, GiftCube, Balloons } from "@/components/party/Decor";
 import { burst, useReveal, useTier, useTiltAndMagnet, type Tier } from "@/components/party/interactions";
 import { Hero3D } from "./Hero3D";
 import { PartyFooter } from "@/components/party/PartyFooter";
+import { GiveawayHeroPill } from "@/components/giveaway/GiveawayPromoCard";
 import { getHomeStrings, HOME_FAQ_EN, type HomeStrings } from "./homeStrings";
 
 /* ---------- Structured data (English; Google & AI crawlers read SSR HTML + JSON-LD) ---------- */
@@ -137,6 +138,7 @@ export function HomeClient({ initialReviews }: { initialReviews?: PublicReviewsS
         <Hero3D tier={tier} onHint={onHint} labels={{ popMsgs: h.popMsgs, giftMsg: h.giftMsg, giftLabel: "Open the gift" }} />
         <div className="bw-container bw-hero-grid">
           <div>
+            <GiveawayHeroPill />
             <span className="bw-eyebrow">{h.eyebrow}</span>
             <h1>
               {s.heroTitle1} <span className="bw-hl">{s.heroTitle2}</span> <span aria-hidden="true">🎮🎂</span>

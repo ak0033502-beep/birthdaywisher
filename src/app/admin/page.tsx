@@ -7,6 +7,8 @@ import { buildInsights, stepLabel } from "@/lib/adminInsights";
 import { Bars, Card, Funnel, Kpi, LineChart, Table, fmt, pct } from "@/components/admin/charts";
 import { CleanupButton, DeleteWishForm, HealthCheck, IndexNowButton, LogoutButton } from "@/components/admin/AdminClient";
 import { CuppyEngineMonitor, CuppyPlayground, CuppySwitchboard } from "@/components/admin/CuppyAdminClient";
+import { GiveawayAdminPanel } from "@/components/admin/GiveawayAdminClient";
+import { getAdminGiveawayDashboard } from "@/lib/giveaway";
 import { toggleReviewAction } from "./actions";
 import { BLOCKS } from "@/blocks/registry";
 
@@ -16,6 +18,7 @@ export const maxDuration = 60;
 const TABS = [
     { id: "overview", t: "📊 Overview" },
     { id: "ai", t: "🧁 Cuppy AI" },
+    { id: "giveaway", t: "🎁 ReelFest" },
     { id: "funnel", t: "🔁 Funnel" },
     { id: "wizard", t: "🧙 Wizard" },
     { id: "recipients", t: "💌 Recipients" },
@@ -75,6 +78,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 <Suspense key={`${tab}-${days}`} fallback={<AdminSkeleton />}>
                     {tab === "overview" && <OverviewTab days={days} />}
                     {tab === "ai" && <CuppyAiTab days={days} />}
+                    {tab === "giveaway" && <GiveawayTab />}
                     {tab === "funnel" && <FunnelTab days={days} />}
                     {tab === "wizard" && <WizardTab days={days} />}
                     {tab === "recipients" && <RecipientsTab days={days} />}
@@ -790,6 +794,34 @@ async function CuppyAiTab({ days }: { days: number }) {
                     empty="No Cuppy AI reviews submitted yet—ratings appear here as creators rate Cuppy inside /create."
                 />
             </Card>
+        </>
+    );
+}
+
+/* ---------------- 11. BirthdayWisher ReelFest Command Center ---------------- */
+async function GiveawayTab() {
+    const g = await getAdminGiveawayDashboard();
+    return (
+        <>
+            <div className="adm-kpis">
+                <Kpi label="Submitted Reels" value={g.kpis.total} hint="15–30s entries" />
+                <Kpi label="Verified Reels (+10)" value={g.kpis.verifiedReels} hint="checked by admin" />
+                <Kpi label="In-Person (+15)" value={`${g.kpis.verifiedInPerson}/${g.kpis.inPerson}`} hint="verified / claimed" />
+                <Kpi label="Collab (+5)" value={`${g.kpis.verifiedCollabs}/${g.kpis.collabs}`} hint="verified / claimed" />
+                <Kpi label="Story Tag (+5)" value={`${g.kpis.verifiedStories}/${g.kpis.stories}`} hint="verified / claimed" />
+                <Kpi label="Top Score / 100" value={`${g.kpis.topScore}/100`} hint="highest wins directly" />
+            </div>
+
+            <Card title="🎁 Rewards Chosen by Creators (🇮🇳 ₹2,000 · 🌍 $25)" wide>
+                <Bars items={g.prizeBreakdown} empty="No prize picks yet" />
+            </Card>
+
+            <GiveawayAdminPanel
+                initialConfig={g.config}
+                resendReady={g.resendReady}
+                fromAddress={g.fromAddress}
+                entries={g.entries}
+            />
         </>
     );
 }

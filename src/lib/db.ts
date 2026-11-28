@@ -17,7 +17,7 @@ import {
 const RESERVED_SLUGS = new Set([
     "admin", "login", "logout", "api", "support", "help", "official", "verify", "security",
     "billing", "payment", "privacy", "terms", "dmca", "disclaimer", "contact", "about",
-    "create", "anniversary", "blog", "games", "dashboard", "wish", "w", "dev", "null", "undefined",
+    "create", "anniversary", "blog", "games", "giveaway", "dashboard", "wish", "w", "dev", "null", "undefined",
 ]);
 
 export class InvalidSlugError extends Error {

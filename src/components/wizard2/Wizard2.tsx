@@ -24,6 +24,7 @@ import { STYLE_IDS, STYLE_INFO, normalizeStyle, type StyleId } from "@/component
 import { SOUNDTRACK_OPTIONS, normalizeSoundtrack, prefetchStyleBgm, startBgm, type BgmController, type SoundtrackMode } from "@/lib/celebration/bgm";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
 import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
+import { GiveawayCreatorCard } from "@/components/giveaway/GiveawayPromoCard";
 
 const DRAFT_KEY = "bw-wizard2-draft";
 
@@ -919,6 +920,7 @@ function Finish({ result, d, Name, onAgain, celebrate }: { result: { id: string;
                         <Link className="bw-btn bw-btn-ghost bw-btn-sm" href={`/dashboard/${result.id}`}>📊 Views dashboard</Link>
                     </div>
                     <KeepAliveCard wishId={result.id} surface="finish" variant="party" />
+                    <GiveawayCreatorCard surface="finish" />
                     <div className="wz2-badges">{badges.map((b) => <span key={b} className="wz2-badge">{b}</span>)}</div>
                     <div style={{ marginTop: 24 }}><button type="button" className="wz2-chip" onClick={onAgain}>＋ Make another surprise</button></div>
                 </>

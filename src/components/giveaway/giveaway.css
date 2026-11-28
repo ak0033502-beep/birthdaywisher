@@ -1,0 +1,803 @@
+/* =========================================================
+   🎁 BirthdayWisher ₹2,000 Creator Reel Challenge (/giveaway)
+   Joyful Party design tokens (--p-*) · Day + Night aware · Zero stars/sparkles
+   ========================================================= */
+
+.gw-page {
+    padding-top: 68px;
+    overflow-x: clip;
+}
+
+/* ---------- 1. Showstopper Festival Hero Stage ---------- */
+.gw-hero {
+    position: relative;
+    padding: 54px 0 64px;
+    color: #fff4e8;
+    background:
+        radial-gradient(920px 440px at 12% 8%, rgba(255, 92, 138, 0.34) 0%, transparent 62%),
+        radial-gradient(820px 460px at 90% 12%, rgba(255, 159, 67, 0.28) 0%, transparent 58%),
+        radial-gradient(760px 480px at 50% 108%, rgba(46, 216, 182, 0.22) 0%, transparent 62%),
+        linear-gradient(145deg, #1b1236 0%, #2a1850 52%, #191230 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.gw-hero-confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        radial-gradient(circle at 8% 24%, #ff5c8a 0 4px, transparent 5px),
+        radial-gradient(circle at 22% 76%, #ffd93d 0 3.5px, transparent 4.5px),
+        radial-gradient(circle at 82% 20%, #2ed8b6 0 4px, transparent 5px),
+        radial-gradient(circle at 91% 68%, #ff9f43 0 4.5px, transparent 5.5px),
+        radial-gradient(circle at 64% 84%, #a78bfa 0 3.5px, transparent 4.5px);
+    opacity: 0.55;
+}
+
+.gw-hero-in {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.gw-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1.5px solid rgba(255, 217, 61, 0.5);
+    color: #ffd93d;
+    font-weight: 900;
+    font-size: 12.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.gw-live-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #2ed8b6;
+    box-shadow: 0 0 0 0 rgba(46, 216, 182, 0.8);
+    animation: gw-pulse 1.7s infinite;
+}
+
+@keyframes gw-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 216, 182, 0.8); }
+    70% { box-shadow: 0 0 0 8px rgba(46, 216, 182, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 216, 182, 0); }
+}
+
+.gw-hero h1 {
+    margin: 18px auto 14px;
+    font-size: clamp(34px, 6vw, 62px);
+    font-weight: 800;
+    line-height: 1.06;
+    color: #ffffff;
+    letter-spacing: -0.4px;
+}
+
+.gw-hero-grad {
+    background: linear-gradient(115deg, #ffd93d 0%, #ff9f43 45%, #ff5c8a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.gw-hero-sub {
+    max-width: 680px;
+    margin: 0 auto 26px;
+    font-size: clamp(16px, 2.1vw, 19.5px);
+    line-height: 1.55;
+    color: rgba(255, 244, 232, 0.86);
+    font-weight: 600;
+}
+
+/* Countdown Clock */
+.gw-clock {
+    display: inline-grid;
+    grid-template-columns: repeat(4, minmax(66px, 84px));
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 22px;
+    background: rgba(15, 9, 32, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    margin-bottom: 26px;
+}
+
+.gw-clock-box {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 10px 6px 8px;
+}
+
+.gw-clock-num {
+    display: block;
+    font-family: var(--p-font-display);
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 800;
+    line-height: 1;
+    color: #ffd93d;
+    font-variant-numeric: tabular-nums;
+}
+
+.gw-clock-lbl {
+    display: block;
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.gw-hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.gw-btn-gold {
+    background: linear-gradient(135deg, #ffd93d 0%, #ff9f43 55%, #ff5c8a 100%);
+    color: #231102;
+    font-weight: 900;
+    box-shadow: 0 14px 34px rgba(255, 159, 67, 0.42);
+}
+.gw-btn-gold:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(255, 159, 67, 0.55);
+}
+
+.gw-btn-dark-ghost {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.24);
+}
+.gw-btn-dark-ghost:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-2px);
+}
+
+.gw-hero-pills {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gw-hero-pills span {
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- 2. 4 Branded Prize Cards + Regional Switch ---------- */
+.gw-region-switch {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    background: var(--p-surface);
+    border: 1.5px solid var(--p-line);
+    box-shadow: var(--p-shadow);
+    margin-top: 14px;
+}
+
+.gw-region-btn {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 0;
+    background: transparent;
+    color: var(--p-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.gw-region-btn:hover {
+    color: var(--p-text);
+}
+
+.gw-region-btn.is-on {
+    background: linear-gradient(135deg, var(--p-pink), var(--p-orange));
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(255, 92, 138, 0.28);
+}
+
+.gw-prizes-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.gw-prizes-grid.is-single {
+    grid-template-columns: minmax(0, 440px);
+    justify-content: center;
+}
+
+@media (max-width: 1020px) {
+    .gw-prizes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+    .gw-prizes-grid { grid-template-columns: 1fr; }
+}
+
+.gw-prize-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 18px 18px;
+    border-radius: 26px;
+    background: var(--p-surface);
+    border: 2px solid var(--p-line);
+    box-shadow: var(--p-shadow);
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.24s var(--p-ease-bounce), border-color 0.2s ease, box-shadow 0.24s ease;
+}
+
+.gw-prize-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--p-shadow-lg);
+}
+
+.gw-prize-card.is-picked {
+    border-color: var(--p-pink);
+    box-shadow: 0 18px 42px rgba(255, 92, 138, 0.24);
+}
+
+.gw-prize-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.gw-prize-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: color-mix(in srgb, var(--accent, #ff5c8a) 16%, var(--p-surface2));
+    color: var(--p-text);
+}
+
+.gw-prize-val {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--p-pink);
+}
+
+.gw-prize-art {
+    height: 176px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid rgba(43, 34, 64, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+}
+
+.gw-prize-img {
+    max-width: 100%;
+    max-height: 152px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.28s var(--p-ease-bounce);
+}
+
+.gw-prize-card:hover .gw-prize-img {
+    transform: scale(1.07);
+}
+
+.gw-prize-card h3 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.gw-prize-card p {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--p-muted);
+    font-weight: 600;
+    flex: 1;
+}
+
+.gw-prize-pick-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    font-weight: 800;
+    background: var(--p-surface2);
+    color: var(--p-text);
+    border: 1.5px solid var(--p-line);
+    transition: background 0.2s, color 0.2s;
+}
+
+.gw-prize-card.is-picked .gw-prize-pick-btn {
+    background: linear-gradient(135deg, var(--p-pink), var(--p-orange));
+    color: #fff;
+    border-color: transparent;
+}
+
+/* ---------- 3. Viral Reel Ideas Grid ---------- */
+.gw-hooks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 720px) {
+    .gw-hooks-grid { grid-template-columns: 1fr; }
+}
+
+.gw-hook-card {
+    padding: 20px;
+    border-radius: 22px;
+    background: var(--p-surface);
+    border: 1.5px solid var(--p-line);
+    box-shadow: var(--p-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gw-hook-tag {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 800;
+    background: var(--p-surface2);
+    color: var(--p-grape);
+}
+
+.gw-hook-quote {
+    margin: 0;
+    font-family: var(--p-font-display);
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.28;
+}
+
+.gw-hook-tip {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--p-muted);
+    font-weight: 600;
+    line-height: 1.48;
+    flex: 1;
+}
+
+.gw-hook-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.gw-copy-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--p-line);
+    background: var(--p-surface2);
+    color: var(--p-text);
+    font-weight: 800;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s, border-color 0.2s;
+}
+.gw-copy-btn:hover {
+    border-color: var(--p-pink);
+    transform: translateY(-1px);
+}
+
+/* ---------- 4. Fair Winner Formula Strip ---------- */
+.gw-fair-box {
+    border-radius: 28px;
+    padding: 28px 26px;
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--p-grape) 10%, var(--p-surface)),
+        color-mix(in srgb, var(--p-pink) 10%, var(--p-surface))
+    );
+    border: 2px solid color-mix(in srgb, var(--p-grape) 28%, var(--p-line));
+    box-shadow: var(--p-shadow);
+}
+
+.gw-fair-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+@media (max-width: 780px) {
+    .gw-fair-steps { grid-template-columns: 1fr; }
+}
+
+.gw-fair-step {
+    background: var(--p-surface);
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid var(--p-line);
+}
+
+.gw-fair-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--p-pink), var(--p-grape));
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.gw-fair-step h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.gw-fair-step p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--p-muted);
+    font-weight: 600;
+}
+
+/* ---------- 5. Entry Form + Live Perforated VIP Ticket ---------- */
+.gw-submit-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 26px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .gw-submit-grid { grid-template-columns: 1fr; }
+}
+
+.gw-form-card {
+    padding: 28px 24px;
+    border-radius: 28px;
+    background: var(--p-surface);
+    border: 2px solid var(--p-line);
+    box-shadow: var(--p-shadow-lg);
+}
+
+.gw-field-group {
+    margin-bottom: 16px;
+}
+
+.gw-label {
+    display: block;
+    font-weight: 800;
+    font-size: 13.5px;
+    margin-bottom: 6px;
+    color: var(--p-text);
+}
+
+.gw-label small {
+    font-weight: 700;
+    color: var(--p-muted);
+    margin-left: 6px;
+}
+
+.gw-input {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 15px;
+    border: 2px solid var(--p-line);
+    background: var(--p-surface2);
+    color: var(--p-text);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gw-input:focus {
+    border-color: var(--p-pink);
+    box-shadow: 0 0 0 4px rgba(255, 92, 138, 0.15);
+}
+
+.gw-prize-pills {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 480px) {
+    .gw-prize-pills { grid-template-columns: 1fr; }
+}
+
+.gw-prize-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 12px;
+    border-radius: 14px;
+    border: 2px solid var(--p-line);
+    background: var(--p-surface2);
+    color: var(--p-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.18s, background 0.18s;
+}
+
+.gw-prize-pill.is-on {
+    border-color: var(--p-pink);
+    background: color-mix(in srgb, var(--p-pink) 12%, var(--p-surface));
+}
+
+.gw-bonus-checks {
+    display: grid;
+    gap: 9px;
+    margin: 14px 0 18px;
+}
+
+.gw-check-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    background: var(--p-surface2);
+    border: 1.5px solid var(--p-line);
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gw-check-row input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--p-pink);
+    flex-shrink: 0;
+}
+
+.gw-pts-pill {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(46, 216, 182, 0.18);
+    color: #0d9488;
+    font-size: 11.5px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+html[data-party="night"] .party .gw-pts-pill {
+    color: #5eead4;
+}
+
+/* Perforated Golden VIP Ticket */
+.gw-ticket {
+    position: sticky;
+    top: 88px;
+    border-radius: 26px;
+    padding: 24px 22px;
+    color: #ffffff;
+    background:
+        radial-gradient(380px 220px at 90% 10%, rgba(255, 217, 61, 0.24), transparent 65%),
+        linear-gradient(155deg, #251948 0%, #17102e 65%, #2b1438 100%);
+    border: 2px solid rgba(255, 217, 61, 0.42);
+    box-shadow: 0 22px 50px rgba(23, 16, 46, 0.35);
+    overflow: hidden;
+}
+
+.gw-ticket.is-locked {
+    border-color: #2ed8b6;
+    box-shadow: 0 22px 54px rgba(46, 216, 182, 0.28);
+}
+
+.gw-ticket-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: #ffd93d;
+}
+
+.gw-ticket-code {
+    margin: 10px 0 4px;
+    font-family: var(--p-font-display);
+    font-size: clamp(32px, 5vw, 42px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 1px;
+    color: #ffffff;
+}
+
+.gw-ticket-handle {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ff8fb8;
+    margin-bottom: 16px;
+}
+
+.gw-ticket-perf {
+    position: relative;
+    border-top: 2px dashed rgba(255, 255, 255, 0.22);
+    margin: 16px -22px;
+}
+
+.gw-ticket-rows {
+    display: grid;
+    gap: 10px;
+    font-size: 13.5px;
+}
+
+.gw-ticket-rows div {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gw-ticket-rows span {
+    color: rgba(255, 255, 255, 0.68);
+    font-weight: 600;
+}
+
+.gw-ticket-rows b {
+    color: #ffffff;
+    font-weight: 800;
+    text-align: right;
+}
+
+/* ---------- 6. Live Entries Wall & Finalist Voting ---------- */
+.gw-entries-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 900px) {
+    .gw-entries-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+    .gw-entries-grid { grid-template-columns: 1fr; }
+}
+
+.gw-entry-card {
+    padding: 18px;
+    border-radius: 22px;
+    background: var(--p-surface);
+    border: 1.5px solid var(--p-line);
+    box-shadow: var(--p-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gw-entry-card.is-finalist {
+    border: 2px solid var(--p-lemon);
+}
+
+.gw-entry-card.is-winner {
+    border: 2.5px solid #2ed8b6;
+}
+
+.gw-entry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.gw-entry-ticket {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--p-surface2);
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--p-grape);
+}
+
+.gw-entry-pts {
+    font-size: 12.5px;
+    font-weight: 900;
+    color: var(--p-pink);
+}
+
+.gw-entry-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+/* ---------- 7. Promo Banner Cards (Home / Finish / Dashboard) ---------- */
+.gw-promo-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 15px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255, 217, 61, 0.22), rgba(255, 92, 138, 0.16));
+    border: 1.5px solid color-mix(in srgb, var(--p-pink, #ff5c8a) 42%, transparent);
+    color: var(--p-text, #2b2240);
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.gw-promo-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 92, 138, 0.18);
+}
+
+.gw-promo-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 16px auto 0;
+    padding: 18px 20px;
+    border-radius: 22px;
+    text-align: left;
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, #ffd93d 16%, var(--p-surface, #fff)),
+        color-mix(in srgb, #ff5c8a 12%, var(--p-surface, #fff))
+    );
+    border: 2px dashed color-mix(in srgb, var(--p-pink, #ff5c8a) 48%, var(--p-line, rgba(43,34,64,0.12)));
+    box-shadow: var(--p-shadow, 0 10px 26px rgba(255, 92, 138, 0.12));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}

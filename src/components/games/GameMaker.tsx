@@ -16,6 +16,7 @@ import { newDraft, defaultOrder } from "@/components/wizard2/draft";
 import { GameConfigEditor, GAME_LIBRARY } from "@/components/wizard2/gameEditors";
 import { ReviewPrompt, shouldAskReview } from "@/components/review/ReviewPrompt";
 import { KeepAliveCard } from "@/components/vault/KeepAliveCard";
+import { GiveawayCreatorCard } from "@/components/giveaway/GiveawayPromoCard";
 import { track } from "@/lib/track";
 
 const DEMO: { [K in GameType]: BlockConfigMap[K] } = {
@@ -184,6 +185,7 @@ export function GameMaker({ game, slug }: { game: GameType; slug: string }) {
                             <a className="bw-btn bw-btn-ghost bw-btn-sm" href={link} target="_blank" rel="noopener noreferrer">👀 Try it</a>
                         </div>
                         <KeepAliveCard wishId={createdId} surface="game_finish" variant="party" />
+                        <GiveawayCreatorCard surface="game_finish" />
                     </>
                 )}
                 {!open && <p className="wz2-sub">Tap the gift to get your link</p>}
