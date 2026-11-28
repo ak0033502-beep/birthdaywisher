@@ -26,13 +26,15 @@ describe("cuppyAi", () => {
         expect(custom.rateLimit10m).toBe(15);
         expect(resolvePauseMessage(custom)).toBe("Cuppy is resting ❤️ Tap a favourite line below!");
     });
-    it("auto-detects Unfiltered, Flirty, 3 AM Raw, Hinglish, and Hindi from hints & spice", () => {
+    it("auto-detects Unfiltered, Flirty, 3 AM Raw, Hinglish, Hindi, and Sweet/Witty/Brutal tab defaults", () => {
         expect(resolveEffectiveTone("auto", "Full unfiltered bakchodi roast")).toBe("unfiltered");
         expect(resolveEffectiveTone("auto", "Make it spicy and flirty")).toBe("flirty");
         expect(resolveEffectiveTone("auto", "3 AM real talk")).toBe("raw3am");
         expect(resolveEffectiveTone("auto", "Suggest a cute Hinglish one-liner")).toBe("hinglish");
         expect(resolveEffectiveTone("auto", "Write in Hindi please")).toBe("hindi");
-        expect(resolveEffectiveTone("auto", "short wish", "brutal")).toBe("unfiltered");
+        expect(resolveEffectiveTone("auto", "coffee lover, rain", "mild")).toBe("sweet");
+        expect(resolveEffectiveTone("auto", "coffee lover, rain", "medium")).toBe("funny");
+        expect(resolveEffectiveTone("auto", "coffee lover, rain", "brutal")).toBe("unfiltered");
         expect(resolveEffectiveTone("funny", "Hinglish roast")).toBe("funny");
     });
 

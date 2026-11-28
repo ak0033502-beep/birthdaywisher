@@ -387,7 +387,7 @@ export function CuppyAiBox({
         );
     }
 
-    const askCuppy = async (toneOverride?: CuppyTone, spiceOverride?: CuppySpice, fresh = false) => {
+    const askCuppy = async (toneOverride?: CuppyTone, spiceOverride?: CuppySpice, fresh = true) => {
         const chosenTone = toneOverride ?? activeTone;
         const chosenSpice = spiceOverride ?? effectiveSpice;
         setActiveTone(chosenTone);
@@ -409,8 +409,9 @@ export function CuppyAiBox({
                     relationship: env.relationship,
                     vibe: env.vibe,
                     hint: hint.trim(),
-                    draft: chosenTone === "polish" ? draft : draft.slice(0, 260),
+                    draft: chosenTone === "polish" ? draft : "",
                     storyContext: env.storyMemory || "",
+                    avoid: items.map((x) => x.text.slice(0, 90)),
                     fresh,
                 }),
             });
@@ -491,7 +492,14 @@ export function CuppyAiBox({
                             title={sp.title}
                             className={`wz2-ai-spice ${effectiveSpice === sp.id ? "is-on" : ""}`}
                             disabled={loading}
-                            onClick={() => setSpice(sp.id)}
+                            onClick={() => {
+                                setSpice(sp.id);
+                                setActiveTone("auto");
+                                // If user typed keywords (or already has suggestions open), immediately generate in this mood!
+                                if (hint.trim() || items.length > 0) {
+                                    void askCuppy("auto", sp.id, true);
+                                }
+                            }}
                         >
                             {sp.label}
                         </button>
@@ -542,7 +550,7 @@ export function CuppyAiBox({
                         type="button"
                         className={`wz2-chip wz2-ai-tone ${t.hot ? "is-hot" : ""} ${activeTone === t.id && items.length ? "is-on" : ""}`}
                         disabled={loading}
-                        onClick={() => void askCuppy(t.id, effectiveSpice, false)}
+                        onClick={() => void askCuppy(t.id, effectiveSpice, true)}
                     >
                         {t.label}
                     </button>

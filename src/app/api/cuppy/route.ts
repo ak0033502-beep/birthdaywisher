@@ -74,7 +74,10 @@ export async function POST(req: Request) {
         draft: typeof body.draft === "string" ? body.draft : "",
         storyContext: typeof body.storyContext === "string" ? body.storyContext : "",
         stepContext: typeof body.stepContext === "string" ? body.stepContext : "",
-        fresh: Boolean(body.fresh),
+        avoid: Array.isArray(body.avoid)
+            ? body.avoid.filter((x): x is string => typeof x === "string").slice(0, 6)
+            : undefined,
+        fresh: body.fresh !== false,
         primaryEngine: cfg.primaryEngine,
         allowNoFilter: cfg.allowNoFilter,
         directorNote: cfg.directorNote,
