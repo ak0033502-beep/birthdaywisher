@@ -117,6 +117,7 @@ export default async function WishPage({ params }: { params: Promise<{ id: strin
                 <V2WishShell
                     wish={raw}
                     wishId={readOnlyMode ? undefined : resolvedParams.id}
+                    vaultWishId={resolvedParams.id}
                     adminBypass={admin}
                     previewRole={previewRole}
                     adminMeta={adminMeta}

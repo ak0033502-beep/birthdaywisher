@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Heart, Send, Loader2 } from "lucide-react";
+import { TRUSTPILOT_REVIEW_URL } from "@/lib/site";
+import { track } from "@/lib/track";
 
 interface ReviewModalProps {
     isOpen: boolean;
@@ -105,13 +107,53 @@ export function ReviewModal({ isOpen, onClose, onSubmitted }: ReviewModalProps) 
                         </button>
 
                         {submitted ? (
-                            <div style={{ textAlign: "center", padding: "24px 8px" }}>
-                                <div style={{ fontSize: 48, marginBottom: 10 }} aria-hidden="true">🎉</div>
+                            <div style={{ textAlign: "center", padding: "20px 8px 12px" }}>
+                                <div style={{ fontSize: 48, marginBottom: 8 }} aria-hidden="true">🎉</div>
                                 <h3>Thank You! ❤️</h3>
-                                <p style={{ color: "var(--p-muted)", fontWeight: 600, margin: "8px 0 20px" }}>
+                                <p style={{ color: "var(--p-muted)", fontWeight: 600, margin: "6px 0 14px" }}>
                                     Your review is live! Thank you for spreading the joy.
                                 </p>
-                                <button type="button" onClick={handleClose} className="bw-btn bw-btn-primary bw-btn-sm">
+                                <div
+                                    style={{
+                                        padding: "12px 14px",
+                                        borderRadius: 18,
+                                        background: "rgba(0, 182, 122, 0.1)",
+                                        border: "1.5px solid rgba(0, 182, 122, 0.32)",
+                                        marginBottom: 14,
+                                        display: "grid",
+                                        gap: 8,
+                                    }}
+                                >
+                                    <span style={{ fontSize: 12.5, fontWeight: 800, color: "var(--p-text)" }}>
+                                        Help our free project grow? We&apos;ll copy your note for 1-tap paste:
+                                    </span>
+                                    <a
+                                        href={TRUSTPILOT_REVIEW_URL}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={() => {
+                                            if (message.trim()) {
+                                                try { void navigator.clipboard.writeText(message.trim()); } catch { /* ignore */ }
+                                            }
+                                            track("cta_click", { label: "trustpilot_home_modal" });
+                                        }}
+                                        style={{
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            padding: "10px 16px",
+                                            borderRadius: 999,
+                                            background: "#00b67a",
+                                            color: "#fff",
+                                            fontWeight: 900,
+                                            fontSize: 14,
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        💚 Copy &amp; Post on Trustpilot ↗
+                                    </a>
+                                </div>
+                                <button type="button" onClick={handleClose} className="bw-btn bw-btn-ghost bw-btn-sm">
                                     Done
                                 </button>
                             </div>

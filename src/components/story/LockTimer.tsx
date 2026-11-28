@@ -4,42 +4,79 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Timer } from "lucide-react";
 
+const sessionDeadlines = new Map<string, number>();
+
 /**
  * A circular countdown timer that auto-unlocks after the given duration.
- * It displays a progress ring and remaining seconds.
- * When time runs out, it calls onAutoUnlock.
+ * Preserves its deadline across back/forward slide navigation and pauses auto-fire while inactive.
  */
 export function LockTimer({
     durationSeconds = 60,
     onAutoUnlock,
     label = "Auto-unlock in",
+    active = true,
+    timerKey,
 }: {
     durationSeconds?: number;
     onAutoUnlock: () => void;
     label?: string;
+    active?: boolean;
+    timerKey?: string;
 }) {
+    const deadlineRef = useRef<number | null>(null);
+    const firedRef = useRef(false);
     const [secondsLeft, setSecondsLeft] = useState(durationSeconds);
 
     // Keep the latest callback without restarting the countdown when the parent re-renders
     const onAutoUnlockRef = useRef(onAutoUnlock);
-    useEffect(() => { onAutoUnlockRef.current = onAutoUnlock; }, [onAutoUnlock]);
-
-    // Deadline-based countdown: stays accurate even if the page is busy or timers are throttled.
-    // (The old version restarted a 1 s interval on every tick/re-render, so it could fall far behind.)
     useEffect(() => {
-        const deadline = Date.now() + durationSeconds * 1000;
-        let fired = false;
-        const interval = setInterval(() => {
+        onAutoUnlockRef.current = onAutoUnlock;
+    }, [onAutoUnlock]);
+
+    // Deadline-based countdown: never resets on back/forward navigation, and only triggers unlock while slide is active.
+    useEffect(() => {
+        if (!active || firedRef.current) return;
+        const resolveDeadline = () => {
+            if (deadlineRef.current !== null) return deadlineRef.current;
+            const scopedKey =
+                timerKey && typeof window !== "undefined"
+                    ? `${window.location.pathname}::${timerKey}`
+                    : null;
+            if (scopedKey) {
+                const saved = sessionDeadlines.get(scopedKey);
+                if (typeof saved === "number") {
+                    deadlineRef.current = saved;
+                    return saved;
+                }
+            }
+            const fresh = Date.now() + durationSeconds * 1000;
+            deadlineRef.current = fresh;
+            if (scopedKey) sessionDeadlines.set(scopedKey, fresh);
+            return fresh;
+        };
+        const deadline = resolveDeadline();
+
+        const sync = () => {
             const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
             setSecondsLeft(left);
-            if (left <= 0 && !fired) {
-                fired = true;
-                clearInterval(interval);
+            if (left <= 0 && !firedRef.current) {
+                firedRef.current = true;
+                if (timerKey && typeof window !== "undefined") {
+                    sessionDeadlines.delete(`${window.location.pathname}::${timerKey}`);
+                }
                 onAutoUnlockRef.current();
+                return true;
             }
+            return false;
+        };
+
+        if (sync()) return;
+        const interval = setInterval(() => {
+            if (sync()) clearInterval(interval);
         }, 250);
         return () => clearInterval(interval);
-    }, [durationSeconds]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [active, durationSeconds, timerKey]);
 
     const progress = secondsLeft / durationSeconds;
     const circumference = 2 * Math.PI * 18; // radius = 18

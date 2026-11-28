@@ -10,6 +10,7 @@
  */
 import "./review.css";
 import { useEffect, useState } from "react";
+import { TRUSTPILOT_REVIEW_URL } from "@/lib/site";
 import { track } from "@/lib/track";
 
 export type ReviewWho = "creator" | "recipient";
@@ -74,6 +75,7 @@ export function ReviewPrompt({ who, wishId, mode, onClose }: { who: ReviewWho; w
     const [rel, setRel] = useState("Friend");
     const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
     const [err, setErr] = useState("");
+    const [copiedTp, setCopiedTp] = useState(false);
 
     // Esc closes the popup
     useEffect(() => {
@@ -83,10 +85,10 @@ export function ReviewPrompt({ who, wishId, mode, onClose }: { who: ReviewWho; w
         return () => window.removeEventListener("keydown", onKey);
     }, [mode, who, wishId, onClose]);
 
-    // Auto-close the popup shortly after a successful review
+    // Give enough time on the thank-you screen to tap the optional Trustpilot button
     useEffect(() => {
         if (state !== "done" || mode !== "modal") return;
-        const t = setTimeout(() => onClose?.(), 2600);
+        const t = setTimeout(() => onClose?.(), 11000);
         return () => clearTimeout(t);
     }, [state, mode, onClose]);
 
@@ -134,7 +136,24 @@ export function ReviewPrompt({ who, wishId, mode, onClose }: { who: ReviewWho; w
                     <div className="rv-thanks-e" aria-hidden="true">{rating >= 4 ? "🥰" : "🙏"}</div>
                     <h3>Thank you! ❤️</h3>
                     <p>{rating >= 4 ? "You just made our day." : "Thanks for telling us. We'll make it better."}</p>
-                    {mode === "modal" && <button type="button" className="rv-btn" onClick={onClose}>Close</button>}
+                    <div className="rv-tp-box">
+                        <small>Want to help our 100% free project grow?</small>
+                        <a
+                            href={TRUSTPILOT_REVIEW_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rv-tp-btn"
+                            onClick={() => {
+                                if (message.trim()) {
+                                    try { void navigator.clipboard.writeText(message.trim()); setCopiedTp(true); } catch { /* ignore */ }
+                                }
+                                track("cta_click", { label: "trustpilot_review_prompt", who });
+                            }}
+                        >
+                            💚 {copiedTp ? "Copied! Paste on Trustpilot ↗" : message.trim() ? "Copy & Share on Trustpilot ↗" : "Share a quick rating on Trustpilot ↗"}
+                        </a>
+                    </div>
+                    {mode === "modal" && <button type="button" className="rv-later" onClick={onClose}>Close</button>}
                 </div>
             ) : (
                 <>

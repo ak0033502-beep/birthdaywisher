@@ -101,14 +101,14 @@ export function MemoryMatchSlide({ config, ctx, blockId }: GameSlideProps<"memor
             {won ? (
                 <div className="bv-card"><p className="bv-big">{config.message || "Every moment with you is worth remembering ❤️"}</p></div>
             ) : (
-                <LockTimer durationSeconds={60} label="Reveal all in" onAutoUnlock={() => { setMatched(uniqueKeys); ctx.celebrate(140); ctx.unlock(); }} />
+                <LockTimer active={ctx.active !== false} timerKey={blockId} durationSeconds={60} label="Reveal all in" onAutoUnlock={() => { setMatched(uniqueKeys); ctx.celebrate(140); ctx.unlock(); }} />
             )}
         </>
     );
 }
 
 /* ======================= 📅 Guess the Year (Memory Timeline) ======================= */
-export function GuessYearSlide({ config, ctx }: GameSlideProps<"guessYear">) {
+export function GuessYearSlide({ config, ctx, blockId }: GameSlideProps<"guessYear">) {
     const moments = config.moments.filter((m) => m.caption.trim() && m.year >= 1950 && m.year <= 2035);
     const list = moments.length ? moments : [{ caption: "When our favourite memory began ❤️", year: 2022 }];
     const [idx, setIdx] = useState(0);
@@ -182,7 +182,7 @@ export function GuessYearSlide({ config, ctx }: GameSlideProps<"guessYear">) {
             </div>
 
             {feedback && <p className={`bv-feedback ${feedback.ok ? "ok" : "bad"}`} aria-live="polite">{feedback.text}</p>}
-            <LockTimer key={idx} durationSeconds={60} label="Auto-reveal in" onAutoUnlock={() => { setFinished(true); ctx.unlock(); }} />
+            <LockTimer key={idx} active={ctx.active !== false} timerKey={`${blockId}:${idx}`} durationSeconds={60} label="Auto-reveal in" onAutoUnlock={() => { setFinished(true); ctx.unlock(); }} />
         </>
     );
 }
@@ -273,7 +273,7 @@ type DropItem = { id: number; x: number; y: number; e: string; good: boolean };
 const GOOD_GIFTS = ["🎁", "🎂", "🧁", "🎈", "💌"];
 const SILLY_ITEMS = ["🥦", "⏰"];
 
-export function CatchGiftsSlide({ config, ctx }: GameSlideProps<"catchGifts">) {
+export function CatchGiftsSlide({ config, ctx, blockId }: GameSlideProps<"catchGifts">) {
     const target = Math.max(3, Math.min(15, Math.round(config.target) || 8));
     const [caught, setCaught] = useState(ctx.unlocked ? target : 0);
     const [basketX, setBasketX] = useState(50);
@@ -282,6 +282,7 @@ export function CatchGiftsSlide({ config, ctx }: GameSlideProps<"catchGifts">) {
     const basketRef = useRef(50);
     const nextId = useRef(1);
     const finishedRef = useRef(ctx.unlocked);
+    const isActive = ctx.active !== false;
 
     const done = ctx.unlocked || caught >= target;
 
@@ -295,7 +296,7 @@ export function CatchGiftsSlide({ config, ctx }: GameSlideProps<"catchGifts">) {
     }, [ctx]);
 
     useEffect(() => {
-        if (done) return;
+        if (done || !isActive) return;
         const spawn = setInterval(() => {
             setDrops((prev) => {
                 if (prev.length >= 6) return prev;
@@ -337,7 +338,7 @@ export function CatchGiftsSlide({ config, ctx }: GameSlideProps<"catchGifts">) {
         }, 55);
 
         return () => { clearInterval(spawn); clearInterval(step); };
-    }, [done, target, finish]);
+    }, [done, isActive, target, finish]);
 
     const tapDrop = (item: DropItem) => {
         setDrops((prev) => prev.filter((d) => d.id !== item.id));
@@ -387,13 +388,13 @@ export function CatchGiftsSlide({ config, ctx }: GameSlideProps<"catchGifts">) {
                 <div className="gm-basket" style={{ left: `${basketX}%` }} aria-hidden="true">🧺</div>
             </div>
             {quip && <p className="bv-muted" style={{ fontSize: 13, fontWeight: 800 }}>{quip}</p>}
-            <LockTimer durationSeconds={60} label="Auto-catch in" onAutoUnlock={() => { setCaught(target); finish(); }} />
+            <LockTimer active={isActive} timerKey={blockId} durationSeconds={60} label="Auto-catch in" onAutoUnlock={() => { setCaught(target); finish(); }} />
         </>
     );
 }
 
 /* ======================= 🗺️ 3-Clue Treasure Hunt ======================= */
-export function TreasureSlide({ config, ctx }: GameSlideProps<"treasure">) {
+export function TreasureSlide({ config, ctx, blockId }: GameSlideProps<"treasure">) {
     const clues = config.clues.filter((c) => c.riddle.trim() && c.answer.trim());
     const list = clues.length ? clues : [{ riddle: "What has candles on top and wishes inside? 🎂", answer: "cake" }];
     const [step, setStep] = useState(0);
@@ -463,7 +464,7 @@ export function TreasureSlide({ config, ctx }: GameSlideProps<"treasure">) {
                 )}
             </div>
             {msg && <p className={`bv-feedback ${msg.ok ? "ok" : "bad"}`} aria-live="polite">{msg.text}</p>}
-            <LockTimer key={step} durationSeconds={60} label="Auto-unlock in" onAutoUnlock={() => { setOpened(true); ctx.unlock(); }} />
+            <LockTimer key={step} active={ctx.active !== false} timerKey={`${blockId}:${step}`} durationSeconds={60} label="Auto-unlock in" onAutoUnlock={() => { setOpened(true); ctx.unlock(); }} />
         </>
     );
 }

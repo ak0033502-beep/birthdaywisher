@@ -6,7 +6,7 @@ import { TestimonialsSection } from "@/components/ui/TestimonialsSection";
 import type { PublicReviewsSummary } from "@/lib/reviews";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations, type SiteStrings } from "@/lib/siteTranslations";
-import { SITE_URL } from "@/lib/site";
+import { INSTAGRAM_URL, SITE_URL, TRUSTPILOT_PROFILE_URL } from "@/lib/site";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Bunting, GiftCube, Balloons } from "@/components/party/Decor";
 import { burst, useReveal, useTier, useTiltAndMagnet, type Tier } from "@/components/party/interactions";
@@ -22,6 +22,7 @@ function buildStructuredData(reviews?: PublicReviewsSummary) {
     "@type": "WebApplication",
     name: "BirthdayWisher.fun",
     url: SITE_URL,
+    sameAs: [INSTAGRAM_URL, TRUSTPILOT_PROFILE_URL],
     applicationCategory: "EntertainmentApplication",
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

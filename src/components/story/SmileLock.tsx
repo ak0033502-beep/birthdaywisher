@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import * as faceapi from "@vladmandic/face-api";
 import { Camera, SmilePlus, Sparkles } from "lucide-react";
 
-export function SmileLock({ children, onUnlock }: { children: ReactNode, onUnlock: () => void }) {
+export function SmileLock({ children, onUnlock, active = true }: { children: ReactNode; onUnlock: () => void; active?: boolean }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isModelsLoaded, setIsModelsLoaded] = useState(false);
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
@@ -32,16 +32,18 @@ export function SmileLock({ children, onUnlock }: { children: ReactNode, onUnloc
         loadModels();
     }, []);
 
-    // 2. Start Video Stream
+    // 2. Start Video Stream (only while slide is active and still locked)
     useEffect(() => {
-        if (!isModelsLoaded) return;
+        if (!isModelsLoaded || !active || isUnlocked) return;
 
+        let localStream: MediaStream | null = null;
         const startVideo = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: "user" },
                     audio: false
                 });
+                localStream = stream;
 
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
@@ -57,19 +59,23 @@ export function SmileLock({ children, onUnlock }: { children: ReactNode, onUnloc
 
         startVideo();
 
-        // Cleanup stream when unmounted
+        // Cleanup stream when unmounted or hidden
         return () => {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
             if (videoRef.current && videoRef.current.srcObject) {
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 const stream = videoRef.current.srcObject as MediaStream;
                 stream.getTracks().forEach(track => track.stop());
+                videoRef.current.srcObject = null;
             }
         };
-    }, [isModelsLoaded]);
+    }, [isModelsLoaded, active, isUnlocked]);
 
     // 3. Run Detection Loop
     useEffect(() => {
-        if (!hasCameraPermission || isUnlocked || !videoRef.current) return;
+        if (!active || !hasCameraPermission || isUnlocked || !videoRef.current) return;
 
         let animationFrameId: number;
 
@@ -87,7 +93,7 @@ export function SmileLock({ children, onUnlock }: { children: ReactNode, onUnloc
 
                     if (happyScore > 0.8) {
                         setIsUnlocked(true);
-                        setStatusText("Beautiful smile detected! 💖");
+                        setStatusText("Beautiful smile detected! ❤️");
                         setTimeout(() => onUnlock(), 1000);
                         return; // Stop loop
                     } else if (happyScore > 0.4) {
@@ -115,7 +121,7 @@ export function SmileLock({ children, onUnlock }: { children: ReactNode, onUnloc
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
-    }, [hasCameraPermission, isUnlocked, onUnlock]);
+    }, [active, hasCameraPermission, isUnlocked, onUnlock]);
 
     // Render the unlocked content behind the lock
     if (isUnlocked) {

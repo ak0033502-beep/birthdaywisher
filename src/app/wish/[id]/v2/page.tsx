@@ -37,6 +37,7 @@ export default async function WishV2PreviewPage({ params }: { params: Promise<{ 
         return (
             <V2WishShell
                 wish={migrateV1toV2(ro.data)}
+                vaultWishId={id}
                 adminBypass={admin}
                 previewRole={admin ? "admin" : "creator"}
                 adminMeta={{ openedAt: ro.openedAt, viewCount: ro.viewCount }}

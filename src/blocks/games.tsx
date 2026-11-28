@@ -17,7 +17,7 @@ import type { SlideCtx } from "./slides";
 export type GameSlideProps<K extends keyof BlockConfigMap> = { config: BlockConfigMap[K]; ctx: SlideCtx; blockId: string };
 
 /* ======================= 🕯️ Blow the Candles (Upgraded) ======================= */
-export function CandlesSlide({ config, ctx }: GameSlideProps<"candles">) {
+export function CandlesSlide({ config, ctx, blockId }: GameSlideProps<"candles">) {
     const total = Math.max(1, Math.min(12, Math.round(config.candles) || 5));
     const [lit, setLit] = useState<boolean[]>(() => Array(total).fill(true));
     const [mic, setMic] = useState<"off" | "asking" | "on" | "denied">("off");
@@ -25,9 +25,14 @@ export function CandlesSlide({ config, ctx }: GameSlideProps<"candles">) {
     const stopRef = useRef<() => void>(() => {});
     const firedRef = useRef(false);
     const autoRef = useRef(false);
+    const isActive = ctx.active !== false;
 
     const left = lit.filter(Boolean).length;
     const done = ctx.unlocked || left === 0;
+
+    useEffect(() => {
+        if (!isActive) stopRef.current();
+    }, [isActive]);
 
     useEffect(() => {
         if (left === 0 && !firedRef.current) {
@@ -84,6 +89,8 @@ export function CandlesSlide({ config, ctx }: GameSlideProps<"candles">) {
                 try { src.disconnect(); } catch { /* already disconnected */ }
                 try { stream.getTracks().forEach((t) => t.stop()); } catch { /* ignore */ }
                 ac.close().catch(() => {});
+                setMic("off");
+                setBreath(0);
             };
             const tick = () => {
                 if (stopped) return;
@@ -162,7 +169,7 @@ export function CandlesSlide({ config, ctx }: GameSlideProps<"candles">) {
                     <button type="button" className="bv-make" style={{ margin: 0 }} onClick={() => blowAt()}>
                         {mic === "denied" ? "Mic blocked: tap here or tap each candle 👆" : "👆 Or tap a candle (or tap here) to blow"}
                     </button>
-                    <LockTimer durationSeconds={60} label="Auto-blow in" onAutoUnlock={() => { autoRef.current = true; setLit(Array(total).fill(false)); }} />
+                    <LockTimer active={isActive} timerKey={blockId} durationSeconds={60} label="Auto-blow in" onAutoUnlock={() => { autoRef.current = true; setLit(Array(total).fill(false)); }} />
                 </div>
             )}
         </>
@@ -197,20 +204,22 @@ export function PrankSlide({ config, ctx, blockId }: GameSlideProps<"prank">) {
         });
     }, [ctx]);
 
+    const isActive = ctx.active !== false;
+
     useEffect(() => {
-        if (phase !== "prank" || config.kind === "error") return;
+        if (!isActive || phase !== "prank" || config.kind === "error") return;
         const iv = setInterval(() => {
             setPct((p) => Math.min(config.kind === "loading" ? 99 : 100, p + (config.kind === "loading" ? 11 : 9)));
             setLine((l) => l + 1);
         }, 460);
         return () => clearInterval(iv);
-    }, [phase, config.kind]);
+    }, [isActive, phase, config.kind]);
 
     useEffect(() => {
-        if (phase !== "prank") return;
+        if (!isActive || phase !== "prank") return;
         const t = setTimeout(reveal, config.kind === "error" ? 5600 : 6200);
         return () => clearTimeout(t);
-    }, [phase, config.kind, reveal]);
+    }, [isActive, phase, config.kind, reveal]);
 
     if (phase === "reveal") {
         return (
@@ -259,7 +268,7 @@ export function PrankSlide({ config, ctx, blockId }: GameSlideProps<"prank">) {
 }
 
 /* ======================= 🎯 Birthday Quiz (Personal, Leaderboard Removed) ======================= */
-export function TriviaSlide({ config, ctx }: GameSlideProps<"trivia">) {
+export function TriviaSlide({ config, ctx, blockId }: GameSlideProps<"trivia">) {
     const questions = config.questions.filter((q) => q.q.trim() && q.options.filter((o) => o.trim()).length >= 2);
     const [stage, setStage] = useState<"play" | "done">(ctx.unlocked ? "done" : "play");
     const [n, setN] = useState(0);
@@ -337,13 +346,13 @@ export function TriviaSlide({ config, ctx }: GameSlideProps<"trivia">) {
                     );
                 })}
             </div>
-            <LockTimer key={n} durationSeconds={60} label="Auto-next in" onAutoUnlock={() => answer(q.correct)} />
+            <LockTimer key={n} active={ctx.active !== false} timerKey={ctx.unlocked ? undefined : `${blockId}:${n}`} durationSeconds={60} label="Auto-next in" onAutoUnlock={() => answer(q.correct)} />
         </>
     );
 }
 
 /* ======================= 🫶 Hold My Hand — Heartbeat Sync (Emotional) ======================= */
-export function HeartbeatSlide({ config, ctx }: GameSlideProps<"heartbeat">) {
+export function HeartbeatSlide({ config, ctx, blockId }: GameSlideProps<"heartbeat">) {
     const name = ctx.wish.recipient.nickname || ctx.wish.recipient.name || "you";
     const [pct, setPct] = useState(ctx.unlocked ? 100 : 0);
     const [holding, setHolding] = useState(false);
@@ -351,6 +360,8 @@ export function HeartbeatSlide({ config, ctx }: GameSlideProps<"heartbeat">) {
     const syncedRef = useRef(ctx.unlocked);
     const beatTimer = useRef<ReturnType<typeof setInterval> | null>(null);
     const rafRef = useRef<number>(0);
+    const isActive = ctx.active !== false;
+    const activeHolding = isActive && holding;
 
     const complete = useCallback(() => {
         if (syncedRef.current) return;
@@ -364,7 +375,7 @@ export function HeartbeatSlide({ config, ctx }: GameSlideProps<"heartbeat">) {
     }, [ctx]);
 
     useEffect(() => {
-        if (!holding || synced) return;
+        if (!activeHolding || synced) return;
         const pulse = () => {
             playUi("ping", { gain: 0.35, rate: 0.52 });
             setTimeout(() => playUi("ping", { gain: 0.25, rate: 0.64 }), 170);
@@ -390,7 +401,7 @@ export function HeartbeatSlide({ config, ctx }: GameSlideProps<"heartbeat">) {
             if (beatTimer.current) clearInterval(beatTimer.current);
             cancelAnimationFrame(rafRef.current);
         };
-    }, [holding, synced, complete]);
+    }, [activeHolding, synced, complete]);
 
     const done = synced || ctx.unlocked;
     const progress = done ? 100 : Math.round(pct);
@@ -439,13 +450,13 @@ export function HeartbeatSlide({ config, ctx }: GameSlideProps<"heartbeat">) {
                 {holding ? `Syncing heartbeats… ${progress}%` : "Press & hold with your thumb"}
             </p>
             <button type="button" className="bv-make" style={{ margin: 0 }} onClick={() => { setPct(100); complete(); }}>👆 Or tap once to connect</button>
-            <LockTimer durationSeconds={60} label="Auto-sync in" onAutoUnlock={() => { setPct(100); complete(); }} />
+            <LockTimer active={isActive} timerKey={blockId} durationSeconds={60} label="Auto-sync in" onAutoUnlock={() => { setPct(100); complete(); }} />
         </div>
     );
 }
 
 /* ======================= 🏮 Sky Lanterns of Wishes (Emotional) ======================= */
-export function LanternsSlide({ config, ctx }: GameSlideProps<"lanterns">) {
+export function LanternsSlide({ config, ctx, blockId }: GameSlideProps<"lanterns">) {
     const wishes = config.wishes.map((w) => w.trim()).filter(Boolean);
     const list = wishes.length ? wishes : ["May all your heartfelt wishes come true this year ❤️"];
     const [released, setReleased] = useState(ctx.unlocked ? list.length : 0);
@@ -531,7 +542,7 @@ export function LanternsSlide({ config, ctx }: GameSlideProps<"lanterns">) {
                 )}
             </div>
 
-            {!done && <LockTimer durationSeconds={60} label="Auto-release in" onAutoUnlock={finishOwn} />}
+            {!done && <LockTimer active={ctx.active !== false} timerKey={blockId} durationSeconds={60} label="Auto-release in" onAutoUnlock={finishOwn} />}
         </>
     );
 }
@@ -546,7 +557,7 @@ const BALLOON_COLORS = [
     "linear-gradient(145deg,#fda4af,#e11d48)",
 ];
 
-export function BalloonsSlide({ config, ctx }: GameSlideProps<"balloons">) {
+export function BalloonsSlide({ config, ctx, blockId }: GameSlideProps<"balloons">) {
     const notes = config.notes.map((s) => s.trim()).filter(Boolean);
     const items = notes.length ? notes : ["You make life brighter every single day ❤️", "Happy Birthday, favourite human! 🎂"];
     const [popped, setPopped] = useState<number[]>(() => (ctx.unlocked ? items.map((_, i) => i) : []));
@@ -611,7 +622,7 @@ export function BalloonsSlide({ config, ctx }: GameSlideProps<"balloons">) {
             )}
 
             {!done && (
-                <LockTimer durationSeconds={60} label="Pop all in" onAutoUnlock={() => { setPopped(items.map((_, i) => i)); ctx.celebrate(140); ctx.unlock(); }} />
+                <LockTimer active={ctx.active !== false} timerKey={blockId} durationSeconds={60} label="Pop all in" onAutoUnlock={() => { setPopped(items.map((_, i) => i)); ctx.celebrate(140); ctx.unlock(); }} />
             )}
         </>
     );

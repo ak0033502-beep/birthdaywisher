@@ -5,6 +5,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Heart } from "lucide-react";
 import { ReviewModal } from "./ReviewModal";
 import type { PublicReview, PublicReviewsSummary } from "@/lib/reviews";
+import { TRUSTPILOT_REVIEW_URL } from "@/lib/site";
+import { track } from "@/lib/track";
 
 const FACE_LABEL: Record<number, { e: string; label: string }> = {
     5: { e: "🥳", label: "Amazing!" },
@@ -197,6 +199,16 @@ export function TestimonialsSection({ initialData }: { initialData?: PublicRevie
                         >
                             ❤️ Leave a Review
                         </button>
+                        <a
+                            href={TRUSTPILOT_REVIEW_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => track("cta_click", { label: "trustpilot_testimonials" })}
+                            className="bw-btn bw-btn-ghost bw-btn-sm"
+                            style={{ borderColor: "rgba(0, 182, 122, 0.42)" }}
+                        >
+                            💚 Trustpilot ↗
+                        </a>
                     </div>
                 </div>
 

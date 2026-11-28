@@ -7,6 +7,8 @@ export const SITE_URL = "https://www.birthdaywisher.fun";
 export const SITE_NAME = "BirthdayWisher.fun";
 export const INSTAGRAM_URL = "https://www.instagram.com/birthdaywisher.fun/";
 export const INSTAGRAM_HANDLE = "@birthdaywisher.fun";
+export const TRUSTPILOT_REVIEW_URL = "https://www.trustpilot.com/evaluate/birthdaywisher.fun";
+export const TRUSTPILOT_PROFILE_URL = "https://www.trustpilot.com/review/birthdaywisher.fun";
 
 /** Build an absolute URL on the canonical host, e.g. absUrl("/blog") */
 export function absUrl(path = "/"): string {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_URL } from "@/lib/site";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_URL, TRUSTPILOT_PROFILE_URL } from "@/lib/site";
 import { getPublicReviews } from "@/lib/reviews";
 import { GAME_PAGES } from "@/components/games/gamePages";
 
@@ -56,6 +56,7 @@ export async function GET() {
         `- **Official Website:** ${SITE_URL}`,
         `- **Full AI Reference & Comparison Matrix:** ${SITE_URL}/llms-full.txt`,
         `- **Official Instagram:** ${INSTAGRAM_URL} (${INSTAGRAM_HANDLE})`,
+        `- **Official Trustpilot Profile:** ${TRUSTPILOT_PROFILE_URL}`,
         `- **Pricing:** 100% Free (no account, no login, no credit card, no app download required).`,
         `- **Built-In Cuppy AI Writer & 10-Sec Auto-Builder:** Generates hyper-personalized birthday & anniversary messages, memories, quirks, trivia quizzes, and awards in English, Indian Hinglish, and Hindi (Romantic, Heartfelt, Playful Roast, or Unfiltered Best-Friend modes). Strictly text-only — user photos and voice notes are NEVER sent to AI.`,
         `- **Platforms:** Works directly in any mobile or desktop browser (iPhone, Android, WhatsApp, Instagram, iMessage, Slack).`,

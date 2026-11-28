@@ -31,7 +31,19 @@ function fastCloudinaryUrl(url: string): string {
     return url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1280/");
 }
 
-export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishDataV2; wishId?: string; adminBypass?: boolean }) {
+export function BlockViewer({
+    wish,
+    wishId,
+    vaultWishId,
+    previewOnly = false,
+    adminBypass = false,
+}: {
+    wish: WishDataV2;
+    wishId?: string;
+    vaultWishId?: string;
+    previewOnly?: boolean;
+    adminBypass?: boolean;
+}) {
     const i = getTranslations((wish.look.language as Locale) || "en");
     const styleId = normalizeStyle(wish.look.presentationStyle);
     const skin = styleSkin(styleId, getSkin(wish.look.theme), wish.look.theme);
@@ -47,6 +59,8 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
     const [idx, setIdx] = useState(0);
     const [dir, setDir] = useState<"next" | "prev">("next");
     const [solved, setSolved] = useState<Set<string>>(() => new Set());
+    const [visitedIds, setVisitedIds] = useState<Set<string>>(() => new Set());
+    const [finaleCompleted, setFinaleCompleted] = useState(false);
     const [nudge, setNudge] = useState(false);
     const [muted, setMuted] = useState(() => isMutedPref());
     const bgmRef = useRef<BgmController | null>(null);
@@ -54,6 +68,16 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
     const current = slides[idx];
     const isGate = current ? getBlock(current.type).gate : false;
     const locked = !adminBypass && isGate && !solved.has(current.id);
+
+    const markVisited = useCallback((slideId?: string) => {
+        if (!slideId) return;
+        setVisitedIds((prev) => {
+            if (prev.has(slideId)) return prev;
+            const next = new Set(prev);
+            next.add(slideId);
+            return next;
+        });
+    }, []);
 
     // Defer background audio & photo preloading until AFTER the cover screen paints LCP
     useEffect(() => {
@@ -132,11 +156,12 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
             const nv = Math.max(0, Math.min(slides.length - 1, v + delta));
             if (nv !== v) {
                 setDir(delta === 1 ? "next" : "prev");
+                markVisited(slides[nv]?.id);
                 playSlideSound();
             }
             return nv;
         });
-    }, [locked, playSlideSound, slides.length]);
+    }, [locked, markVisited, playSlideSound, slides]);
 
     const toggleMute = () => {
         const next = !muted;
@@ -202,15 +227,36 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
         );
     }
 
-    const ctx: SlideCtx = {
-        wish, i, wishId,
-        unlocked: !locked,
-        unlock: () => {
-            if (!current || solved.has(current.id)) return;
-            if (wishId) track("wish_gate", { block: current.type, how: Date.now() - slideStart.current > 57000 ? "auto" : "solved" }, wishId);
-            setSolved((s) => new Set(s).add(current.id));
-        },
-        celebrate,
+    const makeSlideCtx = (slide: (typeof slides)[number], isActive: boolean): SlideCtx => {
+        const slideIsGate = getBlock(slide.type).gate;
+        const slideLocked = !adminBypass && slideIsGate && !solved.has(slide.id);
+        return {
+            wish,
+            i,
+            wishId,
+            vaultWishId: vaultWishId ?? wishId,
+            previewOnly,
+            active: isActive,
+            finaleCompleted,
+            onFinaleComplete: () => setFinaleCompleted(true),
+            unlocked: !slideLocked,
+            unlock: () => {
+                setSolved((prev) => {
+                    if (prev.has(slide.id)) return prev;
+                    if (wishId) {
+                        track(
+                            "wish_gate",
+                            { block: slide.type, how: Date.now() - slideStart.current > 57000 ? "auto" : "solved" },
+                            wishId,
+                        );
+                    }
+                    const next = new Set(prev);
+                    next.add(slide.id);
+                    return next;
+                });
+            },
+            celebrate,
+        };
     };
 
     const isLast = idx === slides.length - 1;
@@ -224,6 +270,7 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
                     vars={style}
                     onDone={() => {
                         setIntro(false);
+                        markVisited(slides[0]?.id);
                         celebrate(120);
                     }}
                 />
@@ -242,19 +289,45 @@ export function BlockViewer({ wish, wishId, adminBypass = false }: { wish: WishD
                 )}
 
                 <div className="bv-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-                    {current && (
-                        <section
-                            key={`${current.id}-${intro ? "pre" : "live"}`}
-                            className={`bv-slide enter-${dir} ${nudge ? "bv-shake" : ""}`}
-                            data-section={current.type}
-                            aria-roledescription="slide"
-                            aria-label={`${idx + 1} / ${slides.length}`}
-                        >
-                            <SlideFrame style={styleId} idx={idx} type={current.type}>
-                                <BlockSlide block={current} ctx={ctx} />
-                            </SlideFrame>
-                        </section>
-                    )}
+                    {slides.map((s, n) => {
+                        const isActive = n === idx;
+                        // Finale portals a full-screen overlay into .bv, so mount it only when active (its completed state is remembered via finaleCompleted)
+                        if (s.type === "finale") {
+                            if (!isActive) return null;
+                            return (
+                                <section
+                                    key={s.id}
+                                    className={`bv-slide enter-${dir}`}
+                                    data-section={s.type}
+                                    aria-roledescription="slide"
+                                    aria-label={`${n + 1} / ${slides.length}`}
+                                >
+                                    <SlideFrame style={styleId} idx={n} type={s.type}>
+                                        <BlockSlide block={s} ctx={makeSlideCtx(s, true)} />
+                                    </SlideFrame>
+                                </section>
+                            );
+                        }
+
+                        const shouldMount = isActive || visitedIds.has(s.id);
+                        if (!shouldMount) return null;
+
+                        return (
+                            <section
+                                key={n === 0 && intro ? `${s.id}-pre` : s.id}
+                                className={`bv-slide ${isActive ? `enter-${dir}` : ""} ${isActive && nudge ? "bv-shake" : ""}`}
+                                style={isActive ? undefined : { display: "none" }}
+                                aria-hidden={!isActive}
+                                data-section={s.type}
+                                aria-roledescription="slide"
+                                aria-label={`${n + 1} / ${slides.length}`}
+                            >
+                                <SlideFrame style={styleId} idx={n} type={s.type}>
+                                    <BlockSlide block={s} ctx={makeSlideCtx(s, isActive && !intro)} />
+                                </SlideFrame>
+                            </section>
+                        );
+                    })}
                 </div>
 
                 <nav className="bv-nav" aria-label="Story navigation">

@@ -58,7 +58,27 @@ const KINDS: Record<FinaleVariant, BurstKind[]> = {
     lanterns: ["willow", "willow", "peony", "ring", "crackle"],
 };
 
-export function GrandFinale({ wish, i, wishId, effect, embed = false }: { wish: WishDataV2; i: Tr; wishId?: string; effect?: string; embed?: boolean }) {
+export function GrandFinale({
+    wish,
+    i,
+    wishId,
+    vaultWishId,
+    previewOnly = false,
+    initialPhase,
+    onReachAfter,
+    effect,
+    embed = false,
+}: {
+    wish: WishDataV2;
+    i: Tr;
+    wishId?: string;
+    vaultWishId?: string;
+    previewOnly?: boolean;
+    initialPhase?: Phase;
+    onReachAfter?: () => void;
+    effect?: string;
+    embed?: boolean;
+}) {
     const [host, setHost] = useState<HTMLElement | null>(null);
     const anchor = useCallback((a: HTMLSpanElement | null) => {
         if (a) setHost((a.closest(".bv") as HTMLElement | null) || a.parentElement || null);
@@ -66,12 +86,63 @@ export function GrandFinale({ wish, i, wishId, effect, embed = false }: { wish: 
     return (
         <>
             <span ref={anchor} aria-hidden="true" style={{ display: "block", width: 1, height: 1 }} />
-            {host && createPortal(<Stage wish={wish} i={i} wishId={wishId} variant={finaleVariant(effect)} embed={embed || host.classList.contains("bv-embed")} host={host} />, host)}
+            {host && (
+                <StagePortal
+                    wish={wish}
+                    i={i}
+                    wishId={wishId}
+                    vaultWishId={vaultWishId}
+                    previewOnly={previewOnly}
+                    initialPhase={initialPhase}
+                    onReachAfter={onReachAfter}
+                    variant={finaleVariant(effect)}
+                    embed={embed || host.classList.contains("bv-embed")}
+                    host={host}
+                />
+            )}
         </>
     );
 }
 
-function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i: Tr; wishId?: string; variant: FinaleVariant; embed: boolean; host: HTMLElement }) {
+function StagePortal(props: {
+    wish: WishDataV2;
+    i: Tr;
+    wishId?: string;
+    vaultWishId?: string;
+    previewOnly?: boolean;
+    initialPhase?: Phase;
+    onReachAfter?: () => void;
+    variant: FinaleVariant;
+    embed: boolean;
+    host: HTMLElement;
+}) {
+    return createPortal(<Stage {...props} />, props.host);
+}
+
+function Stage({
+    wish,
+    i,
+    wishId,
+    vaultWishId,
+    previewOnly = false,
+    initialPhase,
+    onReachAfter,
+    variant,
+    embed,
+    host,
+}: {
+    wish: WishDataV2;
+    i: Tr;
+    wishId?: string;
+    vaultWishId?: string;
+    previewOnly?: boolean;
+    initialPhase?: Phase;
+    onReachAfter?: () => void;
+    variant: FinaleVariant;
+    embed: boolean;
+    host: HTMLElement;
+}) {
+    const effectiveVaultId = vaultWishId || wishId;
     const anniversary = wish.wishType === "anniversary";
     const rawName = (anniversary ? wish.recipient.coupleName || wish.recipient.name : wish.recipient.name || wish.recipient.nickname) || "";
     const name = rawName.trim();
@@ -86,7 +157,13 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
         return out.slice(0, 6);
     }, [wish.blocks]);
 
-    const [phase, setPhase] = useState<Phase>("ready");
+    const [phase, setPhase] = useState<Phase>(() => {
+        if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+            const devPhase = new URLSearchParams(window.location.search).get("gfPhase");
+            if (devPhase === "after" || devPhase === "cake" || devPhase === "ready") return devPhase;
+        }
+        return initialPhase ?? "ready";
+    });
     const [count, setCount] = useState<number | null>(null);
     const [blown, setBlown] = useState(false);
     const [mic, setMic] = useState<"off" | "asking" | "on" | "denied">("off");
@@ -186,9 +263,15 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
         buzz(30);
     }, []);
 
+    const onReachAfterRef = useRef(onReachAfter);
+    useEffect(() => {
+        onReachAfterRef.current = onReachAfter;
+    }, [onReachAfter]);
+
     /* ---------------- acts ---------------- */
     const runAfter = useCallback(() => {
         setPhase("after");
+        onReachAfterRef.current?.();
         const fw = fwRef.current;
         if (!fw) return;
         fw.setWarm(true);
@@ -547,7 +630,14 @@ function Stage({ wish, i, wishId, variant, embed, host }: { wish: WishDataV2; i:
                             🎁 {anniversary ? "Create an anniversary surprise like this →" : "Friend's birthday soon? Make one like this →"}
                         </span>
                     </Link>
-                    {wishId && <KeepAliveCard wishId={wishId} surface="finale" variant="dark" />}
+                    {effectiveVaultId && (
+                        <KeepAliveCard
+                            wishId={effectiveVaultId}
+                            surface="finale"
+                            variant="dark"
+                            previewOnly={previewOnly}
+                        />
+                    )}
                     {showReview && <ReviewPrompt who="recipient" wishId={wishId} mode="inline" onClose={() => setShowReview(false)} />}
                 </div>
             )}

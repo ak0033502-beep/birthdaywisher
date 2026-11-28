@@ -6,7 +6,7 @@
  * Storybook drop-caps, Ken Burns + Polaroid tape photos, live voice equalizer, and gate hints.
  */
 import dynamic from "next/dynamic";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { getTranslations } from "@/lib/i18n";
 import type { BlockConfigMap, BlockInstance, BlockType, WishDataV2 } from "@/lib/wish/schema";
 import { LockTimer } from "@/components/story/LockTimer";
@@ -30,6 +30,15 @@ export interface SlideCtx {
     celebrate: (n?: number) => void;
     /** Real wish id for anonymous completion events; undefined in previews/demos */
     wishId?: string;
+    /** Wish id for Memory Vault KeepAliveCard (remains available in Creator/Admin previews) */
+    vaultWishId?: string;
+    /** True when Creator or Admin is previewing the wish in read-only mode */
+    previewOnly?: boolean;
+    /** False when a previously visited slide is hidden behind another slide */
+    active?: boolean;
+    /** True once the recipient has already reached the Finale afterglow once in this session */
+    finaleCompleted?: boolean;
+    onFinaleComplete?: () => void;
     /** True inside the Wizard preview phone (shows full text immediately). */
     embed?: boolean;
 }
@@ -124,8 +133,18 @@ function Memory({ config, ctx }: SlideProps<"memory">) {
 function Photos({ config, ctx }: SlideProps<"photos">) {
     const items = config.items.filter((m) => m.url);
     const [n, setN] = useState(0);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const idx = Math.min(n, Math.max(0, items.length - 1));
     const item = items[idx];
+    const isActive = ctx.active !== false;
+
+    useEffect(() => {
+        const v = videoRef.current;
+        if (!v) return;
+        if (!isActive) v.pause();
+        else if (v.muted) v.play().catch(() => {});
+    }, [isActive, idx]);
+
     return (
         <>
             <h2>{idx === 0 ? ctx.i.aLittleMemory : ctx.i.andAnother}</h2>
@@ -134,7 +153,7 @@ function Photos({ config, ctx }: SlideProps<"photos">) {
                     <span className="bv-photo-tape" aria-hidden="true" />
                     <div className={`bv-photo ${item.type === "photo" ? "is-kenburns" : ""}`} key={item.url} style={{ transform: `rotate(${idx % 2 === 0 ? -2 : 2}deg)` }}>
                         {item.type === "video"
-                            ? <video src={item.url} autoPlay loop muted playsInline controls />
+                            ? <video ref={videoRef} src={item.url} autoPlay loop muted playsInline controls />
                             // eslint-disable-next-line @next/next/no-img-element
                             : <img src={fastCloudinaryUrl(item.url)} alt={ctx.i.memoryVault} decoding="async" />}
                         {items.length > 1 && <span className="bv-photo-count">{idx + 1} / {items.length}</span>}
@@ -168,6 +187,13 @@ function Award({ config, ctx }: SlideProps<"award">) {
 
 function Voice({ config, ctx }: SlideProps<"voice">) {
     const [playing, setPlaying] = useState(false);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const isActive = ctx.active !== false;
+
+    useEffect(() => {
+        if (!isActive) audioRef.current?.pause();
+    }, [isActive]);
+
     return (
         <>
             <div className="bv-emoji" aria-hidden="true">🎤</div>
@@ -177,6 +203,7 @@ function Voice({ config, ctx }: SlideProps<"voice">) {
                 {Array.from({ length: 7 }, (_, k) => <i key={k} />)}
             </div>
             <audio
+                ref={audioRef}
                 className="bv-audio"
                 controls
                 src={config.audioUrl}
@@ -260,7 +287,7 @@ function PromiseSlide({ config, ctx }: SlideProps<"promise">) {
     let body: ReactNode = config.scratchOff
         ? <div style={{ width: "100%", maxWidth: 420, aspectRatio: "4 / 3" }}><ScratchCard onUnlock={() => ctx.celebrate(100)}>{card}</ScratchCard></div>
         : card;
-    if (config.smileLock) body = <div style={{ width: "100%", maxWidth: 420 }}><SmileLock onUnlock={() => ctx.celebrate(150)}>{body}</SmileLock></div>;
+    if (config.smileLock) body = <div style={{ width: "100%", maxWidth: 420 }}><SmileLock active={ctx.active !== false} onUnlock={() => ctx.celebrate(150)}>{body}</SmileLock></div>;
     return (
         <>
             <h2>🤞 {ctx.i.myPromise}</h2>
@@ -289,7 +316,16 @@ function Finale({ config, ctx }: SlideProps<"finale">) {
     // The Grand Finale renders as a full-screen overlay; this text stays underneath for screen readers / no-JS.
     return (
         <>
-            <GrandFinale wish={wish} i={i} wishId={ctx.wishId} effect={config?.effect} />
+            <GrandFinale
+                wish={wish}
+                i={i}
+                wishId={ctx.wishId}
+                vaultWishId={ctx.vaultWishId}
+                previewOnly={ctx.previewOnly}
+                initialPhase={ctx.finaleCompleted ? "after" : undefined}
+                onReachAfter={ctx.onFinaleComplete}
+                effect={config?.effect}
+            />
             <p className="bv-muted" style={{ fontSize: 18 }}>{wish.wishType === "anniversary" ? i.happyAnniversary : i.happyBirthdayFinale}</p>
             <h1 className="bv-finale-name bv-grad">{name}</h1>
             <p className="bv-muted" style={{ fontSize: 18 }}>{i.withAllMyLove} ❤️</p>
@@ -308,7 +344,7 @@ function useGateFeedback() {
     return { msg, shake, tries, fail, pass, setMsg };
 }
 
-function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
+function SecretDate({ config, ctx, blockId }: SlideProps<"secretDate">) {
     const [guess, setGuess] = useState("");
     const fb = useGateFeedback();
     const submit = () => {
@@ -324,7 +360,7 @@ function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
                     <input className="bv-input" type="date" value={guess} onChange={(e) => setGuess(e.target.value)} aria-label={ctx.i.enterSecretDate} />
                     <button type="button" className="bv-btn" onClick={submit}>{ctx.i.unlock}</button>
                     {fb.tries >= 2 && yearHint && <p className="bv-muted" style={{ fontSize: 13 }}>💡 Hint: the year is <b>{yearHint}</b></p>}
-                    <LockTimer durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: "Time's up! Here it is...", ok: true }); ctx.unlock(); ctx.celebrate(50); }} />
+                    <LockTimer active={ctx.active !== false} timerKey={blockId} durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: "Time's up! Here it is...", ok: true }); ctx.unlock(); ctx.celebrate(50); }} />
                 </div>
             )}
             <p className={`bv-feedback ${fb.msg?.ok ? "ok" : "bad"}`} aria-live="polite">{fb.msg?.text}</p>
@@ -332,7 +368,7 @@ function SecretDate({ config, ctx }: SlideProps<"secretDate">) {
     );
 }
 
-function Puzzle({ config, ctx }: SlideProps<"puzzle">) {
+function Puzzle({ config, ctx, blockId }: SlideProps<"puzzle">) {
     return (
         <>
             <h2>{ctx.unlocked ? ctx.i.puzzleSolved : ctx.i.picturePuzzle}</h2>
@@ -343,14 +379,14 @@ function Puzzle({ config, ctx }: SlideProps<"puzzle">) {
             ) : (
                 <>
                     <div className="bv-puzzle"><SlidingPuzzle imageUrl={config.imageUrl} onSolve={() => { ctx.unlock(); ctx.celebrate(100); }} t={{ card: "" }} /></div>
-                    <LockTimer durationSeconds={60} label="Skipping in" onAutoUnlock={() => { ctx.unlock(); ctx.celebrate(100); }} />
+                    <LockTimer active={ctx.active !== false} timerKey={blockId} durationSeconds={60} label="Skipping in" onAutoUnlock={() => { ctx.unlock(); ctx.celebrate(100); }} />
                 </>
             )}
         </>
     );
 }
 
-function Quiz({ config, ctx }: SlideProps<"quiz">) {
+function Quiz({ config, ctx, blockId }: SlideProps<"quiz">) {
     const questions = config.questions.filter((q) => q.q.trim());
     const [n, setN] = useState(0);
     const [guess, setGuess] = useState("");
@@ -384,7 +420,7 @@ function Quiz({ config, ctx }: SlideProps<"quiz">) {
                 <input className="bv-input" value={guess} onChange={(e) => setGuess(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} placeholder="Type your answer…" aria-label={q.q} />
                 <button type="button" className="bv-btn" onClick={submit}>{ctx.i.submit}</button>
                 {fb.tries >= 2 && q.a && <p className="bv-muted" style={{ fontSize: 13 }}>💡 Hint: starts with &ldquo;{q.a.trim().slice(0, 1).toUpperCase()}…&rdquo;</p>}
-                <LockTimer key={n} durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: `Time's up! It was "${q.a}"`, ok: true }); setTimeout(next, 900); }} />
+                <LockTimer key={n} active={ctx.active !== false} timerKey={`${blockId}:${n}`} durationSeconds={60} onAutoUnlock={() => { fb.setMsg({ text: `Time's up! It was "${q.a}"`, ok: true }); setTimeout(next, 900); }} />
             </div>
             <p className={`bv-feedback ${fb.msg?.ok ? "ok" : "bad"}`} aria-live="polite">{fb.msg?.text}</p>
         </>

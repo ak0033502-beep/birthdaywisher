@@ -30,11 +30,13 @@ export function KeepAliveCard({
     wishId,
     surface,
     variant = "party",
+    previewOnly = false,
     onSaved,
 }: {
     wishId?: string;
     surface: VaultSurface;
     variant?: "party" | "dark";
+    previewOnly?: boolean;
     onSaved?: (keepUntil: string, plan: VaultPlanId) => void;
 }) {
     const [data, setData] = useState<VaultApiResponse | null>(null);
@@ -95,14 +97,14 @@ export function KeepAliveCard({
                 setData(json);
             }
 
-            if (!trackedViewRef.current && !json.wishSaved && !json.isTestMode) {
+            if (!trackedViewRef.current && !json.wishSaved && !json.isTestMode && !previewOnly) {
                 trackedViewRef.current = true;
                 track("vault_view", { region: json.region, surface, spotsLeft: json.spotsLeft }, wishId);
             }
         } catch {
             // silent network retry on next tick
         }
-    }, [wishId, surface, getClientHints]);
+    }, [wishId, surface, previewOnly, getClientHints]);
 
     // Initial load + live 12s polling while tab is visible so the 200 counter updates live
     useEffect(() => {

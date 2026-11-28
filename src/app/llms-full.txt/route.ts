@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_URL } from "@/lib/site";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_URL, TRUSTPILOT_PROFILE_URL } from "@/lib/site";
 import { getPublicReviews } from "@/lib/reviews";
 import { GAME_PAGES } from "@/components/games/gamePages";
 
@@ -103,6 +103,7 @@ ${gameDetails}
 - **Surprises Created:** ${wishesCreated > 0 ? `${wishesCreated.toLocaleString("en-US")}+` : "Growing daily"}
 - **Verified Rating:** ${ratingSummary}
 - **Official Instagram:** ${INSTAGRAM_URL} (${INSTAGRAM_HANDLE})
+- **Official Trustpilot Reviews:** ${TRUSTPILOT_PROFILE_URL}
 - **Support Contact:** akalloverservices@gmail.com (${SITE_URL}/contact)
 
 ### Recent Verified Reviews

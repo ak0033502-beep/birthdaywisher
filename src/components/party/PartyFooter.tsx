@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useSiteLanguage } from "@/lib/SiteLanguageContext";
 import { getSiteTranslations } from "@/lib/siteTranslations";
 import { getHomeStrings } from "@/components/home/homeStrings";
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from "@/lib/site";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, TRUSTPILOT_REVIEW_URL } from "@/lib/site";
+import { track } from "@/lib/track";
 import { BrandMark } from "./BrandLogo";
 
 /** Site footer in the "Joyful Party" design. Must be rendered inside a `.party` scope. */
@@ -19,7 +20,7 @@ export function PartyFooter() {
                     <div>
                         <div className="bw-logo" style={{ marginBottom: 12 }}><BrandMark size={30} /><span>BirthdayWisher<b>.fun</b></span></div>
                         <p>{s.footerDesc}</p>
-                        <div style={{ marginTop: 14 }}>
+                        <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 8 }}>
                             <a
                                 href={INSTAGRAM_URL}
                                 target="_blank"
@@ -53,6 +54,30 @@ export function PartyFooter() {
                                     <circle cx="17.4" cy="6.6" r="1.3" fill="#FF5C8A" />
                                 </svg>
                                 <span>{INSTAGRAM_HANDLE}</span>
+                            </a>
+                            <a
+                                href={TRUSTPILOT_REVIEW_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => track("cta_click", { label: "trustpilot_footer" })}
+                                aria-label="Review BirthdayWisher.fun on Trustpilot"
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 6,
+                                    padding: "8px 14px",
+                                    borderRadius: 999,
+                                    background: "var(--p-surface)",
+                                    border: "1.5px solid rgba(0, 182, 122, 0.42)",
+                                    boxShadow: "var(--p-shadow)",
+                                    color: "var(--p-text)",
+                                    fontWeight: 800,
+                                    fontSize: 13,
+                                    textDecoration: "none",
+                                }}
+                            >
+                                <span aria-hidden="true">💚</span>
+                                <span>Review on Trustpilot ↗</span>
                             </a>
                         </div>
                     </div>
@@ -92,6 +117,7 @@ export function PartyFooter() {
                             <li><Link href="/about">About Us</Link></li>
                             <li><Link href="/contact">Contact</Link></li>
                             <li><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                            <li><a href={TRUSTPILOT_REVIEW_URL} target="_blank" rel="noopener noreferrer">Trustpilot Reviews</a></li>
                             <li><Link href="/privacy">Privacy Policy</Link></li>
                             <li><Link href="/terms">Terms &amp; Conditions</Link></li>
                             <li><Link href="/disclaimer">Disclaimer</Link></li>

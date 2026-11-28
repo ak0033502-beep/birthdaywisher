@@ -111,12 +111,14 @@ export function AdminPreviewBanner({
 export function V2WishShell({
     wish,
     wishId,
+    vaultWishId,
     adminBypass = false,
     previewRole,
     adminMeta,
 }: {
     wish: WishDataV2;
     wishId?: string;
+    vaultWishId?: string;
     adminBypass?: boolean;
     previewRole?: PreviewRole;
     adminMeta?: AdminPreviewMeta;
@@ -156,7 +158,13 @@ export function V2WishShell({
                 />
             )}
             <div style={{ width: "100%", height: "100%", transition: "opacity 0.6s", opacity: showLockOverlay ? 0 : 1, pointerEvents: showLockOverlay ? "none" : "auto" }}>
-                <BlockViewer wish={wish} wishId={wishId} adminBypass={adminBypass} />
+                <BlockViewer
+                    wish={wish}
+                    wishId={wishId}
+                    vaultWishId={vaultWishId ?? wishId}
+                    previewOnly={!!activeRole}
+                    adminBypass={adminBypass}
+                />
             </div>
         </main>
     );
