@@ -91,14 +91,14 @@ export async function getPublicReviews(): Promise<PublicReviewsSummary> {
             sql`
                 SELECT id, name, rating, message, relationship, COALESCE(source, 'site') AS source, created_at
                 FROM reviews
-                WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND BTRIM(message) <> ''
+                WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND COALESCE(source, 'site') <> 'cuppy' AND BTRIM(message) <> ''
                 ORDER BY created_at DESC
                 LIMIT 24
             `,
             sql`
                 SELECT id, name, rating, message, relationship, COALESCE(source, 'site') AS source, created_at
                 FROM reviews
-                WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND BTRIM(message) = ''
+                WHERE approved = true AND NOT COALESCE(hidden_by_admin, false) AND COALESCE(source, 'site') <> 'cuppy' AND BTRIM(message) = ''
                 ORDER BY created_at DESC
                 LIMIT 24
             `,
@@ -108,7 +108,7 @@ export async function getPublicReviews(): Promise<PublicReviewsSummary> {
                        COUNT(*) FILTER (WHERE rating = 5)::int AS amazing_count,
                        COUNT(*) FILTER (WHERE rating = 4)::int AS loved_count
                 FROM reviews
-                WHERE NOT COALESCE(hidden_by_admin, false)
+                WHERE NOT COALESCE(hidden_by_admin, false) AND COALESCE(source, 'site') <> 'cuppy'
             `,
         ]);
 

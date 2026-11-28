@@ -31,7 +31,7 @@ export function LineChart({ labels, series, height = 200 }: { labels: string[]; 
     const n = Math.max(1, labels.length - 1);
     const x = (i: number) => P.l + (i / n) * (W - P.l - P.r);
     const y = (v: number) => H - P.b - (v / max) * (H - P.t - P.b);
-    const ticks = [0, 0.5, 1].map((k) => Math.round(max * k));
+    const ticks = [...new Set([0, 0.5, 1].map((k) => Math.round(max * k)))];
     const every = Math.max(1, Math.ceil(labels.length / 8));
     return (
         <div className="adm-chart">

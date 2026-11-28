@@ -4,11 +4,12 @@ import { sql } from "@vercel/postgres";
 import { ensureReviewsTable, getPublicReviews } from "@/lib/reviews";
 import { checkPersistentRateLimit, getTrustedIp, isSameOriginRequest } from "@/lib/security";
 
-const SOURCES = new Set(["site", "creator", "recipient"]);
+const SOURCES = new Set(["site", "creator", "recipient", "cuppy"]);
 const DEFAULT_NAME: Record<string, string> = {
     site: "Happy user",
     creator: "A happy creator",
     recipient: "A birthday star",
+    cuppy: "Cuppy AI user",
 };
 
 // Strip angle brackets & non-printable control characters to prevent script/HTML injection

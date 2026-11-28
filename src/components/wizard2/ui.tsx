@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import type { WishType } from "@/lib/wish/schema";
+import { track } from "@/lib/track";
 
 /* ---------- Wizard settings: Cuppy mascot / sounds / celebrations (saved) ---------- */
 export interface WizardSettings { mascot: boolean; sound: boolean; celebrate: boolean }
@@ -41,7 +42,7 @@ export function popSound(enabled: boolean, freq = 520) {
 }
 
 /* ---------- Cuppy the cupcake ---------- */
-const CUPPY = (
+export const CUPPY_SVG = (
     <svg viewBox="0 0 64 64" aria-hidden="true">
         <path d="M14 34 L50 34 L45 58 Q44 61 41 61 L23 61 Q20 61 19 58 Z" fill="#FF9F43" />
         <path d="M22 36 L24 59 M32 36 L32 60 M42 36 L40 59" stroke="#E07F22" strokeWidth="2" />
@@ -55,20 +56,182 @@ const CUPPY = (
     </svg>
 );
 
-export function Cuppy({ text, mascot, happyKey, onHide }: { text: ReactNode; mascot: boolean; happyKey: number; onHide: () => void }) {
+export interface CuppyChatContext {
+    name?: string;
+    relationship?: string;
+    vibe?: string;
+    wishType?: WishType;
+    stepId?: string;
+    storyMemory?: string;
+    allowAsk?: boolean;
+    allowNoFilter?: boolean;
+}
+
+export function Cuppy({
+    text,
+    mascot,
+    happyKey,
+    onHide,
+    chatCtx,
+}: {
+    text: ReactNode;
+    mascot: boolean;
+    happyKey: number;
+    onHide: () => void;
+    chatCtx?: CuppyChatContext;
+}) {
     const [happy, setHappy] = useState(false);
+    const [askOpen, setAskOpen] = useState(false);
+    const [question, setQuestion] = useState("");
+    const [reply, setReply] = useState("");
+    const [thinking, setThinking] = useState(false);
+
     useEffect(() => {
         if (!happyKey) return;
         setHappy(true);
         const t = setTimeout(() => setHappy(false), 1300);
         return () => clearTimeout(t);
     }, [happyKey]);
+
+    useEffect(() => {
+        setReply("");
+        setAskOpen(false);
+    }, [chatCtx?.stepId]);
+
+    const sendQuestion = async (qRaw?: string) => {
+        const q = (qRaw ?? question).trim();
+        if (!q || thinking) return;
+        setThinking(true);
+        try {
+            const res = await fetch("/api/cuppy", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    task: "chat",
+                    wishType: chatCtx?.wishType || "birthday",
+                    name: chatCtx?.name || "",
+                    relationship: chatCtx?.relationship || "",
+                    vibe: chatCtx?.vibe || "",
+                    stepContext: chatCtx?.stepId || "",
+                    storyContext: chatCtx?.storyMemory || "",
+                    hint: q,
+                    fresh: true,
+                }),
+            });
+            const data = (await res.json()) as {
+                items?: Array<{ text: string }>;
+                engine?: string;
+                cached?: boolean;
+                failover?: boolean;
+                ms?: number;
+                paused?: boolean;
+                pauseMessage?: string;
+            };
+            if (data.paused && data.pauseMessage) {
+                setReply(data.pauseMessage);
+                setAskOpen(false);
+                return;
+            }
+            if (data.items?.[0]?.text) {
+                track("cuppy_ai_gen", {
+                    task: "chat",
+                    tone: "auto",
+                    spice: "medium",
+                    engine: data.engine || "unknown",
+                    cached: Boolean(data.cached),
+                    failover: Boolean(data.failover),
+                    ms: data.ms ?? 0,
+                    hasHint: true,
+                    hasMemory: Boolean(chatCtx?.storyMemory),
+                });
+                setReply(data.items[0].text);
+                setQuestion("");
+                setHappy(true);
+                setTimeout(() => setHappy(false), 1300);
+            }
+        } catch {
+            setReply("Add 1 funny inside joke + Blow the Candles before the finale—that combo always wins! 🧁🎉");
+        } finally {
+            setThinking(false);
+        }
+    };
+
     if (!text) return null;
-    if (!mascot) return <div className="wz2-tip"><span aria-hidden="true">💡</span><span>{text}</span></div>;
+    if (!mascot) return <div className="wz2-tip"><span aria-hidden="true">💡</span><span>{reply || text}</span></div>;
     return (
-        <div className={`wz2-cuppy ${happy ? "is-happy" : ""}`}>
-            {CUPPY}
-            <div className="wz2-bubble" role="note">{text} <button type="button" onClick={onHide} aria-label="Hide tips">✕</button></div>
+        <div className="wz2-cuppy-wrap">
+            <div className={`wz2-cuppy ${happy || thinking ? "is-happy" : ""}`}>
+                {CUPPY_SVG}
+                <div className="wz2-bubble" role="note">
+                    <span>{reply || text}</span>
+                    <span className="wz2-bubble-acts">
+                        {chatCtx?.allowAsk !== false && (
+                            <button
+                                type="button"
+                                className="wz2-cuppy-ask-btn"
+                                onClick={() => setAskOpen((o) => !o)}
+                                aria-expanded={askOpen}
+                            >
+                                {askOpen ? "Close" : "🧁 Ask AI"}
+                            </button>
+                        )}
+                        <button type="button" onClick={onHide} aria-label="Hide tips">✕</button>
+                    </span>
+                </div>
+            </div>
+            {askOpen && chatCtx?.allowAsk !== false && (
+                <div className="wz2-cuppy-chat">
+                    <div className="wz2-ai-bar">
+                        <input
+                            className="wz2-ai-input"
+                            type="text"
+                            value={question}
+                            maxLength={180}
+                            placeholder={`Ask Cuppy anything (e.g. surprise idea for ${chatCtx?.name || "them"}, Hinglish line…)`}
+                            aria-label="Ask Cuppy AI"
+                            onChange={(e) => setQuestion(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    void sendQuestion();
+                                }
+                            }}
+                        />
+                        <button
+                            type="button"
+                            className="bw-btn bw-btn-primary bw-btn-sm wz2-ai-btn"
+                            disabled={thinking || !question.trim()}
+                            onClick={() => void sendQuestion()}
+                        >
+                            {thinking ? "…" : "Ask"}
+                        </button>
+                    </div>
+                    <div className="wz2-chips" style={{ marginTop: 8 }}>
+                        {(chatCtx?.allowNoFilter === false
+                            ? [
+                                "Give me a cute Hinglish birthday line",
+                                "Give me a heartfelt emotional line",
+                                "Suggest a unique surprise idea",
+                            ]
+                            : [
+                                "Give me an unfiltered Hinglish roast line",
+                                "Give me a 3 AM real emotional line",
+                                "Suggest a unique surprise idea",
+                            ]
+                        ).map((preset) => (
+                            <button
+                                key={preset}
+                                type="button"
+                                className="wz2-chip wz2-ai-tone"
+                                disabled={thinking}
+                                onClick={() => void sendQuestion(preset)}
+                            >
+                                {preset}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

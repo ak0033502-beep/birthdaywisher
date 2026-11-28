@@ -98,3 +98,20 @@
   .adm-kpi b { font-size: 22px; }
   .adm-wrap { padding: 12px 12px 30px; }
 }
+
+/* Cuppy AI Admin Command Center */
+.adm-ai-switches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+.adm-ai-sw-card { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--p-line); background: color-mix(in srgb, var(--p-text) 2%, transparent); }
+.adm-ai-sw-card b { display: block; font-size: 14.5px; margin-bottom: 3px; }
+.adm-ai-sw-card small { display: block; font-size: 12.5px; font-weight: 600; color: var(--p-muted); line-height: 1.4; }
+.adm-ai-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.adm-ai-lbl { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 800; color: var(--p-muted); }
+.adm-ai-lbl.wide { grid-column: 1 / -1; }
+.adm-ai-lbl input, .adm-ai-lbl select { width: 100%; padding: 10px 12px; border-radius: 11px; border: 1px solid var(--p-line); background: var(--p-bg); color: var(--p-text); font: 700 14px var(--p-font-body); }
+.adm-cozy-box { padding: 12px 14px; border-radius: 14px; border: 1px dashed color-mix(in srgb, var(--p-pink) 42%, var(--p-line)); background: color-mix(in srgb, var(--p-pink) 4%, var(--p-surface)); }
+.adm-ai-Radios { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.adm-cozy-preview { margin-top: 10px; padding: 10px 12px; border-radius: 11px; background: var(--p-surface); border: 1px solid var(--p-line); }
+.adm-cozy-preview small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; color: var(--p-muted); margin-bottom: 3px; }
+.adm-cozy-preview p { margin: 0; font-size: 13.5px; font-weight: 700; color: var(--p-text); }
+.adm-play-out { margin-top: 12px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--p-line); background: color-mix(in srgb, var(--p-pink) 4%, var(--p-surface)); }
+@media (max-width: 820px) { .adm-ai-switches, .adm-ai-fields { grid-template-columns: minmax(0, 1fr); } .adm-ai-sw-card { flex-direction: column; align-items: flex-start; } }

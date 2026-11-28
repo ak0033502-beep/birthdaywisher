@@ -11,11 +11,12 @@ import { Balloons, GiftCube } from "@/components/party/Decor";
 import { PartyThemeToggle } from "@/components/party/PartyThemeToggle";
 import { burst, useTier } from "@/components/party/interactions";
 import {
-    CHAPTERS, INGREDIENTS, REQUIRED, TEMPLATES, applyTemplate, buildWish, getConfig, isOn, newDraft, recommended,
+    CHAPTERS, INGREDIENTS, REQUIRED, TEMPLATES, applyAutoBuild, applyTemplate, buildStoryMemory, buildWish, getConfig, isOn, newDraft, recommended,
     stepValid, supports, visibleSteps, wishPower, chosenGames, MAX_GAMES, type Draft, type Mode,
 } from "./draft";
 import { GameConfigEditor, GAME_LIBRARY, PlacementChips } from "./gameEditors";
 import { BLOCK_COPY, EDITORS, type EditorEnv } from "./editors";
+import { CuppyAiBox, CuppyFeedbackBar, CuppyMagicAutoBuild, DEFAULT_PUBLIC_CUPPY_STATUS, type PublicCuppyStatus } from "./CuppyAiBox";
 import { Cuppy, PowerMeter, RELATIONS, VIBES, popSound, useWizardSettings } from "./ui";
 import { FullPreview, PreviewPhone, type PreviewScene } from "./PreviewPhone";
 import { track } from "@/lib/track";
@@ -77,6 +78,9 @@ export function Wizard2() {
     const [hearingMusic, setHearingMusic] = useState(false);
     const wizBgmRef = useRef<BgmController | null>(null);
     const [nudge, setNudge] = useState("");
+    const [autoBuiltBanner, setAutoBuiltBanner] = useState("");
+    const [aiUsed, setAiUsed] = useState<"none" | "assist" | "autobuild">("none");
+    const [cuppyStatus, setCuppyStatus] = useState<PublicCuppyStatus>(DEFAULT_PUBLIC_CUPPY_STATUS);
     const [result, setResult] = useState<{ id: string; slug?: string } | null>(null);
     const [busy, setBusy] = useState(false);
     const [saveError, setSaveError] = useState("");
@@ -88,6 +92,23 @@ export function Wizard2() {
         sync();
         mq.addEventListener("change", sync);
         return () => mq.removeEventListener("change", sync);
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        fetch("/api/cuppy/config")
+            .then((r) => (r.ok ? r.json() : null))
+            .then((j) => {
+                if (!cancelled && j && typeof j.enabled === "boolean") {
+                    setCuppyStatus({
+                        enabled: j.enabled,
+                        allowNoFilter: j.allowNoFilter !== false,
+                        pauseMessage: typeof j.pauseMessage === "string" ? j.pauseMessage : DEFAULT_PUBLIC_CUPPY_STATUS.pauseMessage,
+                    });
+                }
+            })
+            .catch(() => {});
+        return () => { cancelled = true; };
     }, []);
 
     /* ---------- analytics: wizard funnel (anonymous) ---------- */
@@ -181,8 +202,9 @@ export function Wizard2() {
             track("wizard_create_ok", {
                 mode: d.mode ?? undefined, type: d.wishType, style: wish.look.presentationStyle, theme: wish.look.theme, lang: wish.look.language,
                 blocks: wish.blocks.length, games: wish.blocks.filter((b) => isGame(b.type)).length, slug: !!d.customSlug,
+                ai: aiUsed,
                 secs: Math.round((Date.now() - openedAt.current) / 1000),
-            });
+            }, data.id);
             try { if (data.creatorToken) localStorage.setItem(`creator_token_${data.id}`, data.creatorToken); } catch { /* ignore */ }
             try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
             setResult({ id: data.id, slug: d.customSlug || undefined });
@@ -193,9 +215,26 @@ export function Wizard2() {
         } finally { setBusy(false); }
     };
 
+    const markAiUsed = useCallback((how: "assist" | "autobuild") => {
+        setAiUsed((prev) => (prev === "autobuild" ? "autobuild" : how));
+    }, []);
+
     /* ---------- editor env ---------- */
     const photos: MediaItem[] = isOn(d, "photos") ? getConfig(d, "photos").items : [];
-    const env: EditorEnv = { name, relationship: d.recipient.relationship, vibe: d.recipient.vibe, wishType: d.wishType, photos, react };
+    const storyMemory = useMemo(() => buildStoryMemory(d, step.block), [d, step.block]);
+    const env: EditorEnv = {
+        name,
+        nickname: d.recipient.nickname,
+        age: d.wishType === "anniversary" ? d.recipient.anniversaryYear : d.recipient.age,
+        relationship: d.recipient.relationship,
+        vibe: d.recipient.vibe,
+        wishType: d.wishType,
+        storyMemory,
+        cuppyStatus,
+        onAiUsed: markAiUsed,
+        photos,
+        react,
+    };
 
     /* ---------- chapters bar ---------- */
     const usedChapters = [...new Set(steps.filter((s) => s.chapter >= 0).map((s) => s.chapter))];
@@ -247,7 +286,24 @@ export function Wizard2() {
             <div className="wz2-body" style={step.id === "start" || step.id === "finish" ? { gridTemplateColumns: "1fr" } : undefined}>
                 <main className="wz2-main">
                     <div key={step.id} className={`wz2-step enter-${dir}`}>
-                        {!cuppyHidden && <Cuppy text={cuppyLine} mascot={settings.mascot} happyKey={happy} onHide={() => setCuppyHidden(true)} />}
+                        {!cuppyHidden && (
+                            <Cuppy
+                                text={step.id === "review" && autoBuiltBanner ? autoBuiltBanner : cuppyLine}
+                                mascot={settings.mascot}
+                                happyKey={happy}
+                                onHide={() => setCuppyHidden(true)}
+                                chatCtx={{
+                                    name,
+                                    relationship: d.recipient.relationship,
+                                    vibe: d.recipient.vibe,
+                                    wishType: d.wishType,
+                                    stepId: step.id,
+                                    storyMemory,
+                                    allowAsk: cuppyStatus.enabled,
+                                    allowNoFilter: cuppyStatus.allowNoFilter,
+                                }}
+                            />
+                        )}
                         {renderStep()}
                         {nudge && <div className="wz2-error" role="alert">{nudge}</div>}
                         {step.chapter >= 0 && step.id !== "finish" && <PowerMeter {...power} />}
@@ -338,6 +394,21 @@ export function Wizard2() {
                         <button type="button" className="bw-card wz2-mode is-rec" onClick={(e) => pick("template", e)}><div className="e" aria-hidden="true">🎨</div><h3>Template</h3><p>Pick a ready design; everything is pre-filled.</p><span className="time">⏱ ~2 min</span></button>
                         <button type="button" className="bw-card wz2-mode" onClick={(e) => pick("custom", e)}><div className="e" aria-hidden="true">🛠️</div><h3>Full Custom</h3><p>Choose every ingredient: quiz, voice, puzzle…</p><span className="time">⏱ 3–5 min</span></button>
                     </div>
+                    <CuppyMagicAutoBuild
+                        wishType={typeParam}
+                        status={cuppyStatus}
+                        onBuilt={(ab, btnEl) => {
+                            celebrate(btnEl, 80);
+                            react();
+                            setAiUsed("autobuild");
+                            const nextDraft = applyAutoBuild(newDraft(typeParam), ab);
+                            setAutoBuiltBanner(ab.cuppySummary);
+                            setResume(null);
+                            setDir("next");
+                            setD(nextDraft);
+                            window.scrollTo({ top: 0 });
+                        }}
+                    />
                 </>
             );
         }
@@ -718,10 +789,12 @@ export function Wizard2() {
             );
         }
 
-        if (step.id === "link") return <LinkStep d={d} patch={patch} Name={Name} chap={chapNo(6)} />;
+        if (step.id === "link") return <LinkStep d={d} patch={patch} Name={Name} chap={chapNo(6)} env={env} />;
 
         if (step.id === "review") {
             const rows = wish.blocks.filter((b) => b.type !== "intro" && b.type !== "finale");
+            const photoStep = steps.find((s) => s.block === "photos");
+            const hasPhotos = getConfig(d, "photos").items.length > 0;
             return (
                 <>
                     <div className="wz2-meta">{chapNo(6)} · Deliver</div>
@@ -743,7 +816,11 @@ export function Wizard2() {
                     </div>
                     <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
                         <button type="button" className="bw-btn bw-btn-ghost" onClick={() => setFull(true)}>▶ Play the full wish</button>
+                        {photoStep && !hasPhotos && (
+                            <button type="button" className="bw-btn bw-btn-ghost" onClick={() => goTo(photoStep.id, "prev")}>📸 Add photos (optional)</button>
+                        )}
                     </div>
+                    {aiUsed === "autobuild" && <CuppyFeedbackBar contextLabel="autobuild" />}
                     {saveError && <div className="wz2-error" role="alert">{saveError}</div>}
                 </>
             );
@@ -755,7 +832,7 @@ export function Wizard2() {
 }
 
 /* ================= Link step ================= */
-function LinkStep({ d, patch, Name, chap }: { d: Draft; patch: (p: Partial<Draft>) => void; Name: string; chap: string }) {
+function LinkStep({ d, patch, Name, chap, env }: { d: Draft; patch: (p: Partial<Draft>) => void; Name: string; chap: string; env: EditorEnv }) {
     const [checked, setChecked] = useState<{ slug: string; state: "ok" | "taken" | "invalid" | "" }>({ slug: "", state: "" });
     const slug = d.customSlug;
     useEffect(() => {
@@ -793,6 +870,13 @@ function LinkStep({ d, patch, Name, chap }: { d: Draft; patch: (p: Partial<Draft
             <p className="wz2-sub" style={{ marginTop: 8 }} aria-live="polite">{msg}</p>
             <span className="wz2-label">💬 Message to send with the link (WhatsApp)</span>
             <input className="wz2-field" style={{ fontSize: 16 }} value={d.previewText} maxLength={120} placeholder={`🎁 ${Name}, you've got a surprise! Tap to open`} onChange={(e) => patch({ previewText: e.target.value })} aria-label="Share message" />
+            <CuppyAiBox
+                task="whatsapp"
+                env={env}
+                draft={d.previewText}
+                placeholder="Want suspense, clickbait, or unfiltered WhatsApp bait? Tell Cuppy…"
+                onPick={(it) => patch({ previewText: it.text })}
+            />
         </>
     );
 }

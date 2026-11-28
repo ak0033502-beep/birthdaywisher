@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { ensureAnalytics, kvGet, ledgerWishCreated } from "@/lib/analytics";
 import { ensureReviewsTable } from "@/lib/reviews";
 import { ensureDb } from "@/lib/db";
+import { getCuppyConfig } from "@/lib/cuppyConfig";
 import { VAULT_FREE_LIMIT } from "@/lib/vaultPricing";
 
 cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
@@ -287,14 +288,14 @@ export async function getErrors(days: number) {
     };
 }
 
-/* ======================= 8. Reviews ======================= */
+/* ---------------- 8. Reviews ---------------- */
 export async function getReviews() {
     await ensureReviewsTable().catch(() => {});
     const [list, agg] = await Promise.all([
-        safe(() => sql`SELECT id, name, rating, message, relationship, approved, created_at, COALESCE(source, 'site') source FROM reviews ORDER BY created_at DESC LIMIT 100`, { rows: [] as Row[] } as never, "reviews.list"),
+        safe(() => sql`SELECT id, name, rating, message, relationship, approved, created_at, COALESCE(source, 'site') source FROM reviews WHERE COALESCE(source, 'site') <> 'cuppy' ORDER BY created_at DESC LIMIT 100`, { rows: [] as Row[] } as never, "reviews.list"),
         safe(() => sql`SELECT COUNT(*) n, COALESCE(AVG(rating),0) avg, COUNT(*) FILTER (WHERE approved) shown,
                  COUNT(*) FILTER (WHERE rating = 5) r5, COUNT(*) FILTER (WHERE rating = 4) r4, COUNT(*) FILTER (WHERE rating = 3) r3,
-                 COUNT(*) FILTER (WHERE rating = 2) r2, COUNT(*) FILTER (WHERE rating = 1) r1 FROM reviews`, { rows: [] as Row[] } as never, "reviews.agg"),
+                 COUNT(*) FILTER (WHERE rating = 2) r2, COUNT(*) FILTER (WHERE rating = 1) r1 FROM reviews WHERE COALESCE(source, 'site') <> 'cuppy'`, { rows: [] as Row[] } as never, "reviews.agg"),
     ]);
     const a = agg.rows[0] || {};
     return {
@@ -456,5 +457,336 @@ export async function getVaultAdminStats(days: number) {
             createdAt: str(r.created_at),
             stillActive: Boolean(r.still_active),
         })),
+    };
+}
+
+/* ======================= 11. Cuppy AI Command Center ======================= */
+export async function getCuppyAdminStats(days: number) {
+    await ensureAnalytics().catch(() => {});
+    await ensureReviewsTable().catch(() => {});
+
+    const [
+        config,
+        kpis,
+        prevKpis,
+        todayQuota,
+        convLift,
+        roiRows,
+        series,
+        moods,
+        tones,
+        tasks,
+        engines,
+        hours,
+        rvList,
+        rvAgg,
+    ] = await Promise.all([
+        getCuppyConfig(),
+        safe(
+            () => sql`
+                SELECT
+                    COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask'))::int AS gens,
+                    COUNT(*) FILTER (WHERE name = 'cuppy_ai_pick')::int AS picks,
+                    COUNT(*) FILTER (WHERE (name = 'cuppy_ai_gen' AND props->>'task' = 'autobuild') OR name = 'cuppy_autobuild_ok')::int AS autobuilds,
+                    COUNT(*) FILTER (WHERE name = 'cuppy_ai_gen' AND props->>'cached' = 'true')::int AS cached,
+                    COUNT(*) FILTER (WHERE name = 'cuppy_ai_gen' AND props->>'failover' = 'true')::int AS failovers,
+                    COUNT(*) FILTER (WHERE name = 'cuppy_ai_429')::int AS rate_limited,
+                    COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'hasHint' = 'true')::int AS with_hint,
+                    COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'hasMemory' = 'true')::int AS with_memory,
+                    COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND props->>'tone' = 'polish')::int AS polish_uses,
+                    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY (props->>'ms')::float)
+                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p50_ms,
+                    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY (props->>'ms')::float)
+                        FILTER (WHERE name = 'cuppy_ai_gen' AND (props->>'ms')::float > 0 AND COALESCE(props->>'cached','false') <> 'true') AS p75_ms
+                FROM site_events
+                WHERE ts > NOW() - (${days}::int * INTERVAL '1 day')
+                  AND name LIKE 'cuppy_%'
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.kpis",
+        ),
+        safe(
+            () => sql`
+                SELECT COUNT(*)::int AS gens
+                FROM site_events
+                WHERE ts <= NOW() - (${days}::int * INTERVAL '1 day')
+                  AND ts > NOW() - (${days * 2}::int * INTERVAL '1 day')
+                  AND name IN ('cuppy_ai_gen','cuppy_ai_ask')
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.prev",
+        ),
+        safe(
+            () => sql`
+                SELECT
+                    COUNT(*) FILTER (WHERE COALESCE(props->>'cached','false') <> 'true')::int AS total_today,
+                    COUNT(*) FILTER (WHERE COALESCE(props->>'cached','false') <> 'true' AND COALESCE(props->>'engine','') LIKE 'gemini%')::int AS gemini_today,
+                    COUNT(*) FILTER (WHERE COALESCE(props->>'cached','false') <> 'true' AND COALESCE(props->>'engine','') LIKE 'groq%')::int AS groq_today,
+                    COUNT(*) FILTER (WHERE props->>'failover' = 'true')::int AS failovers_today
+                FROM site_events
+                WHERE name = 'cuppy_ai_gen'
+                  AND (ts AT TIME ZONE 'Asia/Kolkata')::date = (NOW() AT TIME ZONE 'Asia/Kolkata')::date
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.today",
+        ),
+        safe(
+            () => sql`
+                WITH w_sids AS (
+                    SELECT DISTINCT sid FROM site_events
+                    WHERE name = 'wizard_open' AND sid IS NOT NULL AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                ),
+                ai_sids AS (
+                    SELECT DISTINCT sid FROM site_events
+                    WHERE name LIKE 'cuppy_%' AND sid IS NOT NULL AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                ),
+                done_sids AS (
+                    SELECT DISTINCT sid FROM site_events
+                    WHERE name = 'wizard_create_ok' AND sid IS NOT NULL AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                )
+                SELECT
+                    COUNT(*) FILTER (WHERE a.sid IS NOT NULL)::int AS ai_sessions,
+                    COUNT(*) FILTER (WHERE a.sid IS NOT NULL AND d.sid IS NOT NULL)::int AS ai_created,
+                    COUNT(*) FILTER (WHERE a.sid IS NULL)::int AS non_ai_sessions,
+                    COUNT(*) FILTER (WHERE a.sid IS NULL AND d.sid IS NOT NULL)::int AS non_ai_created
+                FROM w_sids w
+                LEFT JOIN ai_sids a ON a.sid = w.sid
+                LEFT JOIN done_sids d ON d.sid = w.sid
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.conv",
+        ),
+        safe(
+            () => sql`
+                WITH created AS (
+                    SELECT DISTINCT ON (wish_id)
+                        wish_id,
+                        CASE WHEN COALESCE(props->>'ai', 'none') IN ('assist','autobuild') THEN 'with_ai' ELSE 'without_ai' END AS bucket
+                    FROM site_events
+                    WHERE name = 'wizard_create_ok'
+                      AND wish_id IS NOT NULL
+                      AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                ),
+                rec AS (
+                    SELECT
+                        wish_id,
+                        BOOL_OR(name = 'wish_open') AS opened,
+                        BOOL_OR(name = 'wish_finale') AS finale,
+                        COUNT(*) FILTER (WHERE name = 'wish_make_own')::int AS make_own
+                    FROM site_events
+                    WHERE wish_id IS NOT NULL
+                      AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                    GROUP BY wish_id
+                )
+                SELECT
+                    c.bucket,
+                    COUNT(*)::int AS wishes,
+                    COUNT(*) FILTER (WHERE r.opened)::int AS opened,
+                    COUNT(*) FILTER (WHERE r.finale)::int AS finales,
+                    COALESCE(SUM(r.make_own), 0)::int AS make_own,
+                    COUNT(vc.wish_id)::int AS vault_claims
+                FROM created c
+                LEFT JOIN rec r ON r.wish_id = c.wish_id
+                LEFT JOIN vault_claims vc ON vc.wish_id = c.wish_id
+                GROUP BY c.bucket
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.roi",
+        ),
+        safe(
+            () => sql`
+                WITH d AS (
+                    SELECT generate_series(
+                        ((NOW() AT TIME ZONE 'Asia/Kolkata')::date - (${days - 1}::int * INTERVAL '1 day'))::date,
+                        (NOW() AT TIME ZONE 'Asia/Kolkata')::date,
+                        '1 day'
+                    )::date AS day
+                )
+                SELECT to_char(d.day, 'YYYY-MM-DD') AS day,
+                    (SELECT COUNT(*) FROM site_events e WHERE e.name IN ('cuppy_ai_gen','cuppy_ai_ask') AND (e.ts AT TIME ZONE 'Asia/Kolkata')::date = d.day)::int AS gens,
+                    (SELECT COUNT(*) FROM site_events e WHERE e.name = 'cuppy_ai_pick' AND (e.ts AT TIME ZONE 'Asia/Kolkata')::date = d.day)::int AS picks,
+                    (SELECT COUNT(*) FROM site_events e WHERE ((e.name = 'cuppy_ai_gen' AND e.props->>'task' = 'autobuild') OR e.name = 'cuppy_autobuild_ok') AND (e.ts AT TIME ZONE 'Asia/Kolkata')::date = d.day)::int AS autobuilds
+                FROM d ORDER BY d.day
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.series",
+        ),
+        safe(
+            () => sql`
+                SELECT COALESCE(props->>'spice', 'mild') AS key, COUNT(*)::int AS n
+                FROM site_events
+                WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                GROUP BY 1 ORDER BY 2 DESC
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.moods",
+        ),
+        safe(
+            () => sql`
+                SELECT COALESCE(props->>'tone', 'auto') AS key, COUNT(*)::int AS n
+                FROM site_events
+                WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                GROUP BY 1 ORDER BY 2 DESC LIMIT 14
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.tones",
+        ),
+        safe(
+            () => sql`
+                SELECT
+                    COALESCE(props->>'task', 'message') AS key,
+                    COUNT(*) FILTER (WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask'))::int AS gens,
+                    COUNT(*) FILTER (WHERE name = 'cuppy_ai_pick')::int AS picks
+                FROM site_events
+                WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask','cuppy_ai_pick')
+                  AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                GROUP BY 1 ORDER BY 2 DESC
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.tasks",
+        ),
+        safe(
+            () => sql`
+                SELECT
+                    CASE WHEN props->>'cached' = 'true' THEN 'memory-cache (0ms)' ELSE COALESCE(props->>'engine', 'gemini-3.5-flash-lite') END AS key,
+                    COUNT(*)::int AS n
+                FROM site_events
+                WHERE name = 'cuppy_ai_gen' AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                GROUP BY 1 ORDER BY 2 DESC
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.engines",
+        ),
+        safe(
+            () => sql`
+                SELECT EXTRACT(HOUR FROM (ts AT TIME ZONE 'Asia/Kolkata'))::int AS hr, COUNT(*)::int AS n
+                FROM site_events
+                WHERE name IN ('cuppy_ai_gen','cuppy_ai_ask') AND ts > NOW() - (${days}::int * INTERVAL '1 day')
+                GROUP BY 1 ORDER BY 2 DESC LIMIT 8
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.hours",
+        ),
+        safe(
+            () => sql`
+                SELECT id, name, rating, message, relationship, approved, created_at
+                FROM reviews
+                WHERE source = 'cuppy'
+                ORDER BY created_at DESC
+                LIMIT 60
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.rvList",
+        ),
+        safe(
+            () => sql`
+                SELECT
+                    COUNT(*)::int AS n,
+                    COALESCE(AVG(rating), 0) AS avg,
+                    COUNT(*) FILTER (WHERE rating = 5)::int AS r5,
+                    COUNT(*) FILTER (WHERE rating = 4)::int AS r4,
+                    COUNT(*) FILTER (WHERE rating = 3)::int AS r3,
+                    COUNT(*) FILTER (WHERE rating = 2)::int AS r2,
+                    COUNT(*) FILTER (WHERE rating = 1)::int AS r1
+                FROM reviews
+                WHERE source = 'cuppy'
+            `,
+            { rows: [] as Row[] } as never,
+            "cuppy.rvAgg",
+        ),
+    ]);
+
+    const k = kpis.rows[0] || {};
+    const pk = prevKpis.rows[0] || {};
+    const tq = todayQuota.rows[0] || {};
+    const cl = convLift.rows[0] || {};
+    const ra = rvAgg.rows[0] || {};
+
+    const roiMap = new Map<string, { wishes: number; opened: number; finales: number; makeOwn: number; vaultClaims: number }>();
+    for (const r of roiRows.rows) {
+        roiMap.set(str(r.bucket), {
+            wishes: num(r.wishes),
+            opened: num(r.opened),
+            finales: num(r.finales),
+            makeOwn: num(r.make_own),
+            vaultClaims: num(r.vault_claims),
+        });
+    }
+
+    const fmtHour = (h: number) => {
+        const ampm = h >= 12 ? "PM" : "AM";
+        const h12 = h % 12 === 0 ? 12 : h % 12;
+        return `${h12}:00 ${ampm} IST${h >= 23 || h <= 1 ? " 🕛 Midnight Rush" : ""}`;
+    };
+
+    return {
+        config,
+        envStatus: {
+            geminiReady: Boolean((process.env.GEMINI_API_KEY || "").trim()),
+            groqReady: Boolean((process.env.GROQ_API_KEY || "").trim()),
+        },
+        kpis: {
+            gens: num(k.gens),
+            gensPrev: num(pk.gens),
+            picks: num(k.picks),
+            pickRate: num(k.gens) > 0 ? Math.min(1, num(k.picks) / num(k.gens)) : 0,
+            autobuilds: num(k.autobuilds),
+            cached: num(k.cached),
+            failovers: num(k.failovers),
+            rateLimited: num(k.rate_limited),
+            withHint: num(k.with_hint),
+            withMemory: num(k.with_memory),
+            polishUses: num(k.polish_uses),
+            p50Ms: num(k.p50_ms),
+            p75Ms: num(k.p75_ms),
+        },
+        todayQuota: {
+            totalToday: num(tq.total_today),
+            geminiToday: num(tq.gemini_today),
+            groqToday: num(tq.groq_today),
+            failoversToday: num(tq.failovers_today),
+            combinedDailyLimit: 2500,
+        },
+        conversion: {
+            aiSessions: num(cl.ai_sessions),
+            aiCreated: num(cl.ai_created),
+            aiRate: num(cl.ai_sessions) > 0 ? num(cl.ai_created) / num(cl.ai_sessions) : 0,
+            nonAiSessions: num(cl.non_ai_sessions),
+            nonAiCreated: num(cl.non_ai_created),
+            nonAiRate: num(cl.non_ai_sessions) > 0 ? num(cl.non_ai_created) / num(cl.non_ai_sessions) : 0,
+        },
+        roi: {
+            withAi: roiMap.get("with_ai") || { wishes: 0, opened: 0, finales: 0, makeOwn: 0, vaultClaims: 0 },
+            withoutAi: roiMap.get("without_ai") || { wishes: 0, opened: 0, finales: 0, makeOwn: 0, vaultClaims: 0 },
+        },
+        series: series.rows.map((r) => ({
+            day: str(r.day).slice(0, 10),
+            gens: num(r.gens),
+            picks: num(r.picks),
+            autobuilds: num(r.autobuilds),
+        })),
+        moods: counts(moods.rows),
+        tones: counts(tones.rows),
+        tasks: tasks.rows.map((r) => ({
+            key: str(r.key),
+            gens: num(r.gens),
+            picks: num(r.picks),
+        })),
+        engines: counts(engines.rows),
+        peakHours: hours.rows.map((r) => ({ key: fmtHour(num(r.hr)), n: num(r.n) })),
+        reviews: {
+            total: num(ra.n),
+            avg: num(ra.avg),
+            dist: [5, 4, 3, 2, 1].map((s) => ({ key: `${s} / 5`, n: num(ra[`r${s}`]) })),
+            list: rvList.rows.map((r) => ({
+                id: num(r.id),
+                name: str(r.name),
+                rating: num(r.rating),
+                message: str(r.message),
+                context: str(r.relationship),
+                approved: Boolean(r.approved),
+                created: str(r.created_at),
+            })),
+        },
     };
 }

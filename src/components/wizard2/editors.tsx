@@ -4,12 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import type { BlockConfigMap, BlockType, MediaItem, WishType } from "@/lib/wish/schema";
 import { LIMITS, uploadFiles } from "./uploads";
 import { AWARD_IDEAS, QUIRK_PRESETS, QUIZ_IDEAS, memoryIdeas, messageLines } from "./ui";
+import { CuppyAiBox, type PublicCuppyStatus } from "./CuppyAiBox";
 
 export interface EditorEnv {
     name: string;
+    nickname?: string;
+    age?: string;
     relationship: string;
     vibe: string;
     wishType: WishType;
+    /** Privacy-safe text-only summary of earlier steps (never includes photos/media) */
+    storyMemory?: string;
+    cuppyStatus?: PublicCuppyStatus;
+    onAiUsed?: (how: "assist" | "autobuild") => void;
     /** photos already uploaded in this wish (for re-use in the puzzle) */
     photos: MediaItem[];
     react: () => void;
@@ -133,7 +140,14 @@ function MemoryEditor({ value, onChange, env }: EditorProps<"memory">) {
     return (
         <>
             <TextArea label="Memory" value={value.text} max={400} placeholder="Remember when…" onChange={(t) => onChange({ text: t })} />
-            <Ideas label="Need ideas? Tap one" items={memoryIdeas(env.relationship, env.wishType)} onPick={(t) => { onChange({ text: t }); env.react(); }} />
+            <CuppyAiBox
+                task="memory"
+                env={env}
+                draft={value.text}
+                placeholder="Type 2–3 keywords (e.g. Goa trip, 2 AM maggi, rainy scooty ride)…"
+                onPick={(it) => onChange({ text: it.text })}
+            />
+            <Ideas label="Quick starters" items={memoryIdeas(env.relationship, env.wishType)} onPick={(t) => { onChange({ text: t }); env.react(); }} />
         </>
     );
 }
@@ -155,6 +169,18 @@ function QuirksEditor({ value, onChange, env }: EditorProps<"quirks">) {
                 <input className="wz2-field" style={{ fontSize: 15, padding: "12px 14px" }} value={custom} maxLength={60} onChange={(e) => setCustom(e.target.value)} placeholder="Add your own…" aria-label="Add your own" disabled={items.length >= 6} />
                 <button type="submit" className="bw-btn bw-btn-primary bw-btn-sm" disabled={!custom.trim() || items.length >= 6}>Add</button>
             </form>
+            <CuppyAiBox
+                task="quirks"
+                env={env}
+                mode="chips"
+                pickedValues={items}
+                placeholder="Tell Cuppy their vibe (e.g. chai addict, gym bro, drama queen)…"
+                onPick={(it) => {
+                    if (!items.includes(it.text) && items.length < 6) {
+                        onChange({ items: [...items, it.text] });
+                    }
+                }}
+            />
             <Ideas label="Suggestions" items={QUIRK_PRESETS[env.wishType].filter((q) => !items.includes(q))} onPick={toggle} />
         </>
     );
@@ -163,10 +189,15 @@ function QuirksEditor({ value, onChange, env }: EditorProps<"quirks">) {
 function QuizEditor({ value, onChange, env }: EditorProps<"quiz">) {
     const qs = value.questions.length ? value.questions : [{ q: "", a: "" }];
     const set = (i: number, k: "q" | "a", v: string) => onChange({ questions: qs.map((x, j) => (j === i ? { ...x, [k]: v } : x)) });
-    const fillIdea = (idea: string) => {
+    const fillIdea = (idea: string, suggestedAns = "") => {
         const i = qs.findIndex((x) => !x.q.trim());
-        if (i >= 0) set(i, "q", idea);
-        else if (qs.length < 10) onChange({ questions: [...qs, { q: idea, a: "" }] });
+        if (i >= 0) {
+            onChange({
+                questions: qs.map((x, j) => (j === i ? { q: idea, a: suggestedAns || x.a } : x)),
+            });
+        } else if (qs.length < 10) {
+            onChange({ questions: [...qs, { q: idea, a: suggestedAns }] });
+        }
         env.react();
     };
     return (
@@ -184,7 +215,14 @@ function QuizEditor({ value, onChange, env }: EditorProps<"quiz">) {
                 ))}
             </div>
             <div className="wz2-chips"><button type="button" className="wz2-chip" disabled={qs.length >= 10} onClick={() => onChange({ questions: [...qs, { q: "", a: "" }] })}>＋ Add question ({qs.length}/10)</button></div>
-            <Ideas label="Question ideas" items={QUIZ_IDEAS[env.wishType]} onPick={fillIdea} />
+            <CuppyAiBox
+                task="quiz"
+                env={env}
+                mode="quiz"
+                placeholder="Share 2–3 facts (e.g. met in Delhi, loves cold coffee, hates horror)…"
+                onPick={(it) => fillIdea(it.text, it.answer || "")}
+            />
+            <Ideas label="Question ideas" items={QUIZ_IDEAS[env.wishType]} onPick={(q) => fillIdea(q)} />
         </>
     );
 }
@@ -204,6 +242,14 @@ function AwardEditor({ value, onChange, env }: EditorProps<"award">) {
     return (
         <>
             <input className="wz2-field" value={value.title} maxLength={80} placeholder="e.g. Best Human of 2026" onChange={(e) => onChange({ title: e.target.value })} aria-label="Award title" />
+            <CuppyAiBox
+                task="award"
+                env={env}
+                mode="chips"
+                pickedValues={value.title ? [value.title] : []}
+                placeholder="What should they win an award for? (e.g. sleeping anywhere, best advice)…"
+                onPick={(it) => onChange({ title: it.text })}
+            />
             <Ideas label="Award ideas" items={AWARD_IDEAS} onPick={(t) => { onChange({ title: t }); env.react(); }} />
         </>
     );
@@ -255,6 +301,13 @@ function MessageEditor({ value, onChange, env }: EditorProps<"message">) {
     return (
         <>
             <TextArea label="Your message" value={value.text} max={800} placeholder={`Happy ${env.wishType === "anniversary" ? "anniversary" : "birthday"} ${env.name}…`} onChange={(t) => onChange({ text: t })} />
+            <CuppyAiBox
+                task="message"
+                env={env}
+                draft={value.text}
+                placeholder="Tell Cuppy 2–3 details (e.g. momos lover, always late, my safe place)…"
+                onPick={(it) => onChange({ text: it.text })}
+            />
             <Ideas label="Ready-made lines (tap to use, then make it yours)" items={messageLines(env.name, env.relationship, env.vibe, env.wishType)} onPick={(t) => { onChange({ text: t }); env.react(); }} short={52} />
         </>
     );
@@ -322,14 +375,32 @@ function VoiceEditor({ value, onChange, env }: EditorProps<"voice">) {
     );
 }
 
-function GratitudeEditor({ value, onChange }: EditorProps<"gratitude">) {
-    return <TextArea label="Gratitude" value={value.text} max={300} placeholder="…you always pick up my 2 AM calls" onChange={(t) => onChange({ text: t })} />;
+function GratitudeEditor({ value, onChange, env }: EditorProps<"gratitude">) {
+    return (
+        <>
+            <TextArea label="Gratitude" value={value.text} max={300} placeholder="…you always pick up my 2 AM calls" onChange={(t) => onChange({ text: t })} />
+            <CuppyAiBox
+                task="gratitude"
+                env={env}
+                draft={value.text}
+                placeholder="Why are you grateful for them? (e.g. stood by me in tough times)…"
+                onPick={(it) => onChange({ text: it.text })}
+            />
+        </>
+    );
 }
 
-function PromiseEditor({ value, onChange }: EditorProps<"promise">) {
+function PromiseEditor({ value, onChange, env }: EditorProps<"promise">) {
     return (
         <>
             <TextArea label="Promise" value={value.text} max={200} placeholder="e.g. Pizza is on me this weekend 🍕" onChange={(t) => onChange({ ...value, text: t })} />
+            <CuppyAiBox
+                task="promise"
+                env={env}
+                draft={value.text}
+                placeholder="What treat or favour? (e.g. momos treat, movie night, road trip)…"
+                onPick={(it) => onChange({ ...value, text: it.text })}
+            />
             <div className="bw-card" style={{ padding: "6px 14px", marginTop: 12 }}>
                 <label className="wz2-row"><span>🪙 Hide it under a scratch card</span><input type="checkbox" checked={value.scratchOff} onChange={(e) => onChange({ ...value, scratchOff: e.target.checked })} /></label>
                 <label className="wz2-row"><span>😊 They must smile at the camera to unlock</span><input type="checkbox" checked={value.smileLock} onChange={(e) => onChange({ ...value, smileLock: e.target.checked })} /></label>
@@ -380,7 +451,7 @@ export const EDITORS: Partial<{ [K in BlockType]: (p: EditorProps<K>) => React.R
 export const BLOCK_COPY: Partial<Record<BlockType, { title: string; sub: string; tip: string }>> = {
     photos: { title: "Add photos of {name} 📸", sub: "They appear one by one, like a memory lane.", tip: "Photos make people smile instantly. Got some good ones of {name}?" },
     memory: { title: "Which memory with {name} makes you smile?", sub: "Write it like you're telling them face to face.", tip: "Small details hit hardest: the place, the time, the joke." },
-    quirks: { title: "Things you love about {name} 💖", sub: "Pick up to 6. They float on screen as little bubbles.", tip: "Inside jokes make people cry happy tears 🥹" },
+    quirks: { title: "Things you love about {name} ❤️", sub: "Pick up to 6. They float on screen as little bubbles.", tip: "Inside jokes make people cry happy tears 🥹" },
     quiz: { title: "Quiz: does {name} really know you? 🧠", sub: "They must answer to continue (auto-skips after 60 s). 1–10 questions.", tip: "Keep answers short, like one word, so they can type them." },
     roast: { title: "Toast or roast {name}? 🎚️", sub: "Set the spice level for the roast meter.", tip: "How spicy should it get? 🌶️" },
     award: { title: "Give {name} an award 🏆", sub: "A funny or sweet title they 'officially win'.", tip: "Make it a little ridiculous, it's funnier 😂" },

@@ -6,6 +6,7 @@
  *  - buildWish(): Draft → WishDataV2 (what gets saved)
  */
 import { BLOCKS, GAME_TYPES, V1_STORY_ORDER, isGame, type GameType } from "@/blocks/registry";
+import type { CuppyAutoBuild } from "@/lib/cuppyAi";
 import type { BlockConfigMap, BlockInstance, BlockType, GamePlacement, WishDataV2, WishType } from "@/lib/wish/schema";
 
 export type Mode = "quick" | "template" | "custom";
@@ -241,4 +242,99 @@ export function placeGames(blocks: BlockInstance[]): void {
 
 export function chosenGames(d: Draft): GameType[] {
     return GAME_TYPES.filter((g) => d.enabled.includes(g));
+}
+
+/**
+ * Privacy-strict cross-step story memory: summarizes ONLY text blocks the creator
+ * has already filled in (quirks, memory, award, roast, quiz, gratitude, promise, message).
+ * NEVER reads or includes photos, puzzle images, voice recordings, or gift-card URLs.
+ */
+export function buildStoryMemory(d: Draft, excludeBlock?: BlockType): string {
+    const parts: string[] = [];
+    if (excludeBlock !== "quirks" && d.configs.quirks?.items?.length) {
+        parts.push(`Quirks/habits: ${d.configs.quirks.items.join(", ")}`);
+    }
+    if (excludeBlock !== "memory" && d.configs.memory?.text?.trim()) {
+        parts.push(`Shared memory: "${d.configs.memory.text.trim().slice(0, 140)}"`);
+    }
+    if (excludeBlock !== "award" && d.configs.award?.title?.trim()) {
+        parts.push(`Award given: "${d.configs.award.title.trim()}"`);
+    }
+    if (excludeBlock !== "roast" && typeof d.configs.roast?.level === "number" && d.enabled.includes("roast")) {
+        parts.push(`Roast spice meter: ${d.configs.roast.level}%`);
+    }
+    if (excludeBlock !== "quiz" && d.configs.quiz?.questions?.some((q) => q.q.trim())) {
+        const qs = d.configs.quiz.questions
+            .filter((q) => q.q.trim())
+            .slice(0, 3)
+            .map((q) => `${q.q.trim()}${q.a.trim() ? ` (${q.a.trim()})` : ""}`)
+            .join("; ");
+        parts.push(`Quiz facts: ${qs}`);
+    }
+    if (excludeBlock !== "gratitude" && d.configs.gratitude?.text?.trim()) {
+        parts.push(`Gratitude: "${d.configs.gratitude.text.trim().slice(0, 100)}"`);
+    }
+    if (excludeBlock !== "promise" && d.configs.promise?.text?.trim()) {
+        parts.push(`Promise: "${d.configs.promise.text.trim().slice(0, 90)}"`);
+    }
+    if (excludeBlock !== "message" && d.configs.message?.text?.trim()) {
+        parts.push(`Main message snippet: "${d.configs.message.text.trim().slice(0, 120)}"`);
+    }
+    return parts.join(" | ").slice(0, 480);
+}
+
+/** Applies a 1-line Cuppy Magic Auto-Build blueprint into a complete, ready-to-preview Draft. */
+export function applyAutoBuild(base: Draft, ab: CuppyAutoBuild): Draft {
+    const ann = base.wishType === "anniversary";
+    const enabled: BlockType[] = [
+        "photos",
+        "memory",
+        "quirks",
+        ...(ab.quiz.length > 0 ? (["quiz"] as BlockType[]) : []),
+        ...(!ann ? (["roast", "award"] as BlockType[]) : []),
+        "gratitude",
+        "promise",
+        "candles",
+        "message",
+    ];
+    const configs: Configs = {
+        ...base.configs,
+        memory: { text: ab.memory },
+        quirks: { items: ab.quirks },
+        ...(ab.quiz.length > 0 ? { quiz: { questions: ab.quiz } } : {}),
+        ...(!ann ? { roast: { level: ab.roastLevel }, award: { title: ab.award } } : {}),
+        gratitude: { text: ab.gratitude },
+        promise: { text: ab.promise, scratchOff: true, smileLock: false },
+        finale: { effect: ab.finaleEffect },
+        message: { text: ab.message },
+    };
+
+    const name = ab.name.trim() || base.recipient.name.trim();
+    return {
+        ...base,
+        mode: "custom",
+        template: null,
+        recipient: {
+            ...base.recipient,
+            name,
+            coupleName: ann ? name : base.recipient.coupleName,
+            nickname: ab.nickname || base.recipient.nickname,
+            age: ann ? base.recipient.age : ab.age || base.recipient.age,
+            anniversaryYear: ann ? ab.age || base.recipient.anniversaryYear : base.recipient.anniversaryYear,
+            relationship: ab.relationship || base.recipient.relationship,
+            vibe: ab.vibe,
+        },
+        enabled,
+        wantGames: true,
+        configs,
+        look: {
+            ...base.look,
+            presentationStyle: ab.presentationStyle,
+            theme: ab.theme,
+            soundtrack: ab.soundtrack,
+        },
+        customSlug: ab.customSlug || base.customSlug,
+        previewText: ab.previewText || base.previewText,
+        step: name ? "review" : "name",
+    };
 }

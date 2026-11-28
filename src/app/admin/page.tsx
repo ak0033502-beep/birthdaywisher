@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/adminAuth";
-import { backfillLedger, getDevices, getErrors, getFunnel, getLastAdminDbError, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
+import { backfillLedger, getCuppyAdminStats, getDevices, getErrors, getFunnel, getLastAdminDbError, getOverview, getRecipient, getReviews, getTraffic, getVaultAdminStats, getWishOps, getWizard } from "@/lib/adminStats";
 import { buildInsights, stepLabel } from "@/lib/adminInsights";
 import { Bars, Card, Funnel, Kpi, LineChart, Table, fmt, pct } from "@/components/admin/charts";
 import { CleanupButton, DeleteWishForm, HealthCheck, IndexNowButton, LogoutButton } from "@/components/admin/AdminClient";
+import { CuppyEngineMonitor, CuppyPlayground, CuppySwitchboard } from "@/components/admin/CuppyAdminClient";
 import { toggleReviewAction } from "./actions";
 import { BLOCKS } from "@/blocks/registry";
 
@@ -14,6 +15,7 @@ export const maxDuration = 60;
 
 const TABS = [
     { id: "overview", t: "📊 Overview" },
+    { id: "ai", t: "🧁 Cuppy AI" },
     { id: "funnel", t: "🔁 Funnel" },
     { id: "wizard", t: "🧙 Wizard" },
     { id: "recipients", t: "💌 Recipients" },
@@ -72,6 +74,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <div className="adm-body">
                 <Suspense key={`${tab}-${days}`} fallback={<AdminSkeleton />}>
                     {tab === "overview" && <OverviewTab days={days} />}
+                    {tab === "ai" && <CuppyAiTab days={days} />}
                     {tab === "funnel" && <FunnelTab days={days} />}
                     {tab === "wizard" && <WizardTab days={days} />}
                     {tab === "recipients" && <RecipientsTab days={days} />}
@@ -522,6 +525,270 @@ async function WishesTab() {
             </Card>
             <Card title="Delete a wish now" sub="For privacy or DMCA requests. Deletes the wish and its photos / voice notes immediately. Wish content is never shown here." wide>
                 <DeleteWishForm />
+            </Card>
+        </>
+    );
+}
+
+/* ---------------- 10. Cuppy AI Command Center ---------------- */
+const MOOD_LABEL: Record<string, string> = {
+    mild: "😇 Sweet",
+    medium: "😏 Witty",
+    brutal: "💀 No-Filter",
+};
+
+const TONE_LABEL: Record<string, string> = {
+    auto: "🪄 Custom Write (Auto)",
+    romantic: "❤️ Romantic",
+    heartfelt: "🥹 Heartfelt",
+    sweet: "🥰 Sweet & Warm",
+    funny: "😂 Friendly Roast",
+    hype: "🎉 Party Hype",
+    unfiltered: "🔥 Unfiltered Dost",
+    flirty: "🌶️ Spicy Flirty",
+    raw3am: "🌙 3 AM Raw",
+    hinglish: "🗣️ Hinglish",
+    hindi: "🙏 Pure Hindi",
+    polish: "🪄 Polish Draft",
+};
+
+const TASK_LABEL: Record<string, string> = {
+    message: "💌 Main Message",
+    autobuild: "⚡ 1-Line Auto-Build",
+    memory: "📖 Memory",
+    quirks: "💗 Quirks Bubbles",
+    quiz: "🧠 Quiz Q&A",
+    award: "🏆 Award Title",
+    promise: "🤞 Scratch Promise",
+    gratitude: "🙏 Gratitude",
+    whatsapp: "💬 WhatsApp Teaser",
+    chat: "🧁 Top Mascot Ask AI",
+};
+
+async function CuppyAiTab({ days }: { days: number }) {
+    const c = await getCuppyAdminStats(days);
+    const k = c.kpis;
+    const tq = c.todayQuota;
+    const quotaPct = Math.min(100, (tq.totalToday / tq.combinedDailyLimit) * 100);
+    const moodTotal = Math.max(1, c.moods.reduce((s, m) => s + m.n, 0));
+    const liftTxt =
+        c.conversion.aiSessions > 0
+            ? `${pct(c.conversion.aiRate)} vs ${pct(c.conversion.nonAiRate)}`
+            : "Waiting for sessions";
+
+    return (
+        <>
+            {getLastAdminDbError() && (
+                <Card
+                    title="⚠️ Database Connection / Quota Paused (Your Data Is 100% Safe)"
+                    sub="Neon returned a quota or connection error, so metrics temporarily display 0 until Neon compute resumes."
+                    wide
+                >
+                    <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.5, color: "#fca5a5", fontWeight: 700 }}>
+                        {getLastAdminDbError()}
+                    </p>
+                </Card>
+            )}
+
+            {/* 1. Top 6 Main KPIs */}
+            <div className="adm-kpis">
+                <Kpi label="Total AI generations" value={k.gens} prev={k.gensPrev} hint={`vs previous ${days}d`} />
+                <Kpi label="Suggestions applied" value={k.gens ? pct(k.pickRate) : "—"} hint={`${fmt(k.picks)} picked into wishes`} />
+                <Kpi label="1-Line Auto-Builds" value={k.autobuilds} hint="⚡ ~10s full surprises" />
+                <Kpi label="Conversion (AI vs No AI)" value={liftTxt} hint={`${fmt(c.conversion.aiCreated)}/${fmt(c.conversion.aiSessions)} AI sessions`} />
+                <Kpi label="Median AI speed" value={k.p50Ms ? ms(k.p50Ms) : "—"} hint={k.p75Ms ? `p75: ${ms(k.p75Ms)}` : "real user calls"} />
+                <Kpi label="Cache hits · DB cost" value={`${fmt(k.cached)} · ₹0`} hint="0 DB queries on /api/cuppy" />
+            </div>
+
+            {/* 3. Daily Free-Tier Quota Meter (IST Today) */}
+            <Card
+                title={`🚨 Today's Free-Tier Quota Meter (IST) — ${fmt(tq.totalToday)} / ~${fmt(tq.combinedDailyLimit)} Combined Free Daily Calls (${quotaPct.toFixed(1)}% used)`}
+                sub={
+                    quotaPct >= 80
+                        ? "⚠️ High viral traffic today! Dual-engine failover (Google Gemini ↔ Groq Open-Source) is actively protecting uptime."
+                        : "Healthy headroom across Google AI Studio + Groq Cloud free tiers. Resets daily at midnight."
+                }
+                wide
+            >
+                <div style={{ marginBottom: 12 }}>
+                    <div style={{ height: 11, borderRadius: 999, background: "rgba(124,92,255,0.12)", overflow: "hidden" }}>
+                        <div
+                            style={{
+                                width: `${Math.max(quotaPct > 0 ? 2 : 0, quotaPct)}%`,
+                                height: "100%",
+                                borderRadius: 999,
+                                background: quotaPct >= 80 ? "#e11d48" : "linear-gradient(90deg, #2ED8B6, #7C5CFF, #FF5C8A)",
+                            }}
+                        />
+                    </div>
+                </div>
+                <ul className="adm-facts" style={{ marginBottom: 0 }}>
+                    <li><span>Google Gemini calls today (IST)</span><b>{fmt(tq.geminiToday)}</b></li>
+                    <li><span>Groq Open-Source calls today (IST)</span><b>{fmt(tq.groqToday)}</b></li>
+                    <li><span>Engine 1 → Engine 2 auto-failover saves</span><b>{fmt(tq.failoversToday)} today · {fmt(k.failovers)} ({days}d)</b></li>
+                    <li><span>429 burst blocks ({days}d)</span><b>{fmt(k.rateLimited)}</b></li>
+                </ul>
+            </Card>
+
+            {/* Control Switchboard */}
+            <Card
+                title="🎛️ Live AI Control Switchboard & Cozy Pause Message"
+                sub="Control Cuppy AI live without redeploying (cached 5 min in server RAM so user requests add 0 Neon DB load)."
+                wide
+            >
+                <CuppySwitchboard initial={c.config} />
+            </Card>
+
+            {/* 2. Live 5-Engine Ping + Playground */}
+            <div className="adm-grid">
+                <Card
+                    title="🩺 Live Dual-Engine Status & Free Quota Ping"
+                    sub="Verify keys (never exposed) and ping all 5 cloud/open-source models for live speed & Groq remaining quota headers."
+                    wide
+                >
+                    <CuppyEngineMonitor geminiReady={c.envStatus.geminiReady} groqReady={c.envStatus.groqReady} />
+                </Card>
+
+                <Card
+                    title="🧪 Admin AI Live Playground & Model Comparator"
+                    sub="Test and compare Gemini 3.5, Qwen 3.8 27B, and GPT-OSS 120B side-by-side across any mood or task."
+                    wide
+                >
+                    <CuppyPlayground />
+                </Card>
+            </div>
+
+            {/* 3. Daily Trend Graph */}
+            <Card title="📈 Daily Cuppy AI Trend" wide>
+                <LineChart
+                    labels={c.series.map((s) => s.day)}
+                    series={[
+                        { name: "AI Generations", color: "#7C5CFF", values: c.series.map((s) => s.gens) },
+                        { name: "Applied to Wish", color: "#FF5C8A", values: c.series.map((s) => s.picks) },
+                        { name: "1-Line Auto-Builds", color: "#2ED8B6", values: c.series.map((s) => s.autobuilds) },
+                    ]}
+                />
+            </Card>
+
+            {/* 4. Mood, Tones, Steps & Engines */}
+            <div className="adm-grid">
+                <Card title="Mood filter split (😇 Sweet · 😏 Witty · 💀 No-Filter)">
+                    <Bars
+                        items={c.moods.map((m) => ({
+                            key: m.key,
+                            n: m.n,
+                            extra: <small> · {pct(m.n / moodTotal)}</small>,
+                        }))}
+                        label={(k2) => MOOD_LABEL[k2] || k2}
+                        empty="No mood clicks tracked yet"
+                    />
+                </Card>
+
+                <Card title="Top tones ranking">
+                    <Bars
+                        items={c.tones}
+                        label={(k2) => TONE_LABEL[k2] || k2}
+                        empty="No tone clicks tracked yet"
+                    />
+                </Card>
+
+                <Card title="Where Cuppy helps most (by step)" wide>
+                    <Table
+                        head={["Step / Feature", "AI Generations", "Applied by User", "Pick Rate"]}
+                        rows={c.tasks.map((t) => [
+                            TASK_LABEL[t.key] || t.key,
+                            fmt(t.gens),
+                            fmt(t.picks),
+                            t.gens ? pct(Math.min(1, t.picks / t.gens)) : "—",
+                        ])}
+                        empty="No step usage tracked yet"
+                    />
+                </Card>
+
+                <Card title="Engine distribution & cache hits">
+                    <Bars items={c.engines} empty="No engine telemetry yet" />
+                </Card>
+
+                <Card title="🕛 Midnight rush & creator behavior">
+                    <ul className="adm-facts">
+                        <li>
+                            <span>Typed personal hint vs 1-tap chip</span>
+                            <b>{k.gens ? `${pct(k.withHint / k.gens)} typed · ${pct(1 - k.withHint / k.gens)} 1-tap` : "—"}</b>
+                        </li>
+                        <li>
+                            <span>Cross-step memory active</span>
+                            <b>{k.gens ? `${fmt(k.withMemory)} (${pct(k.withMemory / k.gens)})` : "—"}</b>
+                        </li>
+                        <li>
+                            <span>🪄 Polish draft uses</span>
+                            <b>{fmt(k.polishUses)}</b>
+                        </li>
+                    </ul>
+                    <p style={{ margin: "10px 0 6px", fontSize: 12, fontWeight: 800, opacity: 0.75 }}>Peak Hours (IST)</p>
+                    <Bars items={c.peakHours} empty="No hourly data yet" />
+                </Card>
+            </div>
+
+            {/* Recipient Impact & ROI */}
+            <Card
+                title="🏆 Recipient Impact & ROI (Cuppy AI Wishes vs Non-AI Wishes)"
+                sub="How recipients react when opening wishes made with Cuppy AI vs wishes made without AI."
+                wide
+            >
+                <Table
+                    head={["Wish Group", "Wishes Created", "Opened", "Reached Grand Finale", "Memory Vault Claims", "\"Make Your Own\" Viral Clicks"]}
+                    rows={[
+                        [
+                            <b key="ai">🧁 Made with Cuppy AI</b>,
+                            fmt(c.roi.withAi.wishes),
+                            fmt(c.roi.withAi.opened),
+                            c.roi.withAi.opened ? `${fmt(c.roi.withAi.finales)} (${pct(c.roi.withAi.finales / c.roi.withAi.opened)})` : "—",
+                            fmt(c.roi.withAi.vaultClaims),
+                            fmt(c.roi.withAi.makeOwn),
+                        ],
+                        [
+                            <span key="no">✍️ Made without AI</span>,
+                            fmt(c.roi.withoutAi.wishes),
+                            fmt(c.roi.withoutAi.opened),
+                            c.roi.withoutAi.opened ? `${fmt(c.roi.withoutAi.finales)} (${pct(c.roi.withoutAi.finales / c.roi.withoutAi.opened)})` : "—",
+                            fmt(c.roi.withoutAi.vaultClaims),
+                            fmt(c.roi.withoutAi.makeOwn),
+                        ],
+                    ]}
+                />
+            </Card>
+
+            {/* Cuppy AI User Reviews */}
+            <Card
+                title={`💬 Cuppy AI User Reviews — ${c.reviews.total ? `${c.reviews.avg.toFixed(1)} / 5 (${c.reviews.total} ratings)` : "Waiting for first rating"}`}
+                sub="Dedicated feedback collected right inside Cuppy AI after creators apply a generated suggestion or Auto-Build (kept separate from homepage site reviews)."
+                wide
+            >
+                <div className="adm-grid" style={{ marginBottom: 14 }}>
+                    <div>
+                        <Bars items={c.reviews.dist} max={Math.max(1, ...c.reviews.dist.map((d) => d.n))} color="#FF5C8A" />
+                    </div>
+                    <ul className="adm-facts">
+                        <li><span>Total Cuppy AI ratings</span><b>{fmt(c.reviews.total)}</b></li>
+                        <li><span>Average Cuppy score</span><b>{c.reviews.total ? `${c.reviews.avg.toFixed(2)} / 5` : "—"}</b></li>
+                        <li><span>Privacy guarantee</span><b>Zero wish text / names stored</b></li>
+                    </ul>
+                </div>
+                <Table
+                    head={["Date", "Step · Tone", "Rating", "Creator Feedback", "Action"]}
+                    rows={c.reviews.list.map((r) => [
+                        when(r.created),
+                        <code>{r.context || "cuppy"}</code>,
+                        `${r.rating} / 5`,
+                        <span key="m" className="adm-msg">{r.message || "(1-tap rating)"}</span>,
+                        <form key="f" action={toggleReviewAction}>
+                            <input type="hidden" name="id" value={r.id} />
+                            <input type="hidden" name="show" value={r.approved ? "0" : "1"} />
+                            <button type="submit" className="adm-btn sm ghost">{r.approved ? "Archive" : "Restore"}</button>
+                        </form>,
+                    ])}
+                    empty="No Cuppy AI reviews submitted yet—ratings appear here as creators rate Cuppy inside /create."
+                />
             </Card>
         </>
     );
